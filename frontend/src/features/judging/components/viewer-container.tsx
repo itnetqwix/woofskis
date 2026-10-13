@@ -164,14 +164,14 @@ export function ViewerContainer() {
           )}
 
           {/* Video Player Container - Positioned below Rating Section */}
-          <div className="relative min-h-0 w-full flex-1 overflow-hidden sm:mb-3 sm:rounded-3xl sm:ring-1 sm:ring-white/10 md:mb-0 md:aspect-[9/16] md:h-full md:max-h-[calc(100dvh-13.5rem)] md:w-auto md:flex-initial md:border md:border-white/15 md:shadow-[0_16px_48px_rgba(0,0,0,0.85),0_0_80px_rgba(19,73,30,0.2)] lg:max-h-[calc(100dvh-14.5rem)] 2xl:max-h-[860px]">
+          <div className="relative min-h-0 w-full flex-1 overflow-hidden sm:mb-3 sm:rounded-3xl sm:ring-1 sm:ring-white/10 md:mb-0 md:aspect-[9/16] md:h-full md:max-h-[calc(100dvh-13.5rem)] md:w-auto md:flex-initial md:border md:border-white/15 md:shadow-[0_16px_48px_rgba(0,0,0,0.85),0_0_80px_rgba(250,70,22,0.15)] lg:max-h-[calc(100dvh-14.5rem)] 2xl:max-h-[860px]">
             <main className="absolute inset-0 flex items-center justify-center overflow-hidden">
               {isSuspended ? (
                 <div className="m-4 w-full max-w-lg space-y-6 rounded-3xl border border-rose-500/40 bg-card/90 p-6 text-center text-foreground shadow-2xl backdrop-blur-2xl duration-200 animate-in fade-in zoom-in-95 sm:p-8">
                   <div className="flex items-center justify-center gap-3">
                     <div
                       className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/20 shadow-md grayscale"
-                      style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+                      style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img

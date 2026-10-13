@@ -115,7 +115,7 @@ export function PreviousRatedCard({
       data-interactive="true"
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        'relative box-border w-full max-w-full overflow-hidden rounded-2xl border-2 border-[#13491e]',
+        'relative box-border w-full max-w-full overflow-hidden rounded-2xl border-2 border-[#fa4616]',
         'bg-gradient-to-r from-black/65 via-black/50 to-black/60 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl',
         'motion-safe:duration-300 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2',
         'motion-reduce:animate-none',
@@ -128,7 +128,7 @@ export function PreviousRatedCard({
         type="button"
         onClick={onSelect}
         aria-label={`Return to ${title}`}
-        className="flex w-full cursor-pointer items-stretch gap-3 p-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8BC144] active:bg-white/5 sm:p-3"
+        className="flex w-full cursor-pointer items-stretch gap-3 p-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616] active:bg-white/5 sm:p-3"
       >
         <div className="relative flex min-h-[82px] w-[76px] shrink-0 items-center justify-center self-stretch overflow-hidden rounded-xl border border-white/15 bg-black/40 shadow-inner sm:w-[84px]">
           {showThumb ? (
@@ -169,12 +169,12 @@ export function PreviousRatedCard({
               {title}
             </p>
             <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs">
-              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8BC144]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#fa4616]">
                 Previously rated
               </span>
               <span className="text-white/70">
                 Your Rating:{' '}
-                <span className="font-bold text-[#8BC144]">
+                <span className="font-bold text-[#fa4616]">
                   {formattedUserRating !== null ? formattedUserRating : '—'}
                 </span>
               </span>
@@ -203,7 +203,7 @@ export function PreviousRatedCard({
         type="button"
         onClick={handleDismiss}
         aria-label="Dismiss previous video recap"
-        className="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8BC144]"
+        className="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616]"
       >
         <X className="h-4 w-4" />
       </button>

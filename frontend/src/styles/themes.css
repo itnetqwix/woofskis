@@ -6,54 +6,59 @@
  * All tokens are defined in HSL triplet format (H S% L%) or standard CSS values
  * to support Tailwind's opacity modifiers (e.g., `bg-primary/20`).
  *
- * Source of Truth (Woofskis Logo Asset):
- * - Primary Dark Green: #13491e (hsl(132.2, 58.7%, 18%))
- * - Secondary Bright Lime: #7fc41c (hsl(84.6, 75%, 43.9%))
+ * Source of Truth (Official Woofskis Logo Asset):
+ * - Primary Vibrant Orange: #fa4616 (hsl(14, 96%, 52%)) - from "SKIS", paw print & swoosh
+ * - Secondary Chocolate Espresso: #3e2717 (hsl(24, 45%, 18%)) - from "WOOF"
  */
 
 :root {
   /* ==========================================
    * 1. BRAND SYSTEM (Woofskis Identity - Light)
-   * Primary: Woofskis Deep Forest / Dark Green (#13491e)
-   * Secondary / Highlight: Woofskis Vibrant Lime (#7fc41c)
+   * Primary: Woofskis Vibrant Orange (#fa4616)
+   * Secondary: Woofskis Warm Chocolate Brown (#3e2717)
    * ========================================== */
-  --primary: 132.2 58.7% 18%;
-  --primary-hover: 132.2 58.7% 24%;
-  --primary-active: 132.2 58.7% 14%;
-  --primary-soft: 132.2 45% 94%;
+  --primary: 14 96% 52%;
+  --primary-hover: 14 96% 45%;
+  --primary-active: 14 96% 38%;
+  --primary-soft: 14 90% 95%;
   --primary-foreground: 0 0% 100%;
-  --primary-border: 132.2 35% 80%;
+  --primary-border: 14 96% 75%;
 
-  --secondary: 210 20% 96%;
-  --secondary-hover: 210 20% 90%;
-  --secondary-active: 210 20% 84%;
-  --secondary-soft: 210 20% 98%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 24 25% 94%;
+  --secondary-hover: 24 25% 88%;
+  --secondary-active: 24 25% 82%;
+  --secondary-soft: 24 25% 97%;
+  --secondary-foreground: 24 45% 18%;
 
-  --accent: 84.6 75% 43.9%;
-  --accent-hover: 84.6 75% 38%;
-  --accent-active: 84.6 75% 32%;
-  --accent-soft: 84.6 75% 94%;
-  --accent-foreground: 132.2 58.7% 12%;
-  --accent-border: 84.6 65% 75%;
+  --accent: 14 96% 52%;
+  --accent-hover: 14 96% 45%;
+  --accent-active: 14 96% 38%;
+  --accent-soft: 14 90% 95%;
+  --accent-foreground: 0 0% 100%;
+  --accent-border: 14 96% 75%;
 
   /* Centralized Brand Aliases */
-  --brand-primary: 132.2 58.7% 18%;
-  --brand-primary-hover: 132.2 58.7% 24%;
-  --brand-primary-active: 132.2 58.7% 14%;
-  --brand-secondary: 84.6 75% 43.9%;
-  --brand-secondary-hover: 84.6 75% 38%;
-  --brand-secondary-active: 84.6 75% 32%;
-  --brand-lime: 84.6 75% 43.9%;
-  --brand-lime-hover: 84.6 75% 38%;
-  --brand-lime-active: 84.6 75% 32%;
-  --brand-lime-soft: 84.6 75% 94%;
-  --brand-lime-foreground: 132.2 58.7% 12%;
-  --brand-subtle: 132.2 45% 96%;
-  --brand-muted: 132.2 35% 92%;
-  --brand-border: 132.2 35% 82%;
+  --brand-primary: 14 96% 52%;
+  --brand-primary-hover: 14 96% 45%;
+  --brand-primary-active: 14 96% 38%;
+  --brand-secondary: 24 45% 18%;
+  --brand-secondary-hover: 24 45% 24%;
+  --brand-secondary-active: 24 45% 14%;
+  --brand-orange: 14 96% 52%;
+  --brand-orange-hover: 14 96% 45%;
+  --brand-orange-active: 14 96% 38%;
+  --brand-orange-soft: 14 90% 95%;
+  --brand-orange-foreground: 0 0% 100%;
+  --brand-brown: 24 45% 18%;
+  --brand-brown-hover: 24 45% 24%;
+  --brand-brown-active: 24 45% 14%;
+  --brand-brown-soft: 24 30% 94%;
+  --brand-brown-foreground: 0 0% 100%;
+  --brand-subtle: 14 60% 96%;
+  --brand-muted: 14 45% 90%;
+  --brand-border: 14 60% 80%;
   --brand-foreground: 0 0% 100%;
-  --brand-foreground-secondary: 132.2 58.7% 12%;
+  --brand-foreground-secondary: 24 45% 18%;
 
   /* ==========================================
    * 2. SEMANTIC LAYOUT & SURFACES (Light)
@@ -159,46 +164,51 @@
 .dark {
   /* ==========================================
    * 1. BRAND SYSTEM (Woofskis Identity - Dark)
-   * Woofskis Dark Green (calibrated for dark surfaces)
-   * Woofskis Bright Lime (#7fc41c)
+   * Primary: Woofskis Vibrant Orange (#ff501c)
+   * Secondary / Surface: Woofskis Warm Chocolate Brown (#3e2717)
    * ========================================== */
-  --primary: 132.2 58.7% 28%;
-  --primary-hover: 132.2 58.7% 35%;
-  --primary-active: 132.2 58.7% 22%;
-  --primary-soft: 132.2 45% 12%;
+  --primary: 14 96% 54%;
+  --primary-hover: 14 96% 62%;
+  --primary-active: 14 96% 44%;
+  --primary-soft: 14 90% 14%;
   --primary-foreground: 0 0% 100%;
-  --primary-border: 132.2 35% 26%;
+  --primary-border: 14 96% 32%;
 
-  --secondary: 215 27.9% 16.9%;
-  --secondary-hover: 215 27.9% 22%;
-  --secondary-active: 215 27.9% 28%;
-  --secondary-soft: 215 27.9% 12%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 24 35% 14%;
+  --secondary-hover: 24 35% 20%;
+  --secondary-active: 24 35% 26%;
+  --secondary-soft: 24 35% 10%;
+  --secondary-foreground: 24 40% 92%;
 
-  --accent: 84.6 75% 48%;
-  --accent-hover: 84.6 75% 55%;
-  --accent-active: 84.6 75% 40%;
-  --accent-soft: 84.6 75% 14%;
-  --accent-foreground: 132.2 58.7% 10%;
-  --accent-border: 84.6 65% 28%;
+  --accent: 14 96% 54%;
+  --accent-hover: 14 96% 62%;
+  --accent-active: 14 96% 44%;
+  --accent-soft: 14 90% 14%;
+  --accent-foreground: 0 0% 100%;
+  --accent-border: 14 96% 32%;
 
   /* Centralized Brand Aliases */
-  --brand-primary: 132.2 58.7% 28%;
-  --brand-primary-hover: 132.2 58.7% 35%;
-  --brand-primary-active: 132.2 58.7% 22%;
-  --brand-secondary: 84.6 75% 48%;
-  --brand-secondary-hover: 84.6 75% 55%;
-  --brand-secondary-active: 84.6 75% 40%;
-  --brand-lime: 84.6 75% 48%;
-  --brand-lime-hover: 84.6 75% 55%;
-  --brand-lime-active: 84.6 75% 40%;
-  --brand-lime-soft: 84.6 75% 14%;
-  --brand-lime-foreground: 132.2 58.7% 10%;
-  --brand-subtle: 132.2 45% 10%;
-  --brand-muted: 132.2 35% 15%;
-  --brand-border: 132.2 35% 24%;
+  --brand-primary: 14 96% 54%;
+  --brand-primary-hover: 14 96% 62%;
+  --brand-primary-active: 14 96% 44%;
+  --brand-secondary: 24 40% 25%;
+  --brand-secondary-hover: 24 40% 32%;
+  --brand-secondary-active: 24 40% 20%;
+  --brand-orange: 14 96% 54%;
+  --brand-orange-hover: 14 96% 62%;
+  --brand-orange-active: 14 96% 44%;
+  --brand-orange-soft: 14 90% 14%;
+  --brand-orange-foreground: 0 0% 100%;
+  --brand-brown: 24 40% 25%;
+  --brand-brown-hover: 24 40% 32%;
+  --brand-brown-active: 24 40% 20%;
+  --brand-brown-soft: 24 30% 14%;
+  --brand-brown-foreground: 0 0% 100%;
+  --brand-subtle: 14 50% 10%;
+  --brand-muted: 14 40% 15%;
+  --brand-border: 14 50% 24%;
   --brand-foreground: 0 0% 100%;
-  --brand-foreground-secondary: 132.2 58.7% 10%;
+  --brand-foreground-secondary: 24 40% 85%;
 
   /* ==========================================
    * 2. SEMANTIC LAYOUT & SURFACES (Dark - Midnight)
@@ -224,7 +234,7 @@
   --border-subtle: 215 27.9% 12%;
   --border-hover: 215 27.9% 24%;
   --input: 215 27.9% 16.9%;
-  --ring: 84.6 75% 48%;
+  --ring: 14 96% 54%;
 
   /* Typography Colors */
   --text-primary: 213 31% 91%;

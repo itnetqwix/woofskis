@@ -14,7 +14,7 @@ function RegisterContent() {
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden bg-background p-4">
       <div
         className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[600px] -translate-x-1/2 rounded-full opacity-20 blur-3xl transition-all duration-700"
-        style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+        style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
       />
       <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
 

@@ -40,8 +40,8 @@ export function ScoreRevealOverlay({
             <span className="text-[10px] font-medium uppercase tracking-wider text-white/70">
               Your Rating
             </span>
-            <div className="mt-0.5 flex items-center gap-1 text-lg font-black text-[#8BC144]">
-              <Star className="h-4 w-4 fill-[#8BC144]" />
+            <div className="mt-0.5 flex items-center gap-1 text-lg font-black text-[#fa4616]">
+              <Star className="h-4 w-4 fill-[#fa4616]" />
               <span>{result.userRating}.0</span>
             </div>
           </div>

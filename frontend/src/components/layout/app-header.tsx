@@ -165,20 +165,17 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
                   title="Super Admin Cross-Tenant Switcher"
                   aria-label="Super Admin Cross-Tenant Switcher"
                 >
-                  <div className="flex shrink-0 items-center justify-center p-0.5 sm:p-1.5">
+                  <div className="flex shrink-0 items-center justify-center p-0.5">
                     <img
                       src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
                       alt={activeBrand?.name || 'Woofskis'}
-                      className="h-10 w-10 shrink-0 object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105 sm:h-[4.2rem] sm:w-[4.2rem] md:h-[5.1rem] md:w-[5.1rem]"
-                      width={82}
-                      height={82}
+                      className="h-9 w-auto max-w-[160px] object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:max-w-[200px] md:h-14 md:max-w-[240px]"
+                      width={220}
+                      height={72}
                     />
                   </div>
 
-                  <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
-                    <span className="ripsk-wordmark font-condensed text-2xl font-black leading-none tracking-tight sm:text-3xl md:text-4xl lg:text-[2.6rem]">
-                      woofskis
-                    </span>
+                  <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                     <span className="hidden rounded-full border border-rose-500/30 bg-rose-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-rose-500 sm:inline-flex sm:text-xs">
                       RADAR
                     </span>
@@ -236,25 +233,18 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
           ) : (
             <Link
               href="/"
-              className="group flex min-w-0 shrink-0 items-center gap-2 rounded-xl py-1 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:gap-3"
+              className="group flex min-w-0 shrink-0 items-center rounded-xl py-0.5 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Woofskis Home"
             >
-              {/* Clean Native Official Logo Asset - Prominent Woofskis Branding with comfortable padding */}
-              <div className="flex shrink-0 items-center justify-center p-0.5 sm:p-1.5">
+              {/* Clean Native Official Logo Asset - Prominent Woofskis Branding */}
+              <div className="flex shrink-0 items-center justify-center p-0.5">
                 <img
                   src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
                   alt="Woofskis Logo"
-                  className="h-10 w-10 shrink-0 object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:h-[4.2rem] sm:w-[4.2rem] md:h-[5.1rem] md:w-[5.1rem]"
-                  width={82}
-                  height={82}
+                  className="h-10 w-auto max-w-[170px] object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:max-w-[210px] md:h-14 md:max-w-[250px] lg:h-16 lg:max-w-[280px]"
+                  width={240}
+                  height={80}
                 />
-              </div>
-
-              {/* Refined Brand Lockup */}
-              <div className="flex min-w-0 shrink-0 items-center gap-1.5 leading-none sm:gap-2.5">
-                <span className="ripsk-wordmark font-condensed text-2xl font-black leading-none tracking-tight sm:text-3xl md:text-4xl lg:text-[2.6rem]">
-                  woofskis
-                </span>
               </div>
             </Link>
           )}
@@ -794,7 +784,7 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
             <div className="flex items-center gap-2 sm:gap-2.5">
               <Link
                 href="/login"
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl border-2 border-[#13491e] bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl border-2 border-primary/80 bg-background px-3 text-xs font-medium text-foreground transition-colors hover:border-primary hover:bg-muted sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
               >
                 <LogIn className="h-4 w-4 text-primary" />
                 <span>Sign In</span>
@@ -1013,7 +1003,7 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/login"
-                  className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border-2 border-[#13491e] bg-background py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+                  className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border-2 border-primary/80 bg-background py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-muted"
                 >
                   <LogIn className="h-3.5 w-3.5 text-primary" />
                   <span>Sign In</span>

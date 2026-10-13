@@ -143,8 +143,8 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors ${
                     isCopyActive
-                      ? 'border-[#13491e] bg-[#13491e] text-white'
-                      : 'border-border/80 bg-muted/80 text-foreground group-hover:border-[#13491e]/50 group-hover:bg-[#13491e]/10 group-hover:text-[#13491e]'
+                      ? 'border-[#fa4616] bg-[#fa4616] text-white'
+                      : 'border-border/80 bg-muted/80 text-foreground group-hover:border-[#fa4616]/50 group-hover:bg-[#fa4616]/10 group-hover:text-[#fa4616]'
                   }`}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
@@ -158,7 +158,7 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
         </div>
 
         {copied ? (
-          <div className="flex items-center justify-center gap-1.5 pb-4 text-xs font-bold text-[#13491e]">
+          <div className="flex items-center justify-center gap-1.5 pb-4 text-xs font-bold text-[#fa4616]">
             <Check className="h-3.5 w-3.5" />
             <span>Link copied to clipboard</span>
           </div>

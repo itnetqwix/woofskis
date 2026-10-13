@@ -31,7 +31,7 @@ export const RATING_SCALE_DEFINITIONS: RatingScaleDefinition[] = Array.from(
       value,
       label: String(value),
       description: `${value} out of 10`,
-      colorClass: 'text-[#8BC144]',
+      colorClass: 'text-[#fa4616]',
     };
   }
 );

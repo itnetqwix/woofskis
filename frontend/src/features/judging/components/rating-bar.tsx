@@ -41,13 +41,13 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
       aria-label="Rate this video"
       className={cn(
         'pointer-events-none w-full min-w-0 max-w-full overflow-hidden outline-none',
-        'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#8BC144]',
-        attention && 'ring-2 ring-inset ring-[#8BC144]',
+        'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#fa4616]',
+        attention && 'ring-2 ring-inset ring-[#fa4616]',
         className
       )}
     >
       <div
-        className="pointer-events-auto mx-2 rounded-2xl border-2 border-[#13491e] bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.3)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border-[#13491e]/90 md:bg-black/60 md:px-3 md:py-2 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+        className="pointer-events-auto mx-2 rounded-2xl border-2 border-[#fa4616]/80 bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(250,70,22,0.25)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border-[#fa4616] md:bg-black/60 md:px-3 md:py-2 md:shadow-[0_8px_32px_rgba(250,70,22,0.35)]"
         data-interactive="true"
       >
         <div
@@ -55,7 +55,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           aria-hidden="true"
         >
           <div
-            className="h-full rounded-full bg-[#8BC144] transition-[width] duration-75"
+            className="h-full rounded-full bg-[#fa4616] transition-[width] duration-75"
             style={{ width }}
           />
         </div>

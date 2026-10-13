@@ -16,12 +16,12 @@ export const DEFAULT_TENANT_BRANDS: TenantBrandConfig[] = [
     description:
       'The premier competition platform where talented pets and creators compete for community consensus.',
     colors: {
-      primary: '#13491e',
-      primaryHsl: '132.2 58.7% 18%',
+      primary: '#fa4616',
+      primaryHsl: '14 96% 52%',
       primaryForeground: '0 0% 100%',
-      accent: '#7fc41c',
-      accentHsl: '84.6 75% 43.9%',
-      accentForeground: '132.2 58.7% 12%',
+      accent: '#3e2717',
+      accentHsl: '24 45% 18%',
+      accentForeground: '0 0% 100%',
       backgroundStyle: 'clean-light',
     },
     activeContestId: 'contest_woof_01',

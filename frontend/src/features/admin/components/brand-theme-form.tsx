@@ -34,8 +34,8 @@ import { cn } from '@/lib/utils';
 const COLOR_PRESETS = [
   {
     name: 'Woofskis (Official)',
-    primary: '#13491e',
-    accent: '#7fc41c',
+    primary: '#fa4616',
+    accent: '#3e2717',
     bg: 'clean-light' as BackgroundStylePreset,
   },
   {
@@ -102,8 +102,8 @@ export function BrandThemeForm() {
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [primaryColor, setPrimaryColor] = useState<string>('#13491e');
-  const [accentColor, setAccentColor] = useState<string>('#7fc41c');
+  const [primaryColor, setPrimaryColor] = useState<string>('#fa4616');
+  const [accentColor, setAccentColor] = useState<string>('#3e2717');
   const [backgroundStyle, setBackgroundStyle] = useState<BackgroundStylePreset>('clean-light');
 
   // Preview interactive mock state
@@ -120,8 +120,8 @@ export function BrandThemeForm() {
       setLogoUrl(currentBrand.logoUrl || '');
       setTagline(currentBrand.tagline || '');
       setDescription(currentBrand.description || '');
-      setPrimaryColor(currentBrand.colors?.primary || '#13491e');
-      setAccentColor(currentBrand.colors?.accent || '#7fc41c');
+      setPrimaryColor(currentBrand.colors?.primary || '#fa4616');
+      setAccentColor(currentBrand.colors?.accent || '#3e2717');
       setBackgroundStyle(currentBrand.colors?.backgroundStyle || 'clean-light');
     }
   }, [currentBrand]);

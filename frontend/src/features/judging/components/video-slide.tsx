@@ -622,7 +622,7 @@ function VideoSlideComponent({
               }}
               className="pointer-events-auto mb-1 inline-flex h-9 items-center gap-2 rounded-full border border-white/20 bg-black/70 px-3 text-xs font-semibold text-white backdrop-blur-md transition-transform active:scale-95"
             >
-              <Volume2 className="h-4 w-4 text-[#8BC144]" />
+              <Volume2 className="h-4 w-4 text-[#fa4616]" />
               <span>Tap for sound</span>
             </button>
           )}

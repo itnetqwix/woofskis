@@ -10,28 +10,31 @@ The visual identity is derived directly from the official **Woofskis** logo asse
 
 ### Core Brand Colors
 
-- **Primary Brand Color (Deep Forest / Dark Green)**: `#13491e` (`hsl(132.2, 58.7%, 18%)`)
-  - Used for: Primary buttons, primary CTAs, active navigation indicators, selected tabs, important links, brand badges, header brand treatment.
-- **Secondary Brand Color (Bright Lime Green)**: `#7fc41c` (`hsl(84.6, 75%, 43.9%)`)
-  - Used for: High-emphasis accents, active indicators, highlight badges, selected state highlights, video player scrubbers/progress indicators, hover/focus rings.
+- **Primary Brand Color (Vibrant Woofskis Orange)**: `#fa4616` (`hsl(14, 96%, 52%)`)
+  - Sampled from the "SKIS" wordmark, the paw emblem, and the dynamic energy swoosh.
+  - Used for: Primary buttons, primary CTAs, active navigation indicators, rating stars, selected tabs, important links, brand badges, and header brand treatment.
+- **Secondary Brand Color (Warm Chocolate Espresso Brown)**: `#3e2717` (`hsl(24, 45%, 18%)`)
+  - Sampled from the "WOOF" wordmark.
+  - Used for: Secondary actions, warm contrast badges, dark mode surface accents, border accents, and brand framing.
 
 ### Centralized Brand Tokens
 
 | Brand Token                     | Light Value                   | Dark Value              | Purpose / Usage                              |
 | :------------------------------ | :---------------------------- | :---------------------- | :------------------------------------------- |
-| `--primary` / `--brand-primary` | `132.2 58.7% 18%` (`#13491e`) | `132.2 58.7% 24%`       | Woofskis Deep Dark Green primary brand color  |
-| `--primary-hover`               | `132.2 58.7% 14%`             | `132.2 58.7% 30%`       | Primary interactive hover state              |
-| `--primary-active`              | `132.2 58.7% 10%`             | `132.2 58.7% 36%`       | Primary active / pressed state               |
-| `--primary-soft`                | `132.2 45% 94%`               | `132.2 40% 12%`         | Soft tinted brand backgrounds & chips        |
+| `--primary` / `--brand-primary` | `14 96% 52%` (`#fa4616`)      | `14 96% 54%`            | Woofskis Vibrant Orange primary brand color  |
+| `--primary-hover`               | `14 96% 45%`                  | `14 96% 60%`            | Primary interactive hover state              |
+| `--primary-active`              | `14 96% 38%`                  | `14 96% 66%`            | Primary active / pressed state               |
+| `--primary-soft`                | `14 90% 96%`                  | `14 80% 12%`            | Soft tinted brand backgrounds & chips        |
 | `--primary-foreground`          | `0 0% 100%` (`#ffffff`)       | `0 0% 100%` (`#ffffff`) | High-contrast text on primary                |
-| `--accent` / `--brand-lime`     | `84.6 75% 43.9%` (`#7fc41c`)  | `84.6 75% 48%`          | Woofskis Bright Lime highlight & accent color |
-| `--accent-hover`                | `84.6 75% 38%`                | `84.6 75% 55%`          | Accent interactive hover state               |
-| `--accent-soft`                 | `84.6 65% 93%`                | `84.6 60% 14%`          | Soft tinted lime accent background           |
-| `--brand-subtle`                | `132.2 30% 96%`               | `132.2 30% 8%`          | Subtle brand background surfaces             |
-| `--brand-muted`                 | `132.2 25% 90%`               | `132.2 25% 15%`         | Muted brand container surfaces               |
-| `--brand-border`                | `132.2 35% 82%`               | `132.2 35% 22%`         | Brand-tinted container borders               |
-| `--secondary`                   | `210 40% 96.1%`               | `215 27.9% 16.9%`       | Neutral secondary surface                    |
-| `--secondary-hover`             | `210 40% 90%`                 | `215 27.9% 22%`         | Neutral secondary hover                      |
+| `--secondary` / `--brand-secondary` | `24 45% 18%` (`#3e2717`) | `24 40% 25%`            | Woofskis Warm Chocolate Brown brand color    |
+| `--secondary-foreground`        | `0 0% 100%` (`#ffffff`)       | `0 0% 100%` (`#ffffff`) | High-contrast text on secondary              |
+| `--accent`                      | `14 96% 52%` (`#fa4616`)      | `14 96% 54%`            | Woofskis Vibrant Orange accent color         |
+| `--accent-hover`                | `14 96% 45%`                  | `14 96% 60%`            | Accent interactive hover state               |
+| `--accent-soft`                 | `14 90% 95%`                  | `14 80% 12%`            | Soft tinted orange accent background         |
+| `--brand-subtle`                | `14 60% 97%`                  | `24 35% 8%`             | Subtle brand background surfaces             |
+| `--brand-muted`                 | `14 45% 92%`                  | `24 30% 14%`            | Muted brand container surfaces               |
+| `--brand-border`                | `14 55% 85%`                  | `24 35% 22%`            | Brand-tinted container borders               |
+| `--ring`                        | `14 96% 52%`                  | `14 96% 54%`            | Focus ring brand accent                      |
 
 ---
 

@@ -103,7 +103,7 @@ export function CommentsSheet({ open, submissionId, onOpenChange }: CommentsShee
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
           {commentsQuery.isLoading ? (
             <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin text-[#8BC144]" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#fa4616]" />
               Loading comments…
             </div>
           ) : commentsQuery.isError ? (
@@ -125,7 +125,7 @@ export function CommentsSheet({ open, submissionId, onOpenChange }: CommentsShee
                         className="h-7 w-7 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#13491e] text-[10px] font-bold text-white">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#fa4616] text-[10px] font-bold text-white">
                         {initials(comment.author.name)}
                       </span>
                     )}
@@ -169,7 +169,7 @@ export function CommentsSheet({ open, submissionId, onOpenChange }: CommentsShee
               <button
                 type="submit"
                 disabled={createMutation.isPending}
-                className="h-11 shrink-0 rounded-xl bg-[#8BC144] px-3 text-xs font-bold text-white disabled:opacity-50"
+                className="h-11 shrink-0 rounded-xl bg-[#fa4616] px-3 text-xs font-bold text-white transition-colors hover:bg-[#fa4616]/90 disabled:opacity-50"
               >
                 Submit
               </button>
@@ -177,7 +177,7 @@ export function CommentsSheet({ open, submissionId, onOpenChange }: CommentsShee
           ) : (
             <p className="text-center text-xs text-muted-foreground">
               Guest comments are not specified.{' '}
-              <Link href="/login" className="font-bold text-[#8BC144]">
+              <Link href="/login" className="font-bold text-[#fa4616]">
                 Sign in
               </Link>{' '}
               to comment.

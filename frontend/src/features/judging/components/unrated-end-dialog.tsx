@@ -52,7 +52,7 @@ export function UnratedEndDialog({
           <button
             type="button"
             onClick={onRate}
-            className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-[#8BC144] px-4 text-sm font-semibold text-white"
+            className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-[#fa4616] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#fa4616]/90"
           >
             Rate Video
           </button>
@@ -67,7 +67,7 @@ export function UnratedEndDialog({
         <label className="flex min-h-11 items-center gap-2 text-sm text-white/85">
           <input
             type="checkbox"
-            className="h-5 w-5 accent-[#8BC144]"
+            className="h-5 w-5 accent-[#fa4616]"
             checked={checked}
             onChange={(event) => {
               const hidden = event.target.checked;

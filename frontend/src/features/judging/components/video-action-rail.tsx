@@ -47,7 +47,7 @@ export function VideoActionRail({
 
   // Base style for icon action controls: consistent 48px touch target, thin low-contrast border, subtle translucent dark bg
   const baseActionButtonClass =
-    'group flex h-12 w-12 shrink-0 touch-manipulation items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8BC144] hover:bg-black/70 active:scale-95 disabled:pointer-events-none disabled:opacity-50';
+    'group flex h-12 w-12 shrink-0 touch-manipulation items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616] hover:bg-black/70 active:scale-95 disabled:pointer-events-none disabled:opacity-50';
 
   const bottomStyle =
     typeof previousCardHeight === 'number' && previousCardHeight > 0
@@ -73,7 +73,7 @@ export function VideoActionRail({
         className="flex min-w-12 flex-col items-center justify-center rounded-xl border border-white/15 bg-black/45 px-1.5 py-1.5 text-center text-white shadow-sm backdrop-blur-md"
         title={`Community rating: ${scoreDisplay} / 10 across ${votesDisplay}`}
       >
-        <div className="flex items-center gap-0.5 text-[#8BC144]">
+        <div className="flex items-center gap-0.5 text-[#fa4616]">
           <span className="text-[13px] font-black leading-none tracking-tight text-white">
             {scoreDisplay}
           </span>
@@ -154,7 +154,7 @@ export function VideoActionRail({
           />
         ) : (
           <Volume2
-            className="h-6 w-6 text-[#8BC144] transition-transform duration-150 group-hover:scale-110"
+            className="h-6 w-6 text-[#fa4616] transition-transform duration-150 group-hover:scale-110"
             aria-hidden="true"
           />
         )}

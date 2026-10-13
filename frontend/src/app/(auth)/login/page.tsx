@@ -18,7 +18,7 @@ function LoginContent() {
       {/* Dynamic Ambient Background Glow */}
       <div
         className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[600px] -translate-x-1/2 rounded-full opacity-20 blur-3xl transition-all duration-700"
-        style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+        style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
       />
       <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
 
@@ -37,7 +37,7 @@ function LoginContent() {
           <div className="hidden items-center gap-1.5 rounded-full border border-border/60 bg-card/80 px-2.5 py-1 font-mono text-[11px] text-muted-foreground sm:flex">
             <span
               className="shadow-xs h-2 w-2 rounded-full"
-              style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+              style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
             />
             <span className="font-semibold text-foreground">{activeBrand?.name || 'Woofskis'}</span>
           </div>
@@ -53,7 +53,7 @@ function LoginContent() {
             <div className="inline-flex items-center justify-center">
               <div
                 className="h-12 w-12 overflow-hidden rounded-2xl p-0.5 shadow-lg shadow-primary/20"
-                style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+                style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img

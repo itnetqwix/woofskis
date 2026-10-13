@@ -65,7 +65,7 @@ export function StarRating({
               'motion-safe:transition-transform motion-safe:duration-150',
               on && size === 'md' && layout === 'spread' && 'motion-safe:scale-110',
               on
-                ? 'fill-[#8BC144] text-[#8BC144]'
+                ? 'fill-[#fa4616] text-[#fa4616]'
                 : tone === 'onDark'
                   ? 'fill-transparent text-white/35'
                   : 'fill-transparent text-foreground/30'
@@ -95,10 +95,10 @@ export function StarRating({
             onClick={() => onChange?.(star)}
             className={cn(
               'touch-manipulation items-center justify-center rounded-md',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8BC144]',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616]',
               'transition-all duration-100 hover:scale-110 hover:bg-white/10 active:scale-95 disabled:opacity-50',
               layout === 'inline' ? 'flex h-12 w-12 shrink-0' : 'flex h-full min-w-0 flex-1',
-              value === star && 'bg-[#8BC144]/15'
+              value === star && 'bg-[#fa4616]/15'
             )}
           >
             {glyph}

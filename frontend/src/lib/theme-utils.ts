@@ -252,8 +252,8 @@ export function deploymentOrganizationSlug(): string {
 
 /** Paint placeholder until GET /organizations/:slug/branding returns. */
 export function deploymentBrandPlaceholder(slug = deploymentOrganizationSlug()): TenantBrandConfig {
-  const primary = '#13491e';
-  const accent = '#7fc41c';
+  const primary = '#fa4616';
+  const accent = '#3e2717';
   return {
     id: slug,
     name: slug === 'woofskis' ? 'Woofskis' : slug,
@@ -269,7 +269,7 @@ export function deploymentBrandPlaceholder(slug = deploymentOrganizationSlug()):
       primaryForeground: '0 0% 100%',
       accent,
       accentHsl: hexToHslTriplet(accent),
-      accentForeground: '132.2 58.7% 12%',
+      accentForeground: '0 0% 100%',
       backgroundStyle: 'clean-light',
     },
     isDefault: true,

@@ -228,7 +228,7 @@ export function StarCelebration({ burstId }: { burstId: number }) {
         >
           <Star
             strokeWidth={2}
-            className="fill-[#8BC144] text-[#8BC144]"
+            className="fill-[#fa4616] text-[#fa4616]"
             style={{ width: particle.size, height: particle.size }}
           />
         </span>

@@ -15,7 +15,7 @@ export default function RegisterCreatorPage() {
       {/* Glow */}
       <div
         className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[600px] -translate-x-1/2 rounded-full opacity-20 blur-3xl transition-all duration-700"
-        style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+        style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
       />
 
       <header className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-4 sm:p-6">
@@ -35,7 +35,7 @@ export default function RegisterCreatorPage() {
             <div className="inline-flex items-center justify-center">
               <div
                 className="h-12 w-12 overflow-hidden rounded-2xl p-0.5 shadow-lg shadow-primary/20"
-                style={{ backgroundColor: activeBrand?.colors.primary || '#13491e' }}
+                style={{ backgroundColor: activeBrand?.colors.primary || '#fa4616' }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img

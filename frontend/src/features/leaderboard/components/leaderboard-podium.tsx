@@ -122,7 +122,7 @@ export function LeaderboardPodium({ items, onOpenPreview }: LeaderboardPodiumPro
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center bg-[#13491e] text-[9px] font-bold text-white">
+                      <span className="flex h-full w-full items-center justify-center bg-[#fa4616] text-[9px] font-bold text-white">
                         {initials(rank2.creatorName)}
                       </span>
                     )}
@@ -247,7 +247,7 @@ export function LeaderboardPodium({ items, onOpenPreview }: LeaderboardPodiumPro
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center bg-[#13491e] text-[9px] font-bold text-white">
+                      <span className="flex h-full w-full items-center justify-center bg-[#fa4616] text-[9px] font-bold text-white">
                         {initials(rank1.creatorName)}
                       </span>
                     )}
@@ -366,7 +366,7 @@ export function LeaderboardPodium({ items, onOpenPreview }: LeaderboardPodiumPro
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center bg-[#13491e] text-[9px] font-bold text-white">
+                      <span className="flex h-full w-full items-center justify-center bg-[#fa4616] text-[9px] font-bold text-white">
                         {initials(rank3.creatorName)}
                       </span>
                     )}

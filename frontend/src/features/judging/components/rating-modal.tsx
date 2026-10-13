@@ -111,7 +111,7 @@ export function RatingModal({
           onClick={() => {
             if (selected !== null) onSubmit(selected);
           }}
-          className="mt-4 h-12 w-full rounded-xl bg-[#8BC144] text-sm font-bold text-white disabled:opacity-50"
+          className="mt-4 h-12 w-full rounded-xl bg-[#fa4616] text-sm font-bold text-white transition-colors hover:bg-[#fa4616]/90 disabled:opacity-50"
         >
           {existingRating !== null ? 'Update rating' : 'Submit rating'}
         </button>

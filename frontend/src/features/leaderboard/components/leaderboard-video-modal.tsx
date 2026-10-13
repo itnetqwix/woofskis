@@ -219,7 +219,7 @@ export function LeaderboardVideoModal({ open, onOpenChange, item }: LeaderboardV
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center bg-[#13491e] text-[10px] font-bold text-white">
+                    <span className="flex h-full w-full items-center justify-center bg-[#fa4616] text-[10px] font-bold text-white">
                       {initials(item.creatorName)}
                     </span>
                   )}

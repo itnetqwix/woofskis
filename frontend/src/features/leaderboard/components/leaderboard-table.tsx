@@ -47,7 +47,7 @@ function Creator({ item }: { item: LeaderboardItem }) {
           className="h-7 w-7 shrink-0 rounded-full object-cover"
         />
       ) : (
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#13491e] text-[10px] font-bold text-white">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fa4616] text-[10px] font-bold text-white">
           {initials(item.creatorName)}
         </span>
       )}

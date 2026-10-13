@@ -68,7 +68,7 @@ export function VotersSheet({ open, submissionId, title, onOpenChange }: VotersS
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
           {votersQuery.isLoading ? (
             <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin text-[#13491e]" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#fa4616]" />
               Loading voters…
             </div>
           ) : votersQuery.isError ? (
@@ -94,7 +94,7 @@ export function VotersSheet({ open, submissionId, title, onOpenChange }: VotersS
                         className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#13491e] text-[11px] font-bold text-white">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fa4616] text-[11px] font-bold text-white">
                         {voter.name ? initials(voter.name) : 'G'}
                       </span>
                     )}
