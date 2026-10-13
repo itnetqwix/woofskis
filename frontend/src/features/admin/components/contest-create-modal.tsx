@@ -81,15 +81,6 @@ interface ContestCreateModalProps {
 
 const CATEGORY_PRESETS: Record<string, string[]> = {
   woofskis: [
-    'Comedy Skits',
-    'Standup Shorts',
-    'VFX Humor',
-    'Parody',
-    'Pranks',
-    'Roasts',
-    'Street Interviews',
-  ],
-  woofskis: [
     'Dog Agility',
     'Cat Bloopers',
     'Tricks & Training',
