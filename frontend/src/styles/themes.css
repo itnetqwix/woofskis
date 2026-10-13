@@ -1,0 +1,290 @@
+/**
+ * ============================================================================
+ * WOOFSKIS CENTRALIZED DESIGN SYSTEM - THEME TOKENS
+ * ============================================================================
+ * Single source of truth for all color tokens, semantic states, radii, and shadows.
+ * All tokens are defined in HSL triplet format (H S% L%) or standard CSS values
+ * to support Tailwind's opacity modifiers (e.g., `bg-primary/20`).
+ *
+ * Source of Truth (Woofskis Logo Asset):
+ * - Primary Dark Green: #13491e (hsl(132.2, 58.7%, 18%))
+ * - Secondary Bright Lime: #7fc41c (hsl(84.6, 75%, 43.9%))
+ */
+
+:root {
+  /* ==========================================
+   * 1. BRAND SYSTEM (Woofskis Identity - Light)
+   * Primary: Woofskis Deep Forest / Dark Green (#13491e)
+   * Secondary / Highlight: Woofskis Vibrant Lime (#7fc41c)
+   * ========================================== */
+  --primary: 132.2 58.7% 18%;
+  --primary-hover: 132.2 58.7% 24%;
+  --primary-active: 132.2 58.7% 14%;
+  --primary-soft: 132.2 45% 94%;
+  --primary-foreground: 0 0% 100%;
+  --primary-border: 132.2 35% 80%;
+
+  --secondary: 210 20% 96%;
+  --secondary-hover: 210 20% 90%;
+  --secondary-active: 210 20% 84%;
+  --secondary-soft: 210 20% 98%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --accent: 84.6 75% 43.9%;
+  --accent-hover: 84.6 75% 38%;
+  --accent-active: 84.6 75% 32%;
+  --accent-soft: 84.6 75% 94%;
+  --accent-foreground: 132.2 58.7% 12%;
+  --accent-border: 84.6 65% 75%;
+
+  /* Centralized Brand Aliases */
+  --brand-primary: 132.2 58.7% 18%;
+  --brand-primary-hover: 132.2 58.7% 24%;
+  --brand-primary-active: 132.2 58.7% 14%;
+  --brand-secondary: 84.6 75% 43.9%;
+  --brand-secondary-hover: 84.6 75% 38%;
+  --brand-secondary-active: 84.6 75% 32%;
+  --brand-lime: 84.6 75% 43.9%;
+  --brand-lime-hover: 84.6 75% 38%;
+  --brand-lime-active: 84.6 75% 32%;
+  --brand-lime-soft: 84.6 75% 94%;
+  --brand-lime-foreground: 132.2 58.7% 12%;
+  --brand-subtle: 132.2 45% 96%;
+  --brand-muted: 132.2 35% 92%;
+  --brand-border: 132.2 35% 82%;
+  --brand-foreground: 0 0% 100%;
+  --brand-foreground-secondary: 132.2 58.7% 12%;
+
+  /* ==========================================
+   * 2. SEMANTIC LAYOUT & SURFACES (Light)
+   * ========================================== */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+
+  --surface: 0 0% 100%;
+  --surface-foreground: 222.2 84% 4.9%;
+  --surface-elevated: 0 0% 98%;
+  --surface-elevated-foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --muted: 210 20% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --border: 214.3 31.8% 91.4%;
+  --border-subtle: 214.3 31.8% 95%;
+  --border-hover: 214.3 31.8% 80%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 132.2 58.7% 18%;
+
+  /* Typography Colors */
+  --text-primary: 222.2 84% 4.9%;
+  --text-secondary: 215.4 16.3% 36.9%;
+  --text-muted: 215.4 16.3% 46.9%;
+  --text-inverse: 0 0% 100%;
+
+  /* ==========================================
+   * 3. SEMANTIC STATES (Light)
+   * ========================================== */
+  /* Success (Standardized Green) */
+  --success: 142.1 76.2% 36.3%;
+  --success-hover: 142.1 76.2% 30%;
+  --success-active: 142.1 76.2% 24%;
+  --success-soft: 142.1 76.2% 94%;
+  --success-foreground: 0 0% 100%;
+  --success-border: 142.1 76.2% 80%;
+
+  /* Danger / Error / Destructive (Standardized Red) */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-hover: 0 84.2% 52%;
+  --destructive-active: 0 84.2% 44%;
+  --destructive-soft: 0 84.2% 95%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-border: 0 84.2% 80%;
+
+  --danger: 0 84.2% 60.2%;
+  --danger-hover: 0 84.2% 52%;
+  --danger-active: 0 84.2% 44%;
+  --danger-soft: 0 84.2% 95%;
+  --danger-foreground: 0 0% 100%;
+  --danger-border: 0 84.2% 80%;
+
+  /* Warning (Standardized Amber / Gold) */
+  --warning: 38 92% 50%;
+  --warning-hover: 38 92% 44%;
+  --warning-active: 38 92% 38%;
+  --warning-soft: 38 92% 95%;
+  --warning-foreground: 222.2 84% 4.9%;
+  --warning-border: 38 92% 75%;
+
+  /* Info (Standardized Blue / Sky) */
+  --info: 217.2 91.2% 59.8%;
+  --info-hover: 217.2 91.2% 50%;
+  --info-active: 217.2 91.2% 42%;
+  --info-soft: 217.2 91.2% 95%;
+  --info-foreground: 0 0% 100%;
+  --info-border: 217.2 91.2% 80%;
+
+  /* ==========================================
+   * 4. RADIUS SCALE
+   * ========================================== */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  --radius: 0.5rem;
+
+  /* ==========================================
+   * 5. ELEVATIONS & SHADOWS (Light)
+   * ========================================== */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow-primary: 0 0 20px -3px hsl(var(--primary) / 0.35);
+  --shadow-glow-accent: 0 0 20px -3px hsl(var(--accent) / 0.35);
+  --shadow-glow-lime: 0 0 20px -3px hsl(var(--brand-lime) / 0.35);
+  --shadow-glow-success: 0 0 20px -3px hsl(var(--success) / 0.35);
+  --shadow-glow-danger: 0 0 20px -3px hsl(var(--destructive) / 0.35);
+}
+
+.dark {
+  /* ==========================================
+   * 1. BRAND SYSTEM (Woofskis Identity - Dark)
+   * Woofskis Dark Green (calibrated for dark surfaces)
+   * Woofskis Bright Lime (#7fc41c)
+   * ========================================== */
+  --primary: 132.2 58.7% 28%;
+  --primary-hover: 132.2 58.7% 35%;
+  --primary-active: 132.2 58.7% 22%;
+  --primary-soft: 132.2 45% 12%;
+  --primary-foreground: 0 0% 100%;
+  --primary-border: 132.2 35% 26%;
+
+  --secondary: 215 27.9% 16.9%;
+  --secondary-hover: 215 27.9% 22%;
+  --secondary-active: 215 27.9% 28%;
+  --secondary-soft: 215 27.9% 12%;
+  --secondary-foreground: 210 40% 98%;
+
+  --accent: 84.6 75% 48%;
+  --accent-hover: 84.6 75% 55%;
+  --accent-active: 84.6 75% 40%;
+  --accent-soft: 84.6 75% 14%;
+  --accent-foreground: 132.2 58.7% 10%;
+  --accent-border: 84.6 65% 28%;
+
+  /* Centralized Brand Aliases */
+  --brand-primary: 132.2 58.7% 28%;
+  --brand-primary-hover: 132.2 58.7% 35%;
+  --brand-primary-active: 132.2 58.7% 22%;
+  --brand-secondary: 84.6 75% 48%;
+  --brand-secondary-hover: 84.6 75% 55%;
+  --brand-secondary-active: 84.6 75% 40%;
+  --brand-lime: 84.6 75% 48%;
+  --brand-lime-hover: 84.6 75% 55%;
+  --brand-lime-active: 84.6 75% 40%;
+  --brand-lime-soft: 84.6 75% 14%;
+  --brand-lime-foreground: 132.2 58.7% 10%;
+  --brand-subtle: 132.2 45% 10%;
+  --brand-muted: 132.2 35% 15%;
+  --brand-border: 132.2 35% 24%;
+  --brand-foreground: 0 0% 100%;
+  --brand-foreground-secondary: 132.2 58.7% 10%;
+
+  /* ==========================================
+   * 2. SEMANTIC LAYOUT & SURFACES (Dark - Midnight)
+   * ========================================== */
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
+
+  --surface: 224 71% 6%;
+  --surface-foreground: 213 31% 91%;
+  --surface-elevated: 224 71% 8.5%;
+  --surface-elevated-foreground: 213 31% 91%;
+
+  --card: 224 71% 6%;
+  --card-foreground: 213 31% 91%;
+
+  --popover: 224 71% 8.5%;
+  --popover-foreground: 213 31% 91%;
+
+  --muted: 215 27.9% 16.9%;
+  --muted-foreground: 217.9 10.6% 64.9%;
+
+  --border: 215 27.9% 16.9%;
+  --border-subtle: 215 27.9% 12%;
+  --border-hover: 215 27.9% 24%;
+  --input: 215 27.9% 16.9%;
+  --ring: 84.6 75% 48%;
+
+  /* Typography Colors */
+  --text-primary: 213 31% 91%;
+  --text-secondary: 217.9 10.6% 74.9%;
+  --text-muted: 217.9 10.6% 64.9%;
+  --text-inverse: 222.2 84% 4.9%;
+
+  /* ==========================================
+   * 3. SEMANTIC STATES (Dark)
+   * ========================================== */
+  /* Success (Standardized Emerald) */
+  --success: 142.1 70.6% 45.3%;
+  --success-hover: 142.1 70.6% 52%;
+  --success-active: 142.1 70.6% 58%;
+  --success-soft: 142.1 70.6% 12%;
+  --success-foreground: 0 0% 100%;
+  --success-border: 142.1 70.6% 25%;
+
+  /* Danger / Error / Destructive (Standardized Red) */
+  --destructive: 0 72.2% 50.6%;
+  --destructive-hover: 0 72.2% 58%;
+  --destructive-active: 0 72.2% 64%;
+  --destructive-soft: 0 72.2% 14%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-border: 0 72.2% 25%;
+
+  --danger: 0 72.2% 50.6%;
+  --danger-hover: 0 72.2% 58%;
+  --danger-active: 0 72.2% 64%;
+  --danger-soft: 0 72.2% 14%;
+  --danger-foreground: 0 0% 100%;
+  --danger-border: 0 72.2% 25%;
+
+  /* Warning (Standardized Amber) */
+  --warning: 38 92% 55%;
+  --warning-hover: 38 92% 62%;
+  --warning-active: 38 92% 68%;
+  --warning-soft: 38 92% 13%;
+  --warning-foreground: 222.2 84% 4.9%;
+  --warning-border: 38 92% 25%;
+
+  /* Info (Standardized Sky / Blue) */
+  --info: 217.2 91.2% 65%;
+  --info-hover: 217.2 91.2% 72%;
+  --info-active: 217.2 91.2% 78%;
+  --info-soft: 217.2 91.2% 14%;
+  --info-foreground: 0 0% 100%;
+  --info-border: 217.2 91.2% 25%;
+
+  /* ==========================================
+   * 5. ELEVATIONS & SHADOWS (Dark)
+   * High-contrast depth without muddy light shadows
+   * ========================================== */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+  --shadow-glow-primary: 0 0 25px -3px hsl(var(--primary) / 0.45);
+  --shadow-glow-accent: 0 0 25px -3px hsl(var(--accent) / 0.45);
+  --shadow-glow-lime: 0 0 25px -3px hsl(var(--brand-lime) / 0.45);
+  --shadow-glow-success: 0 0 25px -3px hsl(var(--success) / 0.45);
+  --shadow-glow-danger: 0 0 25px -3px hsl(var(--destructive) / 0.45);
+}

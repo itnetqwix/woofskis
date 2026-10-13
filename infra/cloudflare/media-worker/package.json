@@ -1,0 +1,11 @@
+{
+  "name": "woofskis-media-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/cache.test.js"
+  },
+  "dependencies": {
+    "aws4fetch": "^1.0.20"
+  }
+}

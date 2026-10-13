@@ -1,0 +1,185 @@
+import { AccountStatus, CreatorActivityAction, Role } from '@prisma/client';
+import { FastifyInstance } from 'fastify';
+import { UserRepository } from '../repositories/user.repository.js';
+import { hashPassword, comparePassword } from '../utils/crypto.js';
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from '../utils/response.js';
+import { sanitizeUser } from '../utils/sanitize-user.js';
+import {
+  LoginInput,
+  PresignAvatarInput,
+  RegisterCreatorInput,
+  UpdateCreatorProfileInput,
+} from '../schemas/auth.schema.js';
+import { CreatorActivityService } from './creator-activity.service.js';
+import {
+  buildAvatarObjectKey,
+  getStorageService,
+  parseAvatarObjectKey,
+  signedAvatarUrl,
+} from './storage.service.js';
+
+interface ProfileRecord {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  accountStatus: AccountStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  avatarObjectKey?: string | null;
+  passwordHash?: string;
+}
+
+/**
+ * Public profile. `avatarUrl` is a presigned GET and is omitted when absent
+ * so existing clients that expect no avatar field stay compatible.
+ * `avatarObjectKey` and `passwordHash` never leave the service.
+ */
+async function toPublicUser(user: ProfileRecord) {
+  const safe = sanitizeUser(user);
+  const avatarUrl = await signedAvatarUrl(safe.avatarObjectKey);
+  const { avatarObjectKey: _key, ...profile } = safe;
+  void _key;
+  if (!avatarUrl) return profile;
+  return { ...profile, avatarUrl };
+}
+
+export class AuthService {
+  /**
+   * Register a creator. Body is email, password, and name.
+   * Password is bcrypt-hashed before persist. JWT claims are `{ id, email, role }`.
+   * There is no public admin registration.
+   */
+  static async registerCreator(input: RegisterCreatorInput, fastify: FastifyInstance) {
+    const { email, password, name } = input;
+
+    const existingUser = await UserRepository.findByEmail(email);
+    if (existingUser) {
+      throw new ConflictError('User with this email already exists');
+    }
+
+    const passwordHash = await hashPassword(password);
+    const user = await UserRepository.createCreator({
+      email,
+      passwordHash,
+      name,
+    });
+
+    await CreatorActivityService.record({
+      creatorId: user.id,
+      action: CreatorActivityAction.REGISTERED,
+      description: 'Creator registered',
+      performedByUserId: user.id,
+    });
+
+    const token = fastify.jwt.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      user: await toPublicUser(user),
+      token,
+    };
+  }
+
+  static async login(input: LoginInput, fastify: FastifyInstance) {
+    const { email, password } = input;
+
+    const user = await UserRepository.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedError('Invalid email or password');
+    }
+
+    const isPasswordValid = await comparePassword(password, user.passwordHash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError('Invalid email or password');
+    }
+
+    if (user.role === Role.CREATOR) {
+      await CreatorActivityService.record({
+        creatorId: user.id,
+        action: CreatorActivityAction.LOGGED_IN,
+        description: 'Creator logged in',
+        performedByUserId: user.id,
+      });
+    }
+
+    const token = fastify.jwt.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      user: await toPublicUser(user),
+      token,
+    };
+  }
+
+  static async getCurrentUser(userId: string) {
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError('User profile not found');
+    }
+
+    return toPublicUser(user);
+  }
+
+  /**
+   * Updates the authenticated creator only. The user id comes from the JWT.
+   * Email is not accepted. A profile image key must belong to this creator.
+   */
+  static async updateCurrentUser(userId: string, input: UpdateCreatorProfileInput) {
+    const current = await UserRepository.findById(userId);
+    if (!current) {
+      throw new NotFoundError('User profile not found');
+    }
+    if (current.role !== Role.CREATOR) {
+      throw new ForbiddenError('Only a creator can update this profile');
+    }
+
+    const data: { name?: string; avatarObjectKey?: string | null } = {};
+    if (input.name !== undefined) data.name = input.name;
+    if (input.avatarObjectKey !== undefined) {
+      if (input.avatarObjectKey === null) {
+        data.avatarObjectKey = null;
+      } else {
+        const parsed = parseAvatarObjectKey(input.avatarObjectKey);
+        if (!parsed || parsed.creatorId !== userId) {
+          throw new ValidationError(
+            'Profile image reference is not valid for this account',
+          );
+        }
+        data.avatarObjectKey = input.avatarObjectKey;
+      }
+    }
+
+    const updated = await UserRepository.updateOwnProfile(userId, data);
+    return toPublicUser(updated);
+  }
+
+  static async presignAvatar(userId: string, input: PresignAvatarInput) {
+    const current = await UserRepository.findById(userId);
+    if (!current) {
+      throw new NotFoundError('User profile not found');
+    }
+    if (current.role !== Role.CREATOR) {
+      throw new ForbiddenError('Only a creator can update this profile');
+    }
+
+    const objectKey = buildAvatarObjectKey(userId, input.contentType);
+    const signed = await getStorageService().createPresignedUpload({
+      objectKey,
+      contentType: input.contentType,
+    });
+    return signed;
+  }
+}

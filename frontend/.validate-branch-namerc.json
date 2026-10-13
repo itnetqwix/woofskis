@@ -1,0 +1,4 @@
+{
+  "pattern": "^(feature|feat|fix|hotfix|chore|docs|refactor|test|revert)/[a-z0-9._-]+$",
+  "errorMsg": "Branch name is not valid. Please follow the convention: (feature|feat|fix|hotfix|chore|docs|refactor|test|revert)/branch-name"
+}

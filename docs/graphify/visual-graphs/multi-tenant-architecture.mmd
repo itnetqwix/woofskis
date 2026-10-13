@@ -1,0 +1,29 @@
+flowchart TB
+  subgraph Central_Platform_Engine ["Contest Operating System Core (Global Governance)"]
+    Auth_Global["Global Auth & RBAC Engine"]
+    Scoring_Global["Core Rating & Consensus Algorithm"]
+    Security_Global["Security, Rate Limiting & Anti-Fraud"]
+    DB_Core["Shared PostgreSQL Database"]
+  end
+
+  subgraph Tenant_ActionSkis ["Tenant: ActionSkis (Action Sports)"]
+    Action_Branding["Theme: High-Contrast Amber / Dark Slate<br/>Logo: ActionSkis<br/>Slug: actionskis"]
+    Action_Contests["Contests: Action Sports Open 2026"]
+    Action_Queue["Judging Queue: Sports Short Videos"]
+  end
+
+  subgraph Tenant_Woofskis ["Tenant: Woofskis (Pets)"]
+    Woofskis_Branding["Theme: Friendly Yellow / Green<br/>Logo: Woofskis Pets<br/>Slug: woofskis"]
+    Woofskis_Contests["Contests: Cutest Pet Tricks"]
+    Woofskis_Queue["Judging Queue: Pet Videos"]
+  end
+
+  subgraph Tenant_TalentSkis ["Tenant: TalentSkis (Enterprise Talent)"]
+    Talent_Branding["Theme: Corporate Indigo / Gold<br/>Logo: TalentSkis<br/>Slug: talentskis"]
+    Talent_Contests["Contests: Global Creator Hunt"]
+    Talent_Queue["Judging Queue: Talent Showcase"]
+  end
+
+  Central_Platform_Engine --> Tenant_ActionSkis
+  Central_Platform_Engine --> Tenant_Woofskis
+  Central_Platform_Engine --> Tenant_TalentSkis

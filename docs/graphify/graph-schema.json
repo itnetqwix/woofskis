@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "COSGraphifySchema",
+  "description": "Schema definition for Contest Operating System Graphify nodes and edges",
+  "type": "object",
+  "required": ["version", "projectName", "lastUpdated", "nodes", "edges"],
+  "properties": {
+    "version": { "type": "string" },
+    "projectName": { "type": "string" },
+    "lastUpdated": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/GraphNode"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/GraphEdge"
+      }
+    }
+  },
+  "definitions": {
+    "GraphNode": {
+      "type": "object",
+      "required": ["id", "type", "label", "domain", "status", "sourceReference"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Domain",
+            "UserRole",
+            "Permission",
+            "Feature",
+            "Workflow",
+            "FrontendComponent",
+            "FrontendHook",
+            "APIEndpoint",
+            "BackendService",
+            "BackendRepository",
+            "DatabaseModel"
+          ]
+        },
+        "label": { "type": "string" },
+        "domain": { "type": "string" },
+        "description": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["IMPLEMENTED", "PARTIALLY_IMPLEMENTED", "PLANNED"]
+        },
+        "sourceReference": {
+          "type": "object",
+          "required": ["chapter", "section"],
+          "properties": {
+            "chapter": { "type": "string" },
+            "section": { "type": "string" },
+            "docPath": { "type": "string" }
+          }
+        },
+        "codeReference": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string" },
+            "filePath": { "type": "string" },
+            "symbol": { "type": "string" }
+          }
+        }
+      }
+    },
+    "GraphEdge": {
+      "type": "object",
+      "required": ["id", "source", "target", "relationshipType"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "type": "string" },
+        "target": { "type": "string" },
+        "relationshipType": {
+          "type": "string",
+          "enum": [
+            "BELONGS_TO",
+            "HAS_ROLE",
+            "HAS_PERMISSION",
+            "PROVIDES_FEATURE",
+            "EXECUTES_WORKFLOW",
+            "RENDERED_BY",
+            "MANAGED_BY",
+            "CALLS_API",
+            "HANDLED_BY",
+            "ACCESSES_REPO",
+            "PERSISTS_TO",
+            "DEPENDS_ON",
+            "SCOPED_TO"
+          ]
+        },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

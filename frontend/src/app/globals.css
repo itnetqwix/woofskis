@@ -1,0 +1,135 @@
+@import '../styles/themes.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    height: 100%;
+    min-height: 100dvh;
+  }
+  body {
+    height: 100%;
+    min-height: 100dvh;
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins), 'Poppins', sans-serif;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+  * {
+    @apply border-border;
+  }
+}
+
+@layer utilities {
+  /* ==========================================
+   * CENTRALIZED TYPOGRAPHY UTILITIES (POPPINS)
+   * Mobile-first responsive hierarchy
+   * ========================================== */
+  .text-display {
+    @apply text-4xl font-black leading-[1.1] tracking-tight sm:text-5xl md:text-6xl;
+  }
+
+  .text-h1 {
+    @apply text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl;
+  }
+
+  .text-h2 {
+    @apply text-2xl font-bold leading-snug tracking-tight sm:text-3xl;
+  }
+
+  .text-h3 {
+    @apply text-xl font-bold leading-snug tracking-tight sm:text-2xl;
+  }
+
+  .text-h4 {
+    @apply text-lg font-semibold leading-normal tracking-normal sm:text-xl;
+  }
+
+  .text-body-lg {
+    @apply text-lg font-normal leading-relaxed;
+  }
+
+  .text-body {
+    @apply text-base font-normal leading-normal;
+  }
+
+  .text-body-sm {
+    @apply text-sm font-normal leading-normal;
+  }
+
+  .text-caption {
+    @apply text-xs font-normal leading-normal text-text-muted;
+  }
+
+  .text-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-text-muted;
+  }
+
+  .text-button {
+    @apply text-sm font-semibold leading-none tracking-normal;
+  }
+
+  /* ==========================================
+   * VERTICAL REELS SCROLL SNAP UTILITIES
+   * ========================================== */
+  .scroll-snap-y-mandatory {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  .scroll-snap-align-start {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+  }
+
+  /* ==========================================
+   * REELS SLENDER LOADING BAR ANIMATION
+   * ========================================== */
+  @keyframes reels-loader-shimmer {
+    0% {
+      left: -40%;
+      width: 35%;
+    }
+    50% {
+      left: 25%;
+      width: 55%;
+    }
+    100% {
+      left: 100%;
+      width: 35%;
+    }
+  }
+
+  .animate-reels-loader {
+    animation: reels-loader-shimmer 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  /* Woofskis official wordmark: Roboto Condensed, bold, horizontally stretched for prominent width */
+  .ripsk-wordmark {
+    display: inline-block;
+    font-family: var(--font-roboto-condensed), 'Roboto Condensed', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: #8bc144;
+    transform: scaleX(1.12);
+    transform-origin: left center;
+  }
+}

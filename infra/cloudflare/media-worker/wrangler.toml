@@ -1,0 +1,11 @@
+name = "woofskis-media"
+main = "src/index.js"
+compatibility_date = "2026-03-01"
+workers_dev = false
+
+# Bucket name and region are not credentials.
+# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are Wrangler secrets.
+# Do not put them in this file.
+[vars]
+AWS_REGION = "us-east-2"
+S3_BUCKET = "woofskis-production-media"

@@ -1,0 +1,16 @@
+stateDiagram-v2
+  [*] --> DRAFT : Admin creates contest
+  DRAFT --> SCHEDULED : Schedule & Rules Locked
+  DRAFT --> CANCELLED : Admin cancels contest
+  SCHEDULED --> ACTIVE : Start Date Reached
+  ACTIVE --> JUDGING : Submission Deadline Reached
+  JUDGING --> COMPLETED : Voting Closed & Winners Published
+  COMPLETED --> ARCHIVED : Historical Read-Only Record
+  ARCHIVED --> [*]
+  CANCELLED --> [*]
+
+  state ACTIVE {
+    [*] --> IngestSubmissions
+    IngestSubmissions --> LiveVotingQueue : Approved Submissions
+    LiveVotingQueue --> LeaderboardRecalculation
+  }

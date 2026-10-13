@@ -1,0 +1,44 @@
+---
+description: Global project context, AI workflow pipeline, and knowledge layer navigation rules
+globs: *
+alwaysApply: true
+---
+
+# 00 - Woofskis Project Context & AI Workflow
+
+## 1. Project Identity & Architecture
+You are working on **Woofskis** (`woofskis.com`), an independent single-product digital competition platform for dog and pet video competitions, built on the Contest Operating System infrastructure. Woofskis focuses on **merit-driven video competitions, continuous single-video judging loops, and community consensus scoring**, rather than follower-based social media feeds.
+
+## 2. Workspace Safety Rules
+1. **Writable Scope**: `D:\woofskis` is the ONLY writable project. NEVER touch `D:\cos` or any external path.
+2. **Resource Isolation**: Never access external production databases, S3 buckets, Cloudflare workers, or foreign secrets.
+3. **Execution Guardrails**: Do not run migrations, bootstrap admin, start dev servers, or deploy unless explicitly authorized.
+
+## 3. Source of Truth & Knowledge Hierarchy
+- `/docs/knowledge/`: Processed, structured, actionable project documentation. Consult this first:
+  - [WOOFSKIS-ARCHITECTURE-REFERENCE.md](file:///D:/woofskis/docs/knowledge/WOOFSKIS-ARCHITECTURE-REFERENCE.md) — Architecture map & resource checklists
+  - [project-overview.md](file:///D:/woofskis/docs/knowledge/project-overview.md) — Vision, roadmap, personas
+  - [architecture.md](file:///D:/woofskis/docs/knowledge/architecture.md) — End-to-end system architecture
+  - [domain-model.md](file:///D:/woofskis/docs/knowledge/domain-model.md) — Entities, attributes, states
+  - [feature-map.md](file:///D:/woofskis/docs/knowledge/feature-map.md) — Implemented vs Planned feature matrix
+  - [workflow-map.md](file:///D:/woofskis/docs/knowledge/workflow-map.md) — User journeys & flowcharts
+  - [frontend-map.md](file:///D:/woofskis/docs/knowledge/frontend-map.md) — Next.js App Router & components
+  - [backend-map.md](file:///D:/woofskis/docs/knowledge/backend-map.md) — Fastify routes, services, repos
+  - [api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md) — REST API contracts & Zod schemas
+  - [data-model.md](file:///D:/woofskis/docs/knowledge/data-model.md) — Prisma database schema
+  - [business-rules.md](file:///D:/woofskis/docs/knowledge/business-rules.md) — Governing rules & constraints
+  - [implementation-status.md](file:///D:/woofskis/docs/knowledge/implementation-status.md) — Gap analysis
+  - [ai-development-workflow.md](file:///D:/woofskis/docs/knowledge/ai-development-workflow.md) — AI agent protocol
+- `/docs/graphify/`: Machine-readable relationship graph system (`cos-project-graph.json`, `graph-cli.js`). Use to trace dependencies across:
+  $$\text{User} \longrightarrow \text{Role} \longrightarrow \text{Permission} \longrightarrow \text{Feature} \longrightarrow \text{Workflow} \longrightarrow \text{Frontend} \longrightarrow \text{API} \longrightarrow \text{Backend} \longrightarrow \text{Database}$$
+
+## 4. Mandatory AI Execution Protocol
+1. **Single Task**: Work on one module/task at a time.
+2. **Query Graph**: Run `node docs/graphify/graph-cli.js query --node <ID>` or `trace-path` to identify connected components.
+3. **Read Knowledge**: Consult relevant `/docs/knowledge/` files.
+4. **Inspect Code**: Review actual files in `content-operating-system/` or `cos-backend/`.
+5. **Never Invent Rules**: If a business rule or threshold is not specified, treat it as `NOT SPECIFIED` and request clarification.
+6. **Implement**: Follow existing Clean Architecture / feature-first conventions.
+7. **Validate**: Run typechecks (`npm run typecheck`) and tests (`npm test`).
+8. **Update Knowledge & Graph**: When introducing new models, endpoints, or components, update `/docs/knowledge/` and validate with `node docs/graphify/graph-cli.js validate`.
+9. **Report**: Always report changed files, verification results, and any remaining gaps.

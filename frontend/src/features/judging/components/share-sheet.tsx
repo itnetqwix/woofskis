@@ -1,0 +1,184 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Check, Facebook, Mail, MessageCircle, Link2 } from 'lucide-react';
+
+export interface ShareSheetProps {
+  open: boolean;
+  url: string;
+  title: string;
+  onOpenChange: (open: boolean) => void;
+}
+
+async function copyText(value: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch {
+    // Fall through to the selection fallback.
+  }
+  try {
+    const input = document.createElement('textarea');
+    input.value = value;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(input);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) {
+  const [copied, setCopied] = useState(false);
+  const [manual, setManual] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setCopied(false);
+      setManual(false);
+    }
+  }, [open]);
+
+  // Handle Escape key to close drawer
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onOpenChange(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onOpenChange]);
+
+  if (!open || typeof document === 'undefined') return null;
+
+  const text = title ? `${title} ${url}` : url;
+  const openExternal = (href: string) => {
+    window.open(href, '_blank', 'noopener,noreferrer');
+  };
+
+  const actions = [
+    {
+      id: 'copy',
+      label: copied ? 'Copied' : 'Copy Link',
+      icon: copied ? Check : Link2,
+      onClick: async () => {
+        const ok = await copyText(url);
+        setCopied(ok);
+        setManual(!ok);
+      },
+    },
+    {
+      id: 'whatsapp',
+      label: 'WhatsApp',
+      icon: MessageCircle,
+      onClick: () => openExternal(`https://wa.me/?text=${encodeURIComponent(text)}`),
+    },
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      icon: Facebook,
+      onClick: () =>
+        openExternal(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`),
+    },
+    {
+      id: 'email',
+      label: 'Email',
+      icon: Mail,
+      onClick: () => {
+        const subject = encodeURIComponent(title ? `Woofskis: ${title}` : 'Woofskis video');
+        const body = encodeURIComponent(text);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      },
+    },
+  ];
+
+  return createPortal(
+    <div className="pointer-events-none fixed inset-0 z-[80] flex items-end justify-center sm:items-center">
+      <button
+        type="button"
+        aria-label="Close share"
+        className="backdrop-blur-xs pointer-events-auto absolute inset-0 bg-black/50 transition-opacity"
+        onClick={() => onOpenChange(false)}
+      />
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label="Share video"
+        className="pointer-events-auto relative z-10 w-full max-w-md rounded-t-2xl border border-border bg-background shadow-2xl sm:rounded-2xl"
+      >
+        {/* Header bar matching Comment drawer */}
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h2 className="text-sm font-black text-foreground">Share video</h2>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+          >
+            Close
+          </button>
+        </div>
+
+        {/* 1 Horizontal Row of 4 Sharing Options */}
+        <div className="grid grid-cols-4 gap-2 p-4 sm:gap-3 sm:p-5">
+          {actions.map((action) => {
+            const Icon = action.icon;
+            const isCopyActive = action.id === 'copy' && copied;
+            return (
+              <button
+                key={action.id}
+                type="button"
+                onClick={() => void action.onClick()}
+                className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl p-1.5 transition-all hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
+              >
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors ${
+                    isCopyActive
+                      ? 'border-[#13491e] bg-[#13491e] text-white'
+                      : 'border-border/80 bg-muted/80 text-foreground group-hover:border-[#13491e]/50 group-hover:bg-[#13491e]/10 group-hover:text-[#13491e]'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <span className="w-full truncate text-center text-[11px] font-semibold text-muted-foreground group-hover:text-foreground">
+                  {action.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {copied ? (
+          <div className="flex items-center justify-center gap-1.5 pb-4 text-xs font-bold text-[#13491e]">
+            <Check className="h-3.5 w-3.5" />
+            <span>Link copied to clipboard</span>
+          </div>
+        ) : null}
+
+        {manual ? (
+          <div className="px-4 pb-4">
+            <label className="block text-xs text-muted-foreground">
+              Clipboard is unavailable. Copy this link:
+              <input
+                readOnly
+                value={url}
+                onFocus={(event) => event.currentTarget.select()}
+                className="mt-1.5 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </label>
+          </div>
+        ) : null}
+      </section>
+    </div>,
+    document.body
+  );
+}

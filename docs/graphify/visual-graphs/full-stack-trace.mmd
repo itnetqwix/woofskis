@@ -1,0 +1,83 @@
+flowchart TD
+  subgraph User_Personas ["User Personas & RBAC Roles"]
+    V["Viewer / Voter<br/>(role:viewer)"]
+    C["Content Creator<br/>(role:creator)"]
+    B["Brand Admin<br/>(role:brand_admin)"]
+  end
+
+  subgraph Permissions_Layer ["Permissions"]
+    P_Rate["perm:rate_video"]
+    P_Upload["perm:upload_video"]
+    P_Mod["perm:moderate_submission"]
+  end
+
+  subgraph Features_Layer ["Core Features"]
+    F_Queue["feat:continuous_queue"]
+    F_Upload["feat:video_upload"]
+    F_Mod["feat:split_moderation"]
+  end
+
+  subgraph Workflows_Layer ["Business Workflows"]
+    W_Judge["wf:visitor_judging_loop"]
+    W_Sub["wf:creator_submission_flow"]
+    W_Mod["wf:admin_moderation_flow"]
+  end
+
+  subgraph Frontend_Layer ["Frontend Components & Hooks"]
+    FE_Viewer["fe:ViewerContainer<br/>+ fe:RatingBar"]
+    FE_Upload["fe:UploadModal<br/>+ fe:SubmissionsTable"]
+    FE_Mod["fe:ModerationSplitViewer<br/>+ fe:RejectReasonDialog"]
+    
+    Hook_Queue["fe_hook:useContestQueue"]
+    Hook_Sub["fe_hook:useCreatorSubmissions"]
+  end
+
+  subgraph API_Layer ["REST API Endpoints"]
+    API_Rate["POST /api/v1/contests/:id/videos/:videoId/rate<br/>(PLANNED)"]
+    API_Upload["POST /api/v1/submissions/upload<br/>(PLANNED)"]
+    API_Approve["POST /api/v1/admin/submissions/:id/approve<br/>(PLANNED)"]
+  end
+
+  subgraph Backend_Layer ["Backend Services & Repos"]
+    Svc_Judge["be_svc:JudgingService<br/>(PLANNED)"]
+    Svc_Sub["be_svc:SubmissionService<br/>(PLANNED)"]
+    Svc_Mod["be_svc:ModerationService<br/>(PLANNED)"]
+  end
+
+  subgraph Database_Layer ["PostgreSQL Database Models"]
+    DB_Rating["db:Rating<br/>(PLANNED)"]
+    DB_Sub["db:Submission<br/>(PLANNED)"]
+    DB_Audit["db:AuditLog<br/>(PLANNED)"]
+  end
+
+  V -->|HAS_PERMISSION| P_Rate
+  C -->|HAS_PERMISSION| P_Upload
+  B -->|HAS_PERMISSION| P_Mod
+
+  P_Rate -->|PROVIDES_FEATURE| F_Queue
+  P_Upload -->|PROVIDES_FEATURE| F_Upload
+  P_Mod -->|PROVIDES_FEATURE| F_Mod
+
+  F_Queue -->|EXECUTES_WORKFLOW| W_Judge
+  F_Upload -->|EXECUTES_WORKFLOW| W_Sub
+  F_Mod -->|EXECUTES_WORKFLOW| W_Mod
+
+  W_Judge -->|RENDERED_BY| FE_Viewer
+  W_Sub -->|RENDERED_BY| FE_Upload
+  W_Mod -->|RENDERED_BY| FE_Mod
+
+  FE_Viewer -->|MANAGED_BY| Hook_Queue
+  FE_Upload -->|MANAGED_BY| Hook_Sub
+
+  Hook_Queue -->|CALLS_API| API_Rate
+  Hook_Sub -->|CALLS_API| API_Upload
+  FE_Mod -->|CALLS_API| API_Approve
+
+  API_Rate -->|HANDLED_BY| Svc_Judge
+  API_Upload -->|HANDLED_BY| Svc_Sub
+  API_Approve -->|HANDLED_BY| Svc_Mod
+
+  Svc_Judge -->|PERSISTS_TO| DB_Rating
+  Svc_Judge -->|UPDATES| DB_Sub
+  Svc_Sub -->|PERSISTS_TO| DB_Sub
+  Svc_Mod -->|PERSISTS_TO| DB_Audit

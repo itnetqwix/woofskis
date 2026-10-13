@@ -1,0 +1,14 @@
+Dockerfile*
+docker-compose*
+.dockerignore
+node_modules
+npm-debug.log
+.next
+.git
+.gitignore
+.husky
+.vscode
+README.md
+.env*.local
+coverage
+.DS_Store

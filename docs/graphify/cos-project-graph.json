@@ -1,0 +1,3310 @@
+{
+  "version": "1.0.0",
+  "projectName": "Woofskis",
+  "lastUpdated": "2026-10-11",
+  "nodes": [
+    {
+      "id": "domain:auth",
+      "type": "Domain",
+      "label": "Authentication & RBAC Domain",
+      "domain": "Authentication",
+      "description": "User identity, registration, JWT session issuance, and role-based access control.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/auth.controller.ts",
+        "symbol": "AuthController"
+      }
+    },
+    {
+      "id": "domain:judging",
+      "type": "Domain",
+      "label": "Continuous Judging & Voting Domain",
+      "domain": "Judging",
+      "description": "One-video-at-a-time evaluation loop, numeric scoring (1-5), and consensus calculation.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 4",
+        "section": "4.2",
+        "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/hooks/use-contest-queue.ts",
+        "symbol": "useContestQueue"
+      }
+    },
+    {
+      "id": "domain:submissions",
+      "type": "Domain",
+      "label": "Creator Submissions Domain",
+      "domain": "Submissions",
+      "description": "Creator video uploading, validation, and submission status lifecycle tracking.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/components/upload-modal.tsx",
+        "symbol": "UploadModal"
+      }
+    },
+    {
+      "id": "domain:contests",
+      "type": "Domain",
+      "label": "Contest Management Domain",
+      "domain": "Contests",
+      "description": "Contest lifecycle scheduling, categories, prize pools, and state transitions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/contest-create-modal.tsx",
+        "symbol": "ContestCreateModal"
+      }
+    },
+    {
+      "id": "domain:moderation",
+      "type": "Domain",
+      "label": "Content Moderation & Auditing Domain",
+      "domain": "Moderation",
+      "description": "Split-viewer video inspection, rejection feedback, and append-only audit logging.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.6",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
+        "symbol": "ModerationSplitViewer"
+      }
+    },
+    {
+      "id": "domain:leaderboard",
+      "type": "Domain",
+      "label": "Dynamic Leaderboard Domain",
+      "domain": "Leaderboard",
+      "description": "Community score aggregation, podium top 3 ranking, and category filtering.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
+        "symbol": "LeaderboardPodium"
+      }
+    },
+    {
+      "id": "domain:multitenancy",
+      "type": "Domain",
+      "label": "Multi-Tenancy & Brand Customization Domain",
+      "domain": "MultiTenancy",
+      "description": "Brand tenant provisioning, theme customizer, and organization data isolation.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/brand-theme-form.tsx",
+        "symbol": "BrandThemeForm"
+      }
+    },
+    {
+      "id": "role:viewer",
+      "type": "UserRole",
+      "label": "Visitor / Voter Persona",
+      "domain": "Authentication",
+      "description": "Public community member evaluating competing video entries.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 8",
+        "section": "8.2.2",
+        "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "Role.VIEWER"
+      }
+    },
+    {
+      "id": "role:creator",
+      "type": "UserRole",
+      "label": "Content Creator Persona",
+      "domain": "Authentication",
+      "description": "Authenticated user uploading video entries to compete in contests.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 8",
+        "section": "8.2.1",
+        "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "Role.CREATOR"
+      }
+    },
+    {
+      "id": "role:brand_admin",
+      "type": "UserRole",
+      "label": "Brand Administrator Persona",
+      "domain": "Authentication",
+      "description": "Organization manager configuring branded contests and moderating submissions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 8",
+        "section": "8.3.2",
+        "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "Role.BRAND_ADMIN"
+      }
+    },
+    {
+      "id": "role:super_admin",
+      "type": "UserRole",
+      "label": "Platform Super Administrator Persona",
+      "domain": "Authentication",
+      "description": "Global platform operator managing tenant provisioning and cross-brand governance.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 8",
+        "section": "8.3.3",
+        "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "Role.SUPER_ADMIN"
+      }
+    },
+    {
+      "id": "perm:rate_video",
+      "type": "Permission",
+      "label": "Rate Contest Video",
+      "domain": "Judging",
+      "description": "Permission to cast a 1-5 numerical score on candidate contest submissions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.5",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "perm:upload_video",
+      "type": "Permission",
+      "label": "Upload Contest Video",
+      "domain": "Submissions",
+      "description": "Permission to submit original video entries into active contests.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "perm:moderate_submission",
+      "type": "Permission",
+      "label": "Moderate Submissions",
+      "domain": "Moderation",
+      "description": "Permission to approve or reject pending video submissions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "perm:create_contest",
+      "type": "Permission",
+      "label": "Create & Manage Contests",
+      "domain": "Contests",
+      "description": "Permission to create contest instances, configure schedules, and define prize pools.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.6",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "perm:manage_tenants",
+      "type": "Permission",
+      "label": "Manage Platform Tenants",
+      "domain": "MultiTenancy",
+      "description": "Permission to provision, configure, or suspend brand organizations.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      }
+    },
+    {
+      "id": "feat:continuous_queue",
+      "type": "Feature",
+      "label": "Continuous Video Judging Queue",
+      "domain": "Judging",
+      "description": "Focused single-video vertical player queue with auto-advance and keyboard navigation. Loads approved entries from the judging queue API.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 6",
+        "section": "6.2",
+        "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/components/viewer-container.tsx",
+        "symbol": "ViewerContainer"
+      }
+    },
+    {
+      "id": "feat:video_upload",
+      "type": "Feature",
+      "label": "Creator Video Upload Hub",
+      "domain": "Submissions",
+      "description": "Modal wizard for uploading MP4/WebM videos with validation and metadata tags.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/components/upload-modal.tsx",
+        "symbol": "UploadModal"
+      }
+    },
+    {
+      "id": "feat:split_moderation",
+      "type": "Feature",
+      "label": "Split-Screen Moderation Viewer",
+      "domain": "Moderation",
+      "description": "Dual-pane inspection UI. Approve and reject call the moderation APIs.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.6",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
+        "symbol": "ModerationSplitViewer"
+      }
+    },
+    {
+      "id": "feat:leaderboard_podium",
+      "type": "Feature",
+      "label": "Dynamic Leaderboard & Podium",
+      "domain": "Leaderboard",
+      "description": "Visual top 3 podium and paginated ranking table with real-time score updates.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 4",
+        "section": "4.3.4",
+        "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
+        "symbol": "LeaderboardPodium"
+      }
+    },
+    {
+      "id": "feat:brand_theming",
+      "type": "Feature",
+      "label": "Multi-Tenant Dynamic Theming",
+      "domain": "MultiTenancy",
+      "description": "Live customizer for brand color palettes, typography, logos, and banners. Save persists Organization.branding. Suspension overlay remains local until M10.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/brand-theme-form.tsx",
+        "symbol": "BrandThemeForm"
+      }
+    },
+    {
+      "id": "wf:visitor_judging_loop",
+      "type": "Workflow",
+      "label": "Visitor Judging & Rating Loop",
+      "domain": "Judging",
+      "description": "Watch Video -> Rate [1-5] -> Reveal Consensus Score -> Auto-Advance to Next Video.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.2",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/hooks/use-contest-queue.ts",
+        "symbol": "useContestQueue"
+      }
+    },
+    {
+      "id": "wf:creator_submission_flow",
+      "type": "Workflow",
+      "label": "Creator Video Submission Flow",
+      "domain": "Submissions",
+      "description": "Register -> Open Modal -> Upload Video -> Validate -> Submit to Moderation Queue.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.3",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/components/upload-modal.tsx",
+        "symbol": "UploadModal"
+      }
+    },
+    {
+      "id": "wf:admin_moderation_flow",
+      "type": "Workflow",
+      "label": "Administrator Moderation Flow",
+      "domain": "Moderation",
+      "description": "Load Queue -> Inspect in Split Viewer -> Approve/Reject -> Log Audit Record.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.4",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
+        "symbol": "ModerationSplitViewer"
+      }
+    },
+    {
+      "id": "fe:ViewerContainer",
+      "type": "FrontendComponent",
+      "label": "ViewerContainer Component",
+      "domain": "Judging",
+      "description": "Root Next.js container rendering continuous judging loop with overlays.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 6",
+        "section": "6.2",
+        "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/components/viewer-container.tsx",
+        "symbol": "ViewerContainer"
+      }
+    },
+    {
+      "id": "fe:RatingBar",
+      "type": "FrontendComponent",
+      "label": "RatingBar Component",
+      "domain": "Judging",
+      "description": "1-5 star/numeric rating widget with hotkey badges.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 4",
+        "section": "4.2",
+        "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/components/rating-bar.tsx",
+        "symbol": "RatingBar"
+      }
+    },
+    {
+      "id": "fe:ScoreRevealOverlay",
+      "type": "FrontendComponent",
+      "label": "ScoreRevealOverlay Component",
+      "domain": "Judging",
+      "description": "1.8s consensus reveal animation with progress bar.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 6",
+        "section": "6.3",
+        "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/components/score-reveal-overlay.tsx",
+        "symbol": "ScoreRevealOverlay"
+      }
+    },
+    {
+      "id": "fe:UploadModal",
+      "type": "FrontendComponent",
+      "label": "UploadModal Component",
+      "domain": "Submissions",
+      "description": "Creator video upload wizard with validation and preview.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/components/upload-modal.tsx",
+        "symbol": "UploadModal"
+      }
+    },
+    {
+      "id": "fe:SubmissionsTable",
+      "type": "FrontendComponent",
+      "label": "SubmissionsTable Component",
+      "domain": "Submissions",
+      "description": "Creator dashboard table listing submission statuses, scores, and actions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/components/submissions-table.tsx",
+        "symbol": "SubmissionsTable"
+      }
+    },
+    {
+      "id": "fe:ModerationSplitViewer",
+      "type": "FrontendComponent",
+      "label": "ModerationSplitViewer Component",
+      "domain": "Moderation",
+      "description": "Split-pane admin review UI with video inspection and decision buttons.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.6",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
+        "symbol": "ModerationSplitViewer"
+      }
+    },
+    {
+      "id": "fe:RejectReasonDialog",
+      "type": "FrontendComponent",
+      "label": "RejectReasonDialog Component",
+      "domain": "Moderation",
+      "description": "Dialog capturing categorized rejection reasons and feedback notes.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/reject-reason-dialog.tsx",
+        "symbol": "RejectReasonDialog"
+      }
+    },
+    {
+      "id": "fe:LeaderboardPodium",
+      "type": "FrontendComponent",
+      "label": "LeaderboardPodium Component",
+      "domain": "Leaderboard",
+      "description": "Top 3 ranked submission podium cards.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 4",
+        "section": "4.3.4",
+        "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
+        "symbol": "LeaderboardPodium"
+      }
+    },
+    {
+      "id": "fe:BrandThemeForm",
+      "type": "FrontendComponent",
+      "label": "BrandThemeForm Component",
+      "domain": "MultiTenancy",
+      "description": "Theme customizer form for brand palettes, fonts, and assets.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/brand-theme-form.tsx",
+        "symbol": "BrandThemeForm"
+      }
+    },
+    {
+      "id": "fe_hook:useContestQueue",
+      "type": "FrontendHook",
+      "label": "useContestQueue Hook",
+      "domain": "Judging",
+      "description": "Loads the approved judging queue, posts ratings, and reveals the server score for Contest.autoAdvanceDelayMs.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.7",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/judging/hooks/use-contest-queue.ts",
+        "symbol": "useContestQueue"
+      }
+    },
+    {
+      "id": "fe_hook:useCreatorSubmissions",
+      "type": "FrontendHook",
+      "label": "useCreatorSubmissions Hook",
+      "domain": "Submissions",
+      "description": "Loads GET /submissions/me and soft-deletes through DELETE /submissions/:id after confirmation. Metrics are derived from API rows.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/submissions/hooks/use-creator-submissions.ts",
+        "symbol": "useCreatorSubmissions"
+      }
+    },
+    {
+      "id": "fe_hook:useTenantTheme",
+      "type": "FrontendHook",
+      "label": "useTenantTheme Hook",
+      "domain": "MultiTenancy",
+      "description": "Loads branding by the active slug from GET /organizations/:slug/branding and applies CSS variables. API status feeds activeBrand.status for the suspension overlay (M10). localStorage catalog is a fallback and optional cache.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/hooks/use-tenant-theme.ts",
+        "symbol": "useTenantTheme"
+      }
+    },
+    {
+      "id": "api:POST /auth/register/creator",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/auth/register/creator",
+      "domain": "Authentication",
+      "description": "Registers a new Creator account, assigns the deployment organization from DEPLOYMENT_ORGANIZATION_SLUG, and issues a JWT. Per-IP rate limit 10/15min; sanitizeUser strips passwordHash.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/auth.controller.ts",
+        "symbol": "AuthController.registerCreator"
+      }
+    },
+    {
+      "id": "api:POST /auth/register/brand",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/auth/register/brand",
+      "domain": "Authentication",
+      "description": "Historical brand-registration contract. The customer-facing HTTP route was removed on 2026-09-29. AuthService.registerBrand remains for internal use. See docs/knowledge/deployment-model.md.",
+      "status": "PARTIALLY_IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/auth.controller.ts",
+        "symbol": "AuthController.registerBrand"
+      }
+    },
+    {
+      "id": "api:POST /auth/login",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/auth/login",
+      "domain": "Authentication",
+      "description": "Authenticates user credentials and returns JWT token. M12: per-IP engineering rate limit 10/15min; sanitizeUser strips passwordHash. Expiry remains 7d.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/auth.controller.ts",
+        "symbol": "AuthController.login"
+      }
+    },
+    {
+      "id": "api:GET /auth/me",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/auth/me",
+      "domain": "Authentication",
+      "description": "Returns profile payload of currently authenticated user. Any authenticated Prisma Role. Unauthenticated → 401.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/auth.controller.ts",
+        "symbol": "AuthController.getMe"
+      }
+    },
+    {
+      "id": "api:GET /users",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/users",
+      "domain": "Authentication",
+      "description": "Paginated user list. SUPER_ADMIN only (M03-P01-T02). Unauthenticated → 401. Other roles including BRAND_ADMIN → 403. Org-scoped list NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/user.controller.ts",
+        "symbol": "UserController.listUsers"
+      }
+    },
+    {
+      "id": "api:GET /users/:id",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/users/:id",
+      "domain": "Authentication",
+      "description": "User profile by id. SUPER_ADMIN only. Self-profile remains GET /auth/me. Unauthenticated → 401. Other roles → 403.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/user.controller.ts",
+        "symbol": "UserController.getUserById"
+      }
+    },
+    {
+      "id": "api:POST /contests/:id/videos/:videoId/rate",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/contests/:id/videos/:videoId/rate",
+      "domain": "Judging",
+      "description": "Optional auth. Anonymous or VIEWER. Returns previousScore, newScore, delta, totalVotes. Contest must be ACTIVE or JUDGING. Submission must be APPROVED. M12: per-IP engineering rate limit 60/minute. Duplicate-vote window remains NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/judging.controller.ts",
+        "symbol": "JudgingController.rate"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.5",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "api:POST /submissions/presign",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/submissions/presign",
+      "domain": "Submissions",
+      "description": "CREATOR-only. Issues a presigned S3 PUT URL when the contest is ACTIVE and belongs to the creator organization. A foreign contest is rejected before signing. Fastify never receives video bytes.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/submission.controller.ts",
+        "symbol": "SubmissionController.presign"
+      }
+    },
+    {
+      "id": "api:POST /submissions/complete",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/submissions/complete",
+      "domain": "Submissions",
+      "description": "CREATOR-only. Persists PENDING_REVIEW after the client PUT to S3. objectKey must be backend-issued.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/submission.controller.ts",
+        "symbol": "SubmissionController.complete"
+      }
+    },
+    {
+      "id": "api:GET /submissions/me",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/submissions/me",
+      "domain": "Submissions",
+      "description": "CREATOR-only list of the authenticated creator submissions.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/submission.controller.ts",
+        "symbol": "SubmissionController.listMine"
+      }
+    },
+    {
+      "id": "api:GET /submissions/:id",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/submissions/:id",
+      "domain": "Submissions",
+      "description": "CREATOR-only. Returns the caller's submission or 404.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/submission.controller.ts",
+        "symbol": "SubmissionController.getById"
+      }
+    },
+    {
+      "id": "api:DELETE /submissions/:id",
+      "type": "APIEndpoint",
+      "label": "DELETE /api/v1/submissions/:id",
+      "domain": "Submissions",
+      "description": "CREATOR-only soft delete of the caller's submission. Sets deletedAt and deletedById. Does not remove ratings or the stored video.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/submission.controller.ts",
+        "symbol": "SubmissionController.remove"
+      }
+    },
+    {
+      "id": "be_svc:SubmissionService",
+      "type": "BackendService",
+      "label": "SubmissionService",
+      "domain": "Submissions",
+      "description": "Validates ACTIVE contest, MP4/WebM, 100MB, 60s metadata. Issues object keys and persists PENDING_REVIEW.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/submission.service.ts",
+        "symbol": "SubmissionService"
+      }
+    },
+    {
+      "id": "be_repo:SubmissionRepository",
+      "type": "BackendRepository",
+      "label": "SubmissionRepository",
+      "domain": "Submissions",
+      "description": "Prisma create, findById, findByObjectKey, listByCreatorId, and creator softDeleteOwned. Public lists omit deletedAt rows.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/submission.repository.ts",
+        "symbol": "SubmissionRepository"
+      }
+    },
+    {
+      "id": "be_svc:StorageService",
+      "type": "BackendService",
+      "label": "StorageService / S3StorageAdapter",
+      "domain": "Submissions",
+      "description": "Presigned PUT abstraction. Production adapter is S3StorageAdapter for private bucket woofskis-production-media in us-east-2. There is no local-demo provider and no disk fallback. Fastify does not receive video bytes.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/s3-storage.adapter.ts",
+        "symbol": "S3StorageAdapter"
+      }
+    },
+    {
+      "id": "api:POST /admin/submissions/:id/approve",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/admin/submissions/:id/approve",
+      "domain": "Moderation",
+      "description": "Approves a PENDING_REVIEW submission and writes an AuditLog APPROVE row.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/moderation.controller.ts",
+        "symbol": "ModerationController.approve"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "api:POST /admin/submissions/:id/reject",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/admin/submissions/:id/reject",
+      "domain": "Moderation",
+      "description": "Rejects a PENDING_REVIEW submission. reason is required. Writes AuditLog REJECT.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/moderation.controller.ts",
+        "symbol": "ModerationController.reject"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "be_svc:AuthService",
+      "type": "BackendService",
+      "label": "AuthService",
+      "domain": "Authentication",
+      "description": "Business logic for hashing passwords, issuing JWTs, and validating registration.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/auth.service.ts",
+        "symbol": "AuthService"
+      }
+    },
+    {
+      "id": "be_svc:UserService",
+      "type": "BackendService",
+      "label": "UserService",
+      "domain": "Authentication",
+      "description": "Business logic for user lookups and profile retrieval.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/user.service.ts",
+        "symbol": "UserService"
+      }
+    },
+    {
+      "id": "be_svc:JudgingService",
+      "type": "BackendService",
+      "label": "JudgingService",
+      "domain": "Judging",
+      "description": "Queue of APPROVED submissions and transactional community-score updates. Voting window is ACTIVE and JUDGING.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/judging.service.ts",
+        "symbol": "JudgingService"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.5",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "be_repo:UserRepository",
+      "type": "BackendRepository",
+      "label": "UserRepository",
+      "domain": "Authentication",
+      "description": "Prisma data access methods for User and Organization models.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/user.repository.ts",
+        "symbol": "UserRepository"
+      }
+    },
+    {
+      "id": "be_svc:OrganizationService",
+      "type": "BackendService",
+      "label": "OrganizationService",
+      "domain": "MultiTenancy",
+      "description": "Branding reads, BRAND_ADMIN own-organization write checks, and M10 SUPER_ADMIN list/suspend/reinstate. SUPER_ADMIN may update any organization. No delete or slug mutation.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/organization.service.ts",
+        "symbol": "OrganizationService"
+      }
+    },
+    {
+      "id": "be_repo:OrganizationRepository",
+      "type": "BackendRepository",
+      "label": "OrganizationRepository",
+      "domain": "MultiTenancy",
+      "description": "Prisma access for organization findById, findBySlug, findAll (SUPER_ADMIN list), branding replacement, suspend, and reinstate.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/organization.repository.ts",
+        "symbol": "OrganizationRepository"
+      }
+    },
+    {
+      "id": "api:GET /organizations/:slug/branding",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/organizations/:slug/branding",
+      "domain": "MultiTenancy",
+      "description": "Public branding read by slug. No authenticate hook. Missing slug returns 404. branding may be null.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/organization.controller.ts",
+        "symbol": "OrganizationController.getBrandingBySlug"
+      }
+    },
+    {
+      "id": "api:PUT /organizations/:id/branding",
+      "type": "APIEndpoint",
+      "label": "PUT /api/v1/organizations/:id/branding",
+      "domain": "MultiTenancy",
+      "description": "Replace branding JSON. BRAND_ADMIN own organization or SUPER_ADMIN. Cross-tenant write is 403. primaryColor and logoUrl required.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 13",
+        "section": "13.13",
+        "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/organization.controller.ts",
+        "symbol": "OrganizationController.updateBranding"
+      }
+    },
+    {
+      "id": "api:GET /super-admin/organizations",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/super-admin/organizations",
+      "domain": "MultiTenancy",
+      "description": "M10-P01-T01. SUPER_ADMIN-only list of every organization (id, name, slug, branding, createdAt, updatedAt). BRAND_ADMIN, CREATOR, VIEWER 403; missing/invalid token 401; any query key 400. No pagination, filter, or suspension status.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/organization.controller.ts",
+        "symbol": "OrganizationController.listForSuperAdmin"
+      }
+    },
+    {
+      "id": "api:POST /super-admin/organizations/:id/suspend",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/super-admin/organizations/:id/suspend",
+      "domain": "MultiTenancy",
+      "description": "M10-P01-T02. SUPER_ADMIN only. Body { reason } (required free text). Sets status SUSPENDED, suspendedAt now, suspensionReason. Unknown org 404, already suspended 409, blank reason 400. No AuditLog row.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.2",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/organization.controller.ts",
+        "symbol": "OrganizationController.suspend"
+      }
+    },
+    {
+      "id": "api:POST /super-admin/organizations/:id/reinstate",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/super-admin/organizations/:id/reinstate",
+      "domain": "MultiTenancy",
+      "description": "M10-P01-T03. SUPER_ADMIN only. No body. Sets status ACTIVE and clears suspendedAt and suspensionReason. Unknown org 404, not suspended 409.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.2",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/organization.controller.ts",
+        "symbol": "OrganizationController.reinstate"
+      }
+    },
+    {
+      "id": "fe:SuperAdminPage",
+      "type": "FrontendComponent",
+      "label": "Super Admin Platform Radar Page",
+      "domain": "MultiTenancy",
+      "description": "/super-admin. Tenant fleet from GET /super-admin/organizations with loading, error, and empty states. Suspend opens a reason dialog; Reactivate calls reinstate. Compliance notices remain a local prototype.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/app/(dashboard)/super-admin/page.tsx",
+        "symbol": "SuperAdminPage"
+      }
+    },
+    {
+      "id": "fe_hook:useSuperAdminOrganizations",
+      "type": "FrontendHook",
+      "label": "useSuperAdminOrganizations Hook",
+      "domain": "MultiTenancy",
+      "description": "Loads the SUPER_ADMIN organization list and runs suspend/reinstate through super-admin-api.ts. Surfaces load and action errors from the API envelope.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/hooks/use-super-admin-organizations.ts",
+        "symbol": "useSuperAdminOrganizations"
+      }
+    },
+    {
+      "id": "fe:SuspendOrganizationDialog",
+      "type": "FrontendComponent",
+      "label": "Suspend Organization Dialog",
+      "domain": "MultiTenancy",
+      "description": "Collects the required free-text suspension reason. No preset reason categories (no taxonomy).",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.2",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/components/suspend-organization-dialog.tsx",
+        "symbol": "SuspendOrganizationDialog"
+      }
+    },
+    {
+      "id": "fe:LoginForm",
+      "type": "FrontendComponent",
+      "label": "LoginForm Component",
+      "domain": "Authentication",
+      "description": "Email/password login UI wired to POST /api/v1/auth/login; stores real JWT in STORAGE_KEYS.AUTH_TOKEN.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/auth/components/login-form.tsx",
+        "symbol": "LoginForm"
+      }
+    },
+    {
+      "id": "fe:CreatorRegisterForm",
+      "type": "FrontendComponent",
+      "label": "CreatorRegisterForm Component",
+      "domain": "Authentication",
+      "description": "Creator registration UI. Maps fullName to name; does not POST handle/username/avatarUrl.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/auth/components/creator-register-form.tsx",
+        "symbol": "CreatorRegisterForm"
+      }
+    },
+    {
+      "id": "fe:BrandRegisterForm",
+      "type": "FrontendComponent",
+      "label": "BrandRegisterForm Component",
+      "domain": "Authentication",
+      "description": "Brand registration form is not mounted. /register/brand redirects to /login. Admins are pre-provisioned for the deployment organization.",
+      "status": "PARTIALLY_IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/auth/components/brand-register-form.tsx",
+        "symbol": "BrandRegisterForm"
+      }
+    },
+    {
+      "id": "fe_hook:useAuthSession",
+      "type": "FrontendHook",
+      "label": "useAuthSession Hook",
+      "domain": "Authentication",
+      "description": "Client session: live auth API, JWT persistence, GET /auth/me hydration. Demo/mock login gated out of the production path.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/auth/hooks/use-auth-session.ts",
+        "symbol": "useAuthSession"
+      }
+    },
+    {
+      "id": "fe:RoleGuard",
+      "type": "FrontendComponent",
+      "label": "RoleGuard Component",
+      "domain": "Authentication",
+      "description": "Dashboard route guard. Reads Redux session role (M02 aliases ORGANIZATION_ADMIN/PLATFORM_ADMIN) after GET /auth/me hydration. Protects /creator, /admin/moderation, /admin/contests, /admin/brands, /super-admin.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/components/auth/role-guard.tsx",
+        "symbol": "RoleGuard"
+      }
+    },
+    {
+      "id": "db:User",
+      "type": "DatabaseModel",
+      "label": "User Database Model",
+      "domain": "Authentication",
+      "description": "Prisma entity storing authenticated user credentials, role, and organization link.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 9",
+        "section": "9.3",
+        "docPath": "/docs/source/9 Business Requirements 394ca8c5bdf780f59cb7c048b703b9f2.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model User"
+      }
+    },
+    {
+      "id": "db:Organization",
+      "type": "DatabaseModel",
+      "label": "Organization Database Model",
+      "domain": "MultiTenancy",
+      "description": "Prisma entity storing tenant identity, slug, JSON branding metadata, and M10 suspension state (status ACTIVE|SUSPENDED, suspendedAt, suspensionReason).",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.8",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Organization"
+      }
+    },
+    {
+      "id": "db:Contest",
+      "type": "DatabaseModel",
+      "label": "Contest Database Model",
+      "domain": "Contests",
+      "description": "Prisma contest: organization, optional category, status, dates, prizeSummary, rules, autoAdvanceDelayMs. Has submissions relation (M06).",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Contest"
+      }
+    },
+    {
+      "id": "db:Category",
+      "type": "DatabaseModel",
+      "label": "Category Database Model",
+      "domain": "Contests",
+      "description": "Organization-scoped contest category. Slug is unique per organization.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Category"
+      }
+    },
+    {
+      "id": "be_svc:ContestService",
+      "type": "BackendService",
+      "label": "ContestService",
+      "domain": "Contests",
+      "description": "Contest create, list, get, and patch. Enforces one-step lifecycle, ACTIVE settings lock, and BRAND_ADMIN organization scope.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.6",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/contest.service.ts",
+        "symbol": "ContestService"
+      }
+    },
+    {
+      "id": "be_repo:ContestRepository",
+      "type": "BackendRepository",
+      "label": "ContestRepository",
+      "domain": "Contests",
+      "description": "Prisma CRUD and list by organization, status, and category slug.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/contest.repository.ts",
+        "symbol": "ContestRepository"
+      }
+    },
+    {
+      "id": "be_repo:CategoryRepository",
+      "type": "BackendRepository",
+      "label": "CategoryRepository",
+      "domain": "Contests",
+      "description": "Create and list categories for one organization. No category HTTP API.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/category.repository.ts",
+        "symbol": "CategoryRepository"
+      }
+    },
+    {
+      "id": "api:GET /contests",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/contests",
+      "domain": "Contests",
+      "description": "Admin contest list. BRAND_ADMIN is limited to their organization. CREATOR is rejected. SUPER_ADMIN may filter by tenantId, status, and category slug.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.list"
+      }
+    },
+    {
+      "id": "api:GET /contests/active",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/contests/active",
+      "domain": "Contests",
+      "description": "Public list of ACTIVE contests for the deployment organization resolved from DEPLOYMENT_ORGANIZATION_SLUG. No auth. Guest and creator discovery use this instead of a tenant catalog.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.listDeploymentActive"
+      }
+    },
+    {
+      "id": "api:POST /contests",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/contests",
+      "domain": "Contests",
+      "description": "Create a DRAFT contest. BRAND_ADMIN own organization or SUPER_ADMIN.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.6",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.create"
+      }
+    },
+    {
+      "id": "api:POST /contests/banners/presign",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/contests/banners/presign",
+      "domain": "Contests",
+      "description": "ADMIN presigns a private contest banner PUT. The contest stores bannerObjectKey. The bucket stays private.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.presignBanner"
+      }
+    },
+    {
+      "id": "api:GET /contests/:id",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/contests/:id",
+      "domain": "Contests",
+      "description": "Get one contest. BRAND_ADMIN cannot read another organization's contest.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.getById"
+      }
+    },
+    {
+      "id": "api:PATCH /contests/:id",
+      "type": "APIEndpoint",
+      "label": "PATCH /api/v1/contests/:id",
+      "domain": "Contests",
+      "description": "Update contest metadata or move one lifecycle step. ACTIVE settings lock and closed-contest read-only rules apply.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.6",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/contest.controller.ts",
+        "symbol": "ContestController.update"
+      }
+    },
+    {
+      "id": "fe_hook:useContestsManagement",
+      "type": "FrontendHook",
+      "label": "useContestsManagement Hook",
+      "domain": "Contests",
+      "description": "Admin contest list, create, and status transitions via the contests API. localStorage is not the primary source.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/hooks/use-contests-management.ts",
+        "symbol": "useContestsManagement"
+      }
+    },
+    {
+      "id": "db:Submission",
+      "type": "DatabaseModel",
+      "label": "Submission Database Model",
+      "domain": "Submissions",
+      "description": "Prisma submission: contest, creator, title, videoUrl, unique objectKey, optional thumbnailUrl, durationSeconds, PENDING_REVIEW default, tags, communityScore, totalVotes, nullable deletedAt and deletedById.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.4",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Submission"
+      }
+    },
+    {
+      "id": "db:Rating",
+      "type": "DatabaseModel",
+      "label": "Rating Database Model",
+      "domain": "Judging",
+      "description": "Individual ratings. New votes are integers 1-10. Historical 1-5 rows stay valid. userId and voterFingerprint are optional. Duplicate-vote window is NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Rating"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.5",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "db:AuditLog",
+      "type": "DatabaseModel",
+      "label": "AuditLog Database Model",
+      "domain": "Moderation",
+      "description": "Append-only audit row: actor, action, optional reason, metadata, createdAt. Retention is NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model AuditLog"
+      },
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.10",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      }
+    },
+    {
+      "id": "api:GET /admin/moderation/queue",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/admin/moderation/queue",
+      "domain": "Moderation",
+      "description": "PENDING_REVIEW queue. BRAND_ADMIN is organization-scoped. SUPER_ADMIN is cross-tenant.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.6",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/moderation.controller.ts",
+        "symbol": "ModerationController.queue"
+      }
+    },
+    {
+      "id": "api:GET /admin/moderation/audit-logs",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/admin/moderation/audit-logs",
+      "domain": "Moderation",
+      "description": "Append-only moderation audit history, tenant-scoped like the queue.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.10",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/moderation.controller.ts",
+        "symbol": "ModerationController.auditLogs"
+      }
+    },
+    {
+      "id": "be_svc:ModerationService",
+      "type": "BackendService",
+      "label": "ModerationService",
+      "domain": "Moderation",
+      "description": "Approve, reject, and flag from PENDING_REVIEW inside a transaction with an audit row.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.4",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/moderation.service.ts",
+        "symbol": "ModerationService"
+      }
+    },
+    {
+      "id": "be_repo:AuditLogRepository",
+      "type": "BackendRepository",
+      "label": "AuditLogRepository",
+      "domain": "Moderation",
+      "description": "Append-only create and list. No update or delete.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.10",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/audit-log.repository.ts",
+        "symbol": "AuditLogRepository"
+      }
+    },
+    {
+      "id": "fe_hook:useModerationQueue",
+      "type": "FrontendHook",
+      "label": "useModerationQueue Hook",
+      "domain": "Moderation",
+      "description": "Loads the pending queue and audit logs from the M07 APIs and submits approve/reject.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.6",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/admin/hooks/use-moderation-queue.ts",
+        "symbol": "useModerationQueue"
+      }
+    },
+    {
+      "id": "api:GET /contests/:id/queue",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/contests/:id/queue",
+      "domain": "Judging",
+      "description": "Public approved judging queue. ACTIVE or JUDGING only. Display order is createdAt then id. Not a leaderboard.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.7",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/judging.controller.ts",
+        "symbol": "JudgingController.queue"
+      }
+    },
+    {
+      "id": "be_repo:RatingRepository",
+      "type": "BackendRepository",
+      "label": "RatingRepository",
+      "domain": "Judging",
+      "description": "Locks a submission, inserts a Rating, and writes communityScore and totalVotes in one transaction.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 12",
+        "section": "12.5",
+        "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/rating.repository.ts",
+        "symbol": "RatingRepository"
+      }
+    },
+    {
+      "id": "be_svc:LeaderboardService",
+      "type": "BackendService",
+      "label": "LeaderboardService",
+      "domain": "Leaderboard",
+      "description": "Aggregates approved submissions, computes podium (top 3) and ranked entries by communityScore and totalVotes.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/leaderboard.service.ts",
+        "symbol": "LeaderboardService"
+      }
+    },
+    {
+      "id": "fe_hook:useLeaderboard",
+      "type": "FrontendHook",
+      "label": "useLeaderboard Hook",
+      "domain": "Leaderboard",
+      "description": "Fetches GET /contests/:id/leaderboard when a contest UUID is known. Does not fall back to mock rankings. Public contest discovery is NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/leaderboard/hooks/use-leaderboard.ts",
+        "symbol": "useLeaderboard"
+      }
+    },
+    {
+      "id": "api:GET /contests/:id/leaderboard",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/contests/:id/leaderboard",
+      "domain": "Leaderboard",
+      "description": "Public contest leaderboard with merit-based communityScore ranking and top-3 podium aggregation.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/leaderboard.controller.ts",
+        "symbol": "LeaderboardController.getLeaderboard"
+      }
+    },
+    {
+      "id": "be_svc:RateLimit",
+      "type": "BackendService",
+      "label": "Route rate limit",
+      "domain": "Authentication",
+      "description": "In-memory @fastify/rate-limit. Auth writes 10 per 15 minutes per IP per route. Rating POST 60 per minute per IP. Engineering defaults, not business-rule thresholds. Redis and trustProxy are not used.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 13",
+        "section": "13.13",
+        "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/plugins/rate-limit.ts",
+        "symbol": "rateLimitPlugin"
+      }
+    },
+    {
+      "id": "api:GET /health",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/health",
+      "domain": "Platform",
+      "description": "Public health check. Frozen envelope. data.status is healthy plus an ISO timestamp. Does not probe Prisma. Database readiness on this route is NOT SPECIFIED.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 13",
+        "section": "13.13",
+        "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/routes/index.ts",
+        "symbol": "GET /health"
+      }
+    },
+    {
+      "id": "api:GET /",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/",
+      "domain": "Platform",
+      "description": "Public root. data.name is Contest Operating System Backend. data.version is 1.0.0. Frozen envelope.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 13",
+        "section": "13.13",
+        "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/routes/index.ts",
+        "symbol": "GET /"
+      }
+    },
+    {
+      "id": "perm:manage_creator_friends",
+      "type": "Permission",
+      "label": "Manage Creator Friends",
+      "domain": "Friends",
+      "description": "Active CREATOR accounts may search creators and manage friend requests. Guests and ADMIN are denied. Not specified in the source chapters.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/routes/index.ts",
+        "symbol": "creatorGuards"
+      }
+    },
+    {
+      "id": "db:Friendship",
+      "type": "DatabaseModel",
+      "label": "Friendship Database Model",
+      "domain": "Friends",
+      "description": "One unordered creator pair. PENDING or ACCEPTED. Unique (userLowId, userHighId) plus a check that the requester is one of the two users.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Friendship"
+      }
+    },
+    {
+      "id": "be_svc:FriendshipService",
+      "type": "BackendService",
+      "label": "FriendshipService",
+      "domain": "Friends",
+      "description": "Send, accept, reject, cancel, remove, list, and search. Does not call contest, submission, judging, or leaderboard services.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/friendship.service.ts",
+        "symbol": "FriendshipService"
+      }
+    },
+    {
+      "id": "be_repo:FriendshipRepository",
+      "type": "BackendRepository",
+      "label": "FriendshipRepository",
+      "domain": "Friends",
+      "description": "Prisma access for friendships and active-creator name search.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/friendship.repository.ts",
+        "symbol": "FriendshipRepository"
+      }
+    },
+    {
+      "id": "api:GET /friends",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/friends",
+      "domain": "Friends",
+      "description": "Accepted friends plus incoming and outgoing requests. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.list"
+      }
+    },
+    {
+      "id": "api:GET /friends/search",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/friends/search",
+      "domain": "Friends",
+      "description": "Name search of active creators. Email is not returned. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.search"
+      }
+    },
+    {
+      "id": "api:POST /friends/requests",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/friends/requests",
+      "domain": "Friends",
+      "description": "Send a friend request. Self, duplicate, and already-friends requests are rejected. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.send"
+      }
+    },
+    {
+      "id": "api:POST /friends/requests/:id/accept",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/friends/requests/:id/accept",
+      "domain": "Friends",
+      "description": "Recipient accepts a pending request. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.accept"
+      }
+    },
+    {
+      "id": "api:POST /friends/requests/:id/reject",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/friends/requests/:id/reject",
+      "domain": "Friends",
+      "description": "Recipient rejects a pending request. The row is deleted. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.reject"
+      }
+    },
+    {
+      "id": "api:DELETE /friends/requests/:id",
+      "type": "APIEndpoint",
+      "label": "DELETE /api/v1/friends/requests/:id",
+      "domain": "Friends",
+      "description": "Sender cancels a pending request. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.cancel"
+      }
+    },
+    {
+      "id": "api:DELETE /friends/:id",
+      "type": "APIEndpoint",
+      "label": "DELETE /api/v1/friends/:id",
+      "domain": "Friends",
+      "description": "Either friend removes an accepted friendship. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/friendship.controller.ts",
+        "symbol": "FriendshipController.remove"
+      }
+    },
+    {
+      "id": "fe:FriendsPanel",
+      "type": "FrontendComponent",
+      "label": "FriendsPanel",
+      "domain": "Friends",
+      "description": "Creator friends page: search, incoming, outgoing, and accepted friends.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/friends/components/friends-panel.tsx",
+        "symbol": "FriendsPanel"
+      }
+    },
+    {
+      "id": "fe_hook:useCreatorFriends",
+      "type": "FrontendHook",
+      "label": "useCreatorFriends",
+      "domain": "Friends",
+      "description": "Loads and mutates creator friend requests.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/friends/hooks/use-creator-friends.ts",
+        "symbol": "useCreatorFriends"
+      }
+    },
+    {
+      "id": "perm:creator_friend_chat",
+      "type": "Permission",
+      "label": "Creator Friend Chat",
+      "domain": "Friends",
+      "description": "Active CREATOR accounts may message accepted friends. Guests and ADMIN are denied. Not specified in the source chapters.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/routes/index.ts",
+        "symbol": "creatorGuards"
+      }
+    },
+    {
+      "id": "feat:creator_friend_chat",
+      "type": "Feature",
+      "label": "Creator Friend Chat",
+      "domain": "Friends",
+      "description": "One-to-one text, emoji, and private image or video messages between accepted friends.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/chat.service.ts",
+        "symbol": "ChatService"
+      }
+    },
+    {
+      "id": "db:ChatMessage",
+      "type": "DatabaseModel",
+      "label": "ChatMessage",
+      "domain": "Friends",
+      "description": "A text or private attachment message on an accepted friendship.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model ChatMessage"
+      }
+    },
+    {
+      "id": "db:ChatRead",
+      "type": "DatabaseModel",
+      "label": "ChatRead",
+      "domain": "Friends",
+      "description": "Per-creator read cursor for one friendship.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model ChatRead"
+      }
+    },
+    {
+      "id": "be_svc:ChatService",
+      "type": "BackendService",
+      "label": "ChatService",
+      "domain": "Friends",
+      "description": "Accepted-friend messaging, unread counts, read cursors, and private attachment presign.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/services/chat.service.ts",
+        "symbol": "ChatService"
+      }
+    },
+    {
+      "id": "be_repo:ChatRepository",
+      "type": "BackendRepository",
+      "label": "ChatRepository",
+      "domain": "Friends",
+      "description": "Prisma access for chat messages and read cursors.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/repositories/chat.repository.ts",
+        "symbol": "ChatRepository"
+      }
+    },
+    {
+      "id": "api:GET /chat/conversations",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/chat/conversations",
+      "domain": "Friends",
+      "description": "Conversation list with preview, timestamp, and unread count. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/chat.controller.ts",
+        "symbol": "ChatController.list"
+      }
+    },
+    {
+      "id": "api:GET /chat/conversations/:id/messages",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/chat/conversations/:id/messages",
+      "domain": "Friends",
+      "description": "History for one accepted friendship. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/chat.controller.ts",
+        "symbol": "ChatController.messages"
+      }
+    },
+    {
+      "id": "api:POST /chat/conversations/:id/messages",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/chat/conversations/:id/messages",
+      "domain": "Friends",
+      "description": "Send text, emoji, or a private attachment. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/chat.controller.ts",
+        "symbol": "ChatController.send"
+      }
+    },
+    {
+      "id": "api:POST /chat/attachments/presign",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/chat/attachments/presign",
+      "domain": "Friends",
+      "description": "Presigned PUT for a private chat image or video. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/chat.controller.ts",
+        "symbol": "ChatController.presign"
+      }
+    },
+    {
+      "id": "api:GET /chat/stream",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/chat/stream",
+      "domain": "Friends",
+      "description": "Server-sent events for messages and read receipts. CREATOR only.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "cos-backend",
+        "filePath": "src/controllers/chat.controller.ts",
+        "symbol": "ChatController.stream"
+      }
+    },
+    {
+      "id": "fe:CreatorChat",
+      "type": "FrontendComponent",
+      "label": "CreatorChat",
+      "domain": "Friends",
+      "description": "Conversation list and thread, including emoji, attachments, unread, and reconnect state.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/chat/components/creator-chat.tsx",
+        "symbol": "CreatorChat"
+      }
+    },
+    {
+      "id": "fe_hook:useCreatorChat",
+      "type": "FrontendHook",
+      "label": "useCreatorChat",
+      "domain": "Friends",
+      "description": "Loads conversations and history, sends messages, and applies the SSE stream.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.6",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "content-operating-system",
+        "filePath": "src/features/chat/hooks/use-creator-chat.ts",
+        "symbol": "useCreatorChat"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e01",
+      "source": "role:viewer",
+      "target": "perm:rate_video",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Visitors have permission to submit 1-5 star ratings on active contest videos."
+    },
+    {
+      "id": "e02",
+      "source": "perm:rate_video",
+      "target": "feat:continuous_queue",
+      "relationshipType": "PROVIDES_FEATURE",
+      "description": "Rating permission unlocks the continuous judging queue experience."
+    },
+    {
+      "id": "e03",
+      "source": "feat:continuous_queue",
+      "target": "wf:visitor_judging_loop",
+      "relationshipType": "EXECUTES_WORKFLOW",
+      "description": "Continuous queue runs the watch-rate-reveal-advance loop workflow."
+    },
+    {
+      "id": "e04",
+      "source": "wf:visitor_judging_loop",
+      "target": "fe:ViewerContainer",
+      "relationshipType": "RENDERED_BY",
+      "description": "Judging loop is visually hosted by ViewerContainer."
+    },
+    {
+      "id": "e05",
+      "source": "fe:ViewerContainer",
+      "target": "fe:RatingBar",
+      "relationshipType": "DEPENDS_ON",
+      "description": "ViewerContainer embeds RatingBar for rating input."
+    },
+    {
+      "id": "e06",
+      "source": "fe:ViewerContainer",
+      "target": "fe:ScoreRevealOverlay",
+      "relationshipType": "DEPENDS_ON",
+      "description": "ViewerContainer embeds ScoreRevealOverlay for consensus feedback."
+    },
+    {
+      "id": "e07",
+      "source": "fe:ViewerContainer",
+      "target": "fe_hook:useContestQueue",
+      "relationshipType": "MANAGED_BY",
+      "description": "ViewerContainer lifecycle and state is managed by useContestQueue."
+    },
+    {
+      "id": "e08",
+      "source": "fe_hook:useContestQueue",
+      "target": "api:POST /contests/:id/videos/:videoId/rate",
+      "relationshipType": "CALLS_API",
+      "description": "Submits rating payload to backend endpoint."
+    },
+    {
+      "id": "e09",
+      "source": "api:POST /contests/:id/videos/:videoId/rate",
+      "target": "be_svc:JudgingService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Endpoint routes score processing to JudgingService."
+    },
+    {
+      "id": "e10",
+      "source": "be_svc:JudgingService",
+      "target": "db:Rating",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Persists individual vote record into Rating database table."
+    },
+    {
+      "id": "e11",
+      "source": "be_svc:JudgingService",
+      "target": "db:Submission",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Updates calculated communityScore and totalVotes on Submission."
+    },
+    {
+      "id": "e12",
+      "source": "role:creator",
+      "target": "perm:upload_video",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Creators have permission to upload original videos into active contests."
+    },
+    {
+      "id": "e13",
+      "source": "perm:upload_video",
+      "target": "feat:video_upload",
+      "relationshipType": "PROVIDES_FEATURE",
+      "description": "Upload permission enables the creator upload hub."
+    },
+    {
+      "id": "e14",
+      "source": "feat:video_upload",
+      "target": "wf:creator_submission_flow",
+      "relationshipType": "EXECUTES_WORKFLOW",
+      "description": "Video upload feature executes the creator submission workflow."
+    },
+    {
+      "id": "e15",
+      "source": "wf:creator_submission_flow",
+      "target": "fe:UploadModal",
+      "relationshipType": "RENDERED_BY",
+      "description": "Creator submission workflow is rendered via UploadModal."
+    },
+    {
+      "id": "e16",
+      "source": "fe:UploadModal",
+      "target": "fe_hook:useCreatorSubmissions",
+      "relationshipType": "MANAGED_BY",
+      "description": "UploadModal submission state is managed by useCreatorSubmissions."
+    },
+    {
+      "id": "e17",
+      "source": "fe_hook:useCreatorSubmissions",
+      "target": "api:GET /submissions/me",
+      "relationshipType": "CALLS_API",
+      "description": "Loads the authenticated creator submissions."
+    },
+    {
+      "id": "e18",
+      "source": "api:POST /submissions/complete",
+      "target": "be_svc:SubmissionService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Complete is handled by SubmissionService."
+    },
+    {
+      "id": "e19",
+      "source": "role:brand_admin",
+      "target": "perm:moderate_submission",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Brand Admins have permission to moderate tenant submissions."
+    },
+    {
+      "id": "e20",
+      "source": "perm:moderate_submission",
+      "target": "feat:split_moderation",
+      "relationshipType": "PROVIDES_FEATURE",
+      "description": "Moderation permission unlocks the split-viewer review interface."
+    },
+    {
+      "id": "e21",
+      "source": "feat:split_moderation",
+      "target": "wf:admin_moderation_flow",
+      "relationshipType": "EXECUTES_WORKFLOW",
+      "description": "Split moderation feature runs the moderation workflow."
+    },
+    {
+      "id": "e22",
+      "source": "wf:admin_moderation_flow",
+      "target": "fe:ModerationSplitViewer",
+      "relationshipType": "RENDERED_BY",
+      "description": "Moderation workflow is rendered by ModerationSplitViewer."
+    },
+    {
+      "id": "e23",
+      "source": "fe:ModerationSplitViewer",
+      "target": "api:POST /admin/submissions/:id/approve",
+      "relationshipType": "CALLS_API",
+      "description": "Approves submission into live contest queue."
+    },
+    {
+      "id": "e24",
+      "source": "fe:ModerationSplitViewer",
+      "target": "api:POST /admin/submissions/:id/reject",
+      "relationshipType": "CALLS_API",
+      "description": "Rejects submission with reason code."
+    },
+    {
+      "id": "e25",
+      "source": "api:POST /admin/submissions/:id/approve",
+      "target": "db:AuditLog",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Logs approval action in AuditLog table."
+    },
+    {
+      "id": "e26",
+      "source": "api:POST /admin/submissions/:id/reject",
+      "target": "db:AuditLog",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Logs rejection action with reason in AuditLog table."
+    },
+    {
+      "id": "e27",
+      "source": "role:brand_admin",
+      "target": "perm:create_contest",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Brand Admins can create and schedule contests."
+    },
+    {
+      "id": "e28",
+      "source": "role:super_admin",
+      "target": "perm:manage_tenants",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Super Admins can provision and manage all brand tenants."
+    },
+    {
+      "id": "e29",
+      "source": "api:POST /auth/register/creator",
+      "target": "be_svc:AuthService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Creator registration route is handled by AuthService."
+    },
+    {
+      "id": "e30",
+      "source": "api:POST /auth/register/brand",
+      "target": "be_svc:AuthService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Historical brand registration handler. The HTTP route is no longer registered."
+    },
+    {
+      "id": "e31",
+      "source": "api:POST /auth/login",
+      "target": "be_svc:AuthService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Login route is handled by AuthService."
+    },
+    {
+      "id": "e32",
+      "source": "api:GET /auth/me",
+      "target": "be_svc:AuthService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Current user profile route is handled by AuthService."
+    },
+    {
+      "id": "e33",
+      "source": "be_svc:AuthService",
+      "target": "be_repo:UserRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "AuthService calls UserRepository for data queries."
+    },
+    {
+      "id": "e34",
+      "source": "be_repo:UserRepository",
+      "target": "db:User",
+      "relationshipType": "PERSISTS_TO",
+      "description": "UserRepository persists and reads User records."
+    },
+    {
+      "id": "e35",
+      "source": "be_repo:UserRepository",
+      "target": "db:Organization",
+      "relationshipType": "PERSISTS_TO",
+      "description": "UserRepository creates and reads Organization records."
+    },
+    {
+      "id": "e36",
+      "source": "db:User",
+      "target": "db:Organization",
+      "relationshipType": "SCOPED_TO",
+      "description": "User is optionally scoped to an Organization via organizationId."
+    },
+    {
+      "id": "e37",
+      "source": "db:Contest",
+      "target": "db:Organization",
+      "relationshipType": "SCOPED_TO",
+      "description": "Contests are strictly scoped to an Organization via organizationId."
+    },
+    {
+      "id": "e38",
+      "source": "db:Submission",
+      "target": "db:Contest",
+      "relationshipType": "BELONGS_TO",
+      "description": "Submissions strictly belong to a Contest via contestId."
+    },
+    {
+      "id": "e39",
+      "source": "db:Rating",
+      "target": "db:Submission",
+      "relationshipType": "BELONGS_TO",
+      "description": "Ratings strictly belong to a Submission via submissionId."
+    },
+    {
+      "id": "e40",
+      "source": "fe:BrandThemeForm",
+      "target": "fe_hook:useTenantTheme",
+      "relationshipType": "MANAGED_BY",
+      "description": "BrandThemeForm synchronizes with useTenantTheme."
+    },
+    {
+      "id": "e41",
+      "source": "fe:LoginForm",
+      "target": "fe_hook:useAuthSession",
+      "relationshipType": "MANAGED_BY",
+      "description": "LoginForm submits credentials through useAuthSession.login."
+    },
+    {
+      "id": "e42",
+      "source": "fe:CreatorRegisterForm",
+      "target": "fe_hook:useAuthSession",
+      "relationshipType": "MANAGED_BY",
+      "description": "CreatorRegisterForm submits registration through useAuthSession.registerCreator."
+    },
+    {
+      "id": "e43",
+      "source": "fe:BrandRegisterForm",
+      "target": "fe_hook:useAuthSession",
+      "relationshipType": "MANAGED_BY",
+      "description": "BrandRegisterForm submits registration through useAuthSession.registerBrand."
+    },
+    {
+      "id": "e44",
+      "source": "fe_hook:useAuthSession",
+      "target": "api:POST /auth/login",
+      "relationshipType": "CALLS_API",
+      "description": "Posts email/password and stores the returned JWT."
+    },
+    {
+      "id": "e45",
+      "source": "fe_hook:useAuthSession",
+      "target": "api:POST /auth/register/creator",
+      "relationshipType": "CALLS_API",
+      "description": "Posts email, password, and name only (no handle)."
+    },
+    {
+      "id": "e46",
+      "source": "fe_hook:useAuthSession",
+      "target": "api:POST /auth/register/brand",
+      "relationshipType": "CALLS_API",
+      "description": "registerBrand remains in the client hook. The product UI does not call it, and the HTTP route returns 404."
+    },
+    {
+      "id": "e47",
+      "source": "fe_hook:useAuthSession",
+      "target": "api:GET /auth/me",
+      "relationshipType": "CALLS_API",
+      "description": "Hydrates the client session from the Bearer-protected profile."
+    },
+    {
+      "id": "e48",
+      "source": "fe:RoleGuard",
+      "target": "fe_hook:useAuthSession",
+      "relationshipType": "MANAGED_BY",
+      "description": "RoleGuard waits for useAuthSession hydration then reads the Redux session role."
+    },
+    {
+      "id": "e49",
+      "source": "api:GET /users",
+      "target": "be_svc:UserService",
+      "relationshipType": "HANDLED_BY",
+      "description": "SUPER_ADMIN user list is handled by UserService.listUsers."
+    },
+    {
+      "id": "e50",
+      "source": "api:GET /users/:id",
+      "target": "be_svc:UserService",
+      "relationshipType": "HANDLED_BY",
+      "description": "SUPER_ADMIN user lookup is handled by UserService.getUserProfile."
+    },
+    {
+      "id": "e51",
+      "source": "be_svc:UserService",
+      "target": "be_repo:UserRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "UserService calls UserRepository for list and profile queries."
+    },
+    {
+      "id": "e52",
+      "source": "api:GET /organizations/:slug/branding",
+      "target": "be_svc:OrganizationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Public branding read is handled by OrganizationService.getBrandingBySlug."
+    },
+    {
+      "id": "e53",
+      "source": "api:PUT /organizations/:id/branding",
+      "target": "be_svc:OrganizationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Branding replace is handled by OrganizationService.updateBranding."
+    },
+    {
+      "id": "e54",
+      "source": "be_svc:OrganizationService",
+      "target": "be_repo:OrganizationRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "OrganizationService reads and replaces branding through OrganizationRepository."
+    },
+    {
+      "id": "e55",
+      "source": "be_repo:OrganizationRepository",
+      "target": "db:Organization",
+      "relationshipType": "PERSISTS_TO",
+      "description": "OrganizationRepository reads Organization and replaces branding JSON."
+    },
+    {
+      "id": "e56",
+      "source": "fe_hook:useTenantTheme",
+      "target": "api:GET /organizations/:slug/branding",
+      "relationshipType": "CALLS_API",
+      "description": "Active tenant slug loads public branding tokens."
+    },
+    {
+      "id": "e57",
+      "source": "fe:BrandThemeForm",
+      "target": "api:PUT /organizations/:id/branding",
+      "relationshipType": "CALLS_API",
+      "description": "Save submits primaryColor, logoUrl, and optional accent and tagline."
+    },
+    {
+      "id": "e58",
+      "source": "role:super_admin",
+      "target": "perm:create_contest",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Super Admins can create and manage contests across organizations."
+    },
+    {
+      "id": "e59",
+      "source": "api:GET /contests",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Contest list is handled by ContestService."
+    },
+    {
+      "id": "e118",
+      "source": "api:GET /contests/active",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Public ACTIVE contest discovery for the deployment organization."
+    },
+    {
+      "id": "e60",
+      "source": "api:POST /contests",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Contest create is handled by ContestService."
+    },
+    {
+      "id": "e119",
+      "source": "api:POST /contests/banners/presign",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Banner presign is handled by ContestService."
+    },
+    {
+      "id": "e61",
+      "source": "api:GET /contests/:id",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Contest read is handled by ContestService."
+    },
+    {
+      "id": "e62",
+      "source": "api:PATCH /contests/:id",
+      "target": "be_svc:ContestService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Contest update and status transition are handled by ContestService."
+    },
+    {
+      "id": "e63",
+      "source": "be_svc:ContestService",
+      "target": "be_repo:ContestRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "ContestService persists contests through ContestRepository."
+    },
+    {
+      "id": "e64",
+      "source": "be_svc:ContestService",
+      "target": "be_repo:CategoryRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "ContestService resolves categories through CategoryRepository."
+    },
+    {
+      "id": "e65",
+      "source": "be_repo:ContestRepository",
+      "target": "db:Contest",
+      "relationshipType": "PERSISTS_TO",
+      "description": "ContestRepository reads and writes Contest rows."
+    },
+    {
+      "id": "e66",
+      "source": "be_repo:CategoryRepository",
+      "target": "db:Category",
+      "relationshipType": "PERSISTS_TO",
+      "description": "CategoryRepository reads and writes Category rows."
+    },
+    {
+      "id": "e67",
+      "source": "db:Contest",
+      "target": "db:Organization",
+      "relationshipType": "SCOPED_TO",
+      "description": "Every contest belongs to one organization."
+    },
+    {
+      "id": "e68",
+      "source": "db:Category",
+      "target": "db:Organization",
+      "relationshipType": "SCOPED_TO",
+      "description": "Every category belongs to one organization."
+    },
+    {
+      "id": "e69",
+      "source": "db:Contest",
+      "target": "db:Category",
+      "relationshipType": "DEPENDS_ON",
+      "description": "A contest may reference one category in the same organization."
+    },
+    {
+      "id": "e70",
+      "source": "fe_hook:useContestsManagement",
+      "target": "api:GET /contests",
+      "relationshipType": "CALLS_API",
+      "description": "Admin contest table loads GET /contests."
+    },
+    {
+      "id": "e71",
+      "source": "fe_hook:useContestsManagement",
+      "target": "api:POST /contests",
+      "relationshipType": "CALLS_API",
+      "description": "Create modal submits POST /contests."
+    },
+    {
+      "id": "e72",
+      "source": "fe_hook:useContestsManagement",
+      "target": "api:PATCH /contests/:id",
+      "relationshipType": "CALLS_API",
+      "description": "Metadata edits and status actions submit PATCH /contests/:id."
+    },
+    {
+      "id": "e73",
+      "source": "fe:UploadModal",
+      "target": "api:POST /submissions/presign",
+      "relationshipType": "CALLS_API",
+      "description": "Upload modal requests a presigned S3 PUT URL."
+    },
+    {
+      "id": "e74",
+      "source": "fe:UploadModal",
+      "target": "api:POST /submissions/complete",
+      "relationshipType": "CALLS_API",
+      "description": "After the S3 PUT, the modal registers PENDING_REVIEW metadata."
+    },
+    {
+      "id": "e75",
+      "source": "api:POST /submissions/presign",
+      "target": "be_svc:SubmissionService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Presign is handled by SubmissionService."
+    },
+    {
+      "id": "e76",
+      "source": "api:GET /submissions/me",
+      "target": "be_svc:SubmissionService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Creator list is handled by SubmissionService."
+    },
+    {
+      "id": "e77",
+      "source": "api:GET /submissions/:id",
+      "target": "be_svc:SubmissionService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Owner get-by-id is handled by SubmissionService."
+    },
+    {
+      "id": "e78",
+      "source": "be_svc:SubmissionService",
+      "target": "be_repo:SubmissionRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "SubmissionService persists through SubmissionRepository."
+    },
+    {
+      "id": "e79",
+      "source": "be_svc:SubmissionService",
+      "target": "be_svc:StorageService",
+      "relationshipType": "DEPENDS_ON",
+      "description": "SubmissionService signs uploads through StorageService."
+    },
+    {
+      "id": "e80",
+      "source": "be_repo:SubmissionRepository",
+      "target": "db:Submission",
+      "relationshipType": "PERSISTS_TO",
+      "description": "SubmissionRepository reads and writes Submission rows."
+    },
+    {
+      "id": "e81",
+      "source": "db:Submission",
+      "target": "db:User",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Every submission belongs to one creator user."
+    },
+    {
+      "id": "e82",
+      "source": "fe:ModerationSplitViewer",
+      "target": "fe_hook:useModerationQueue",
+      "relationshipType": "MANAGED_BY",
+      "description": "Split viewer decisions are submitted by useModerationQueue."
+    },
+    {
+      "id": "e83",
+      "source": "fe_hook:useModerationQueue",
+      "target": "api:GET /admin/moderation/queue",
+      "relationshipType": "CALLS_API",
+      "description": "Loads PENDING_REVIEW submissions for the signed-in admin."
+    },
+    {
+      "id": "e84",
+      "source": "fe_hook:useModerationQueue",
+      "target": "api:GET /admin/moderation/audit-logs",
+      "relationshipType": "CALLS_API",
+      "description": "Loads moderation audit history for the audit modal."
+    },
+    {
+      "id": "e85",
+      "source": "api:GET /admin/moderation/queue",
+      "target": "be_svc:ModerationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Queue is handled by ModerationService."
+    },
+    {
+      "id": "e86",
+      "source": "api:POST /admin/submissions/:id/approve",
+      "target": "be_svc:ModerationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Approve is handled by ModerationService."
+    },
+    {
+      "id": "e87",
+      "source": "api:POST /admin/submissions/:id/reject",
+      "target": "be_svc:ModerationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Reject is handled by ModerationService."
+    },
+    {
+      "id": "e88",
+      "source": "api:GET /admin/moderation/audit-logs",
+      "target": "be_svc:ModerationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Audit list is handled by ModerationService."
+    },
+    {
+      "id": "e89",
+      "source": "be_svc:ModerationService",
+      "target": "be_repo:AuditLogRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "Each decision appends an AuditLog row."
+    },
+    {
+      "id": "e90",
+      "source": "be_svc:ModerationService",
+      "target": "be_repo:SubmissionRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "Decisions update Submission status through SubmissionRepository."
+    },
+    {
+      "id": "e91",
+      "source": "be_repo:AuditLogRepository",
+      "target": "db:AuditLog",
+      "relationshipType": "PERSISTS_TO",
+      "description": "AuditLogRepository appends audit_logs rows."
+    },
+    {
+      "id": "e92",
+      "source": "fe_hook:useContestQueue",
+      "target": "api:GET /contests/:id/queue",
+      "relationshipType": "CALLS_API",
+      "description": "Loads approved submissions for the selected contest."
+    },
+    {
+      "id": "e93",
+      "source": "api:GET /contests/:id/queue",
+      "target": "be_svc:JudgingService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Queue reads are handled by JudgingService."
+    },
+    {
+      "id": "e94",
+      "source": "be_svc:JudgingService",
+      "target": "be_repo:RatingRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "Ratings are inserted and scores are written through RatingRepository."
+    },
+    {
+      "id": "e95",
+      "source": "be_repo:RatingRepository",
+      "target": "db:Rating",
+      "relationshipType": "PERSISTS_TO",
+      "description": "RatingRepository inserts ratings rows."
+    },
+    {
+      "id": "e96",
+      "source": "be_repo:RatingRepository",
+      "target": "db:Submission",
+      "relationshipType": "PERSISTS_TO",
+      "description": "The same transaction updates Submission.communityScore and totalVotes."
+    },
+    {
+      "id": "e97",
+      "source": "fe_hook:useLeaderboard",
+      "target": "api:GET /contests/:id/leaderboard",
+      "relationshipType": "CALLS_API",
+      "description": "Fetches ranked leaderboard entries for the selected contest."
+    },
+    {
+      "id": "e98",
+      "source": "api:GET /contests/:id/leaderboard",
+      "target": "be_svc:LeaderboardService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Leaderboard reads are handled by LeaderboardService."
+    },
+    {
+      "id": "e99",
+      "source": "be_svc:LeaderboardService",
+      "target": "be_repo:SubmissionRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "Queries approved submissions for contest leaderboard rankings."
+    },
+    {
+      "id": "e100",
+      "source": "fe:LeaderboardPodium",
+      "target": "fe_hook:useLeaderboard",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Leaderboard podium and rankings consume data from useLeaderboard hook."
+    },
+    {
+      "id": "e101",
+      "source": "api:GET /super-admin/organizations",
+      "target": "be_svc:OrganizationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Tenant list is handled by OrganizationService.listOrganizations."
+    },
+    {
+      "id": "e102",
+      "source": "api:GET /super-admin/organizations",
+      "target": "perm:manage_tenants",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard authorizeRoles(SUPER_ADMIN); the only role holding manage_tenants."
+    },
+    {
+      "id": "e103",
+      "source": "api:POST /super-admin/organizations/:id/suspend",
+      "target": "be_svc:OrganizationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Suspend is handled by OrganizationService.suspendOrganization."
+    },
+    {
+      "id": "e104",
+      "source": "api:POST /super-admin/organizations/:id/reinstate",
+      "target": "be_svc:OrganizationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Reinstate is handled by OrganizationService.reinstateOrganization."
+    },
+    {
+      "id": "e105",
+      "source": "api:POST /super-admin/organizations/:id/suspend",
+      "target": "perm:manage_tenants",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard authorizeRoles(SUPER_ADMIN)."
+    },
+    {
+      "id": "e106",
+      "source": "api:POST /super-admin/organizations/:id/reinstate",
+      "target": "perm:manage_tenants",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard authorizeRoles(SUPER_ADMIN)."
+    },
+    {
+      "id": "e107",
+      "source": "fe_hook:useSuperAdminOrganizations",
+      "target": "api:GET /super-admin/organizations",
+      "relationshipType": "CALLS_API",
+      "description": "Loads the tenant fleet."
+    },
+    {
+      "id": "e108",
+      "source": "fe_hook:useSuperAdminOrganizations",
+      "target": "api:POST /super-admin/organizations/:id/suspend",
+      "relationshipType": "CALLS_API",
+      "description": "Sends { reason } from the suspend dialog."
+    },
+    {
+      "id": "e109",
+      "source": "fe_hook:useSuperAdminOrganizations",
+      "target": "api:POST /super-admin/organizations/:id/reinstate",
+      "relationshipType": "CALLS_API",
+      "description": "Reactivate button."
+    },
+    {
+      "id": "e110",
+      "source": "fe:SuperAdminPage",
+      "target": "fe_hook:useSuperAdminOrganizations",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Fleet grid and suspension controls use the hook."
+    },
+    {
+      "id": "e111",
+      "source": "fe:SuperAdminPage",
+      "target": "fe:SuspendOrganizationDialog",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Suspend opens the reason dialog."
+    },
+    {
+      "id": "e112",
+      "source": "api:POST /auth/login",
+      "target": "be_svc:RateLimit",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Login uses the auth engineering rate limit."
+    },
+    {
+      "id": "e113",
+      "source": "api:POST /auth/register/creator",
+      "target": "be_svc:RateLimit",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Creator register uses the auth engineering rate limit."
+    },
+    {
+      "id": "e114",
+      "source": "api:POST /auth/register/brand",
+      "target": "be_svc:RateLimit",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Historical. Brand registration is no longer on the auth rate-limit counter."
+    },
+    {
+      "id": "e115",
+      "source": "api:POST /contests/:id/videos/:videoId/rate",
+      "target": "be_svc:RateLimit",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Rating POST uses the rating engineering rate limit."
+    },
+    {
+      "id": "e120",
+      "source": "fe_hook:useCreatorSubmissions",
+      "target": "api:DELETE /submissions/:id",
+      "relationshipType": "CALLS_API",
+      "description": "Creator delete dialog calls DELETE after confirmation."
+    },
+    {
+      "id": "e121",
+      "source": "api:DELETE /submissions/:id",
+      "target": "be_svc:SubmissionService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Creator soft delete is handled by SubmissionService.remove."
+    },
+    {
+      "id": "e122",
+      "source": "role:creator",
+      "target": "perm:manage_creator_friends",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Only the CREATOR role may use friend routes. ADMIN is not granted this permission."
+    },
+    {
+      "id": "e123",
+      "source": "api:GET /friends",
+      "target": "perm:manage_creator_friends",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard is creatorGuards."
+    },
+    {
+      "id": "e124",
+      "source": "api:POST /friends/requests",
+      "target": "perm:manage_creator_friends",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard is creatorGuards."
+    },
+    {
+      "id": "e125",
+      "source": "api:GET /friends",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "List is handled by FriendshipService.list."
+    },
+    {
+      "id": "e126",
+      "source": "api:GET /friends/search",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Search is handled by FriendshipService.search."
+    },
+    {
+      "id": "e127",
+      "source": "api:POST /friends/requests",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Send is handled by FriendshipService.sendRequest."
+    },
+    {
+      "id": "e128",
+      "source": "api:POST /friends/requests/:id/accept",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Accept is handled by FriendshipService.accept."
+    },
+    {
+      "id": "e129",
+      "source": "api:POST /friends/requests/:id/reject",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Reject is handled by FriendshipService.reject."
+    },
+    {
+      "id": "e130",
+      "source": "api:DELETE /friends/requests/:id",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Cancel is handled by FriendshipService.cancel."
+    },
+    {
+      "id": "e131",
+      "source": "api:DELETE /friends/:id",
+      "target": "be_svc:FriendshipService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Remove is handled by FriendshipService.remove."
+    },
+    {
+      "id": "e132",
+      "source": "be_svc:FriendshipService",
+      "target": "be_repo:FriendshipRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "Persistence goes through FriendshipRepository."
+    },
+    {
+      "id": "e133",
+      "source": "be_repo:FriendshipRepository",
+      "target": "db:Friendship",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Reads and writes the friendships table."
+    },
+    {
+      "id": "e134",
+      "source": "fe_hook:useCreatorFriends",
+      "target": "api:GET /friends",
+      "relationshipType": "CALLS_API",
+      "description": "Friends page loads the list."
+    },
+    {
+      "id": "e135",
+      "source": "fe_hook:useCreatorFriends",
+      "target": "api:POST /friends/requests",
+      "relationshipType": "CALLS_API",
+      "description": "Add friend sends a request."
+    },
+    {
+      "id": "e136",
+      "source": "fe:FriendsPanel",
+      "target": "fe_hook:useCreatorFriends",
+      "relationshipType": "DEPENDS_ON",
+      "description": "The friends panel renders search results and request status from the hook."
+    },
+    {
+      "id": "e137",
+      "source": "role:creator",
+      "target": "perm:creator_friend_chat",
+      "relationshipType": "HAS_PERMISSION",
+      "description": "Only the CREATOR role may use chat. ADMIN is not granted this permission."
+    },
+    {
+      "id": "e138",
+      "source": "perm:creator_friend_chat",
+      "target": "feat:creator_friend_chat",
+      "relationshipType": "PROVIDES_FEATURE",
+      "description": "The creator chat permission provides one-to-one friend messaging."
+    },
+    {
+      "id": "e139",
+      "source": "api:GET /chat/conversations",
+      "target": "perm:creator_friend_chat",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Route guard is creatorGuards."
+    },
+    {
+      "id": "e140",
+      "source": "api:POST /chat/conversations/:id/messages",
+      "target": "be_svc:ChatService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Send is handled by ChatService.sendMessage."
+    },
+    {
+      "id": "e141",
+      "source": "be_svc:ChatService",
+      "target": "be_repo:ChatRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "ChatService persists messages and read cursors through ChatRepository."
+    },
+    {
+      "id": "e142",
+      "source": "be_repo:ChatRepository",
+      "target": "db:ChatMessage",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Messages are stored on chat_messages."
+    },
+    {
+      "id": "e143",
+      "source": "be_repo:ChatRepository",
+      "target": "db:ChatRead",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Read cursors are stored on chat_reads."
+    },
+    {
+      "id": "e144",
+      "source": "fe:CreatorChat",
+      "target": "fe_hook:useCreatorChat",
+      "relationshipType": "DEPENDS_ON",
+      "description": "The chat screen renders the hook."
+    },
+    {
+      "id": "e145",
+      "source": "fe_hook:useCreatorChat",
+      "target": "api:GET /chat/conversations",
+      "relationshipType": "CALLS_API",
+      "description": "The inbox loads conversations."
+    },
+    {
+      "id": "e146",
+      "source": "fe_hook:useCreatorChat",
+      "target": "api:POST /chat/conversations/:id/messages",
+      "relationshipType": "CALLS_API",
+      "description": "The composer sends a message."
+    },
+    {
+      "id": "e147",
+      "source": "fe_hook:useCreatorChat",
+      "target": "api:GET /chat/stream",
+      "relationshipType": "CALLS_API",
+      "description": "The hook keeps a server-sent event stream open."
+    },
+    {
+      "id": "e148",
+      "source": "api:POST /chat/attachments/presign",
+      "target": "be_svc:ChatService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Presign is handled by ChatService.presignAttachment."
+    }
+  ]
+}

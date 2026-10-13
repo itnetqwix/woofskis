@@ -1,0 +1,238 @@
+import {
+  AuditAction,
+  ContestStatus,
+  CreatorActivityAction,
+  Prisma,
+  Role,
+  SubmissionStatus,
+} from '@prisma/client';
+import { prisma } from '../config/database.js';
+import {
+  AuditLogRecord,
+  AuditLogRepository,
+} from '../repositories/audit-log.repository.js';
+import {
+  ModerationQueueRecord,
+  SubmissionRecord,
+  SubmissionRepository,
+} from '../repositories/submission.repository.js';
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from '../utils/response.js';
+import { CreatorActivityService } from './creator-activity.service.js';
+
+/**
+ * Moderation decisions (M07-P01-T04).
+ *
+ * Documented transitions leave PENDING_REVIEW only:
+ *   PENDING_REVIEW → APPROVED | REJECTED | FLAGGED
+ *
+ * Reverse transitions, unflag, and FLAGGED → APPROVED/REJECTED are not
+ * implemented. FLAGGED escalation details are NOT SPECIFIED.
+ *
+ * BR-CONT-05: COMPLETED and ARCHIVED contests are read-only, so moderation
+ * writes are rejected. Other contest statuses are not additionally gated
+ * (that constraint is NOT SPECIFIED).
+ *
+ * BR-VID-02: reject requires a non-empty reason. Optional reasonCode is
+ * stored in audit metadata. Source chapters do not enumerate categories,
+ * so reasonCode is not a closed allowlist.
+ *
+ * ISSUE_WARNING and SUSPEND_CREATOR exist on AuditAction and are not written
+ * here. No warning or suspension API is part of M07.
+ *
+ * Flag is a service operation. M07 does not register an HTTP flag route.
+ */
+
+export interface ModerationActor {
+  id: string;
+  role: Role;
+}
+
+export interface ModerationDecision {
+  submission: SubmissionRecord;
+  audit: AuditLogRecord;
+}
+
+const MODERATOR_ROLES = new Set<Role>([Role.ADMIN]);
+
+const CLOSED_CONTEST_STATUSES = new Set<ContestStatus>([
+  ContestStatus.COMPLETED,
+  ContestStatus.ARCHIVED,
+]);
+
+type TransactionClient = Prisma.TransactionClient;
+
+type TransactionRunner = <T>(fn: (tx: TransactionClient) => Promise<T>) => Promise<T>;
+
+let runTransaction: TransactionRunner = (fn) =>
+  prisma.$transaction(fn, { maxWait: 10000, timeout: 30000 });
+
+/** Test seam. Pass null to restore prisma.$transaction. */
+export function setModerationTransactionRunner(runner: TransactionRunner | null): void {
+  runTransaction =
+    runner ?? ((fn) => prisma.$transaction(fn, { maxWait: 10000, timeout: 30000 }));
+}
+
+function assertModerator(actor: ModerationActor): void {
+  if (!MODERATOR_ROLES.has(actor.role)) {
+    throw new ForbiddenError(
+      `Forbidden: User role '${actor.role}' does not have permission to access this resource`,
+    );
+  }
+}
+
+function assertModeratorOnly(actor: ModerationActor): void {
+  assertModerator(actor);
+}
+
+function assertModeratable(submission: SubmissionRecord): void {
+  if (submission.deletedAt) {
+    throw new ConflictError('Deleted submissions cannot be moderated');
+  }
+  if (CLOSED_CONTEST_STATUSES.has(submission.contest.status)) {
+    throw new ConflictError('Closed contests are read-only historical records');
+  }
+  if (submission.status !== SubmissionStatus.PENDING_REVIEW) {
+    throw new ConflictError(
+      `Invalid submission status transition from ${submission.status}`,
+    );
+  }
+}
+
+async function decide(
+  actor: ModerationActor,
+  submissionId: string,
+  action: AuditAction,
+  nextStatus: SubmissionStatus,
+  reason: string | null,
+  reasonCode?: string,
+): Promise<ModerationDecision> {
+  const existing = await SubmissionRepository.findById(submissionId);
+  if (!existing) {
+    throw new NotFoundError('Submission not found');
+  }
+  assertModeratorOnly(actor);
+  assertModeratable(existing);
+
+  const moderatedAt = new Date();
+  const metadata: Record<string, string> = {
+    previousStatus: existing.status,
+    newStatus: nextStatus,
+  };
+  if (reasonCode) {
+    metadata.reasonCode = reasonCode;
+  }
+
+  const decision = await runTransaction(async (tx) => {
+    const submission = await SubmissionRepository.applyDecision(
+      submissionId,
+      {
+        status: nextStatus,
+        rejectionReason: nextStatus === SubmissionStatus.REJECTED ? reason : null,
+        moderatedById: actor.id,
+        moderatedAt,
+      },
+      tx,
+    );
+    const audit = await AuditLogRepository.create(
+      {
+        submissionId,
+        actorId: actor.id,
+        action,
+        reason,
+        metadata,
+      },
+      tx,
+    );
+    return { submission, audit };
+  });
+
+  const activityAction =
+    nextStatus === SubmissionStatus.APPROVED
+      ? CreatorActivityAction.SUBMISSION_APPROVED
+      : nextStatus === SubmissionStatus.REJECTED
+        ? CreatorActivityAction.SUBMISSION_REJECTED
+        : CreatorActivityAction.SUBMISSION_FLAGGED;
+
+  await CreatorActivityService.record({
+    creatorId: decision.submission.creatorId,
+    action: activityAction,
+    description:
+      nextStatus === SubmissionStatus.APPROVED
+        ? 'Submission approved'
+        : nextStatus === SubmissionStatus.REJECTED
+          ? 'Submission rejected'
+          : 'Submission flagged',
+    relatedSubmissionId: decision.submission.id,
+    relatedContestId: decision.submission.contestId,
+    performedByUserId: actor.id,
+    metadata: {
+      submissionTitle: decision.submission.title,
+      contestTitle: decision.submission.contest.title,
+    },
+  });
+
+  return decision;
+}
+
+export class ModerationService {
+  static async listQueue(actor: ModerationActor): Promise<ModerationQueueRecord[]> {
+    assertModeratorOnly(actor);
+    return SubmissionRepository.listPendingReview();
+  }
+
+  static async listAuditLogs(actor: ModerationActor): Promise<AuditLogRecord[]> {
+    assertModeratorOnly(actor);
+    return AuditLogRepository.list();
+  }
+
+  static async approve(actor: ModerationActor, submissionId: string, note?: string) {
+    return decide(
+      actor,
+      submissionId,
+      AuditAction.APPROVE,
+      SubmissionStatus.APPROVED,
+      note ?? null,
+    );
+  }
+
+  static async reject(
+    actor: ModerationActor,
+    submissionId: string,
+    reason: string,
+    reasonCode?: string,
+  ) {
+    const trimmed = reason.trim();
+    if (!trimmed) {
+      throw new ValidationError('Rejection reason is required');
+    }
+    return decide(
+      actor,
+      submissionId,
+      AuditAction.REJECT,
+      SubmissionStatus.REJECTED,
+      trimmed,
+      reasonCode?.trim() || undefined,
+    );
+  }
+
+  /**
+   * Sets FLAGGED and writes AuditAction.FLAG.
+   * No HTTP route is registered: the M07 API list does not include flag.
+   * Escalation after FLAGGED is NOT SPECIFIED.
+   */
+  static async flag(actor: ModerationActor, submissionId: string, reason?: string) {
+    const trimmed = reason?.trim();
+    return decide(
+      actor,
+      submissionId,
+      AuditAction.FLAG,
+      SubmissionStatus.FLAGGED,
+      trimmed ? trimmed : null,
+    );
+  }
+}

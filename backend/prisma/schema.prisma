@@ -1,0 +1,364 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CREATOR
+}
+
+// Creator management access. ACTIVE is the default for every user.
+// Only CREATOR rows are moved to BLOCKED. ADMIN is not blocked by this flow.
+enum AccountStatus {
+  ACTIVE
+  BLOCKED
+}
+
+// Generic creator timeline. Moderation AuditLog stays a decision record.
+// This log is the admin view of what a creator did and what an admin did to them.
+enum CreatorActivityAction {
+  REGISTERED
+  LOGGED_IN
+  SUBMISSION_UPLOADED
+  SUBMISSION_APPROVED
+  SUBMISSION_REJECTED
+  SUBMISSION_FLAGGED
+  SUBMISSION_DELETED
+  BLOCKED
+  UNBLOCKED
+  WARNED
+}
+
+model User {
+  id                   String               @id @default(uuid())
+  email                String               @unique
+  passwordHash         String
+  name                 String
+  role                 Role                 @default(CREATOR)
+  accountStatus        AccountStatus        @default(ACTIVE)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  submissions          Submission[]         @relation("CreatedByUser")
+  moderatedSubmissions Submission[]         @relation("ModeratedByUser")
+  deletedSubmissions   Submission[]         @relation("DeletedByUser")
+  auditLogs            AuditLog[]
+  ratings              Rating[]
+  comments             Comment[]
+  warningsReceived     CreatorWarning[]     @relation("WarningSubject")
+  warningsIssued       CreatorWarning[]     @relation("WarningIssuer")
+  activityAsSubject    CreatorActivityLog[] @relation("ActivitySubject")
+  activityPerformed    CreatorActivityLog[] @relation("ActivityActor")
+  friendshipsAsLow     Friendship[]         @relation("FriendshipLow")
+  friendshipsAsHigh    Friendship[]         @relation("FriendshipHigh")
+  chatMessagesSent     ChatMessage[]        @relation("ChatMessageSender")
+  chatReads            ChatRead[]           @relation("ChatReadUser")
+
+  // Private storage key for the creator profile image.
+  // The API returns a short-lived presigned avatarUrl. That URL is not stored.
+  // handle remains PLANNED and is not a column (M02-P01-T05 / T06).
+  avatarObjectKey      String?
+
+  // handle is a domain-model PLANNED field.
+  // Persistence (nullability, uniqueness, @-prefix format) is NOT SPECIFIED.
+
+  @@index([role, accountStatus])
+  @@index([role, createdAt])
+  @@map("users")
+}
+
+// M05-P01-T01. Master-plan transitions only:
+// DRAFT → SCHEDULED → ACTIVE → JUDGING → COMPLETED → ARCHIVED.
+// CANCELLED is drawn in the pre-M05 domain diagram and listed in the old
+// planned snippet, but master plan says CANCELLED triggers are NOT SPECIFIED.
+// Suspension is also NOT SPECIFIED as a status. Neither value is persisted.
+enum ContestStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  JUDGING
+  COMPLETED
+  ARCHIVED
+}
+
+// Slug is unique for this deployment. There is no organization scope.
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  contests    Contest[]
+  createdAt   DateTime  @default(now())
+
+  @@map("categories")
+}
+
+// M05-P01-T03 / T04. Submission relation added in M06-P01.
+// categoryId is optional. autoAdvanceDelayMs default is 1800.
+// Evaluation-criteria columns are NOT SPECIFIED and are not added.
+// Prize distribution breakdown is NOT SPECIFIED; only prizeSummary is stored.
+model Contest {
+  id                 String        @id @default(uuid())
+  categoryId         String?
+  category           Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  title              String
+  description        String        @db.Text
+  // Optional creator-facing copy and visuals chosen in the admin form.
+  // Prize breakdown beyond prizeSummary remains NOT SPECIFIED.
+  tagline            String?
+  bannerUrl          String?
+  // Stable private-bucket key. Display URLs are signed at read time.
+  bannerObjectKey    String?
+  thumbnailUrl       String?
+  status             ContestStatus @default(DRAFT)
+  // IANA zone used to interpret and display the schedule. Instants stay UTC.
+  timezone           String        @default("Asia/Kolkata")
+  startDate          DateTime
+  endDate            DateTime
+  // Null on contests created before voting closure was stored separately.
+  votingClosesAt     DateTime?
+  prizeSummary       String?
+  rules              Json?
+  autoAdvanceDelayMs Int           @default(1800)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  submissions        Submission[]
+
+  @@index([status])
+  @@map("contests")
+}
+
+// M06-P01-T01. Initial ingest state is PENDING_REVIEW (BR-VID-01).
+// APPROVED / REJECTED / FLAGGED are written by ModerationService (M07).
+enum SubmissionStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+// M06-P01-T02 / T03 plus M07 moderation decision columns.
+// objectKey is unique so complete can retry the same reserved key.
+// thumbnailUrl is optional: thumbnail generation is NOT SPECIFIED.
+// rejectionReason, moderatedById, and moderatedAt are written only by moderation.
+// Community score and totalVotes are updated by JudgingService (M08).
+model Submission {
+  id              String           @id @default(uuid())
+  contestId       String
+  contest         Contest          @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  creatorId       String
+  creator         User             @relation("CreatedByUser", fields: [creatorId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?          @db.Text
+  videoUrl        String
+  objectKey       String           @unique
+  thumbnailUrl    String?
+  durationSeconds Int
+  status          SubmissionStatus @default(PENDING_REVIEW)
+  rejectionReason String?          @db.Text
+  moderatedById   String?
+  moderatedBy     User?            @relation("ModeratedByUser", fields: [moderatedById], references: [id], onDelete: SetNull)
+  moderatedAt     DateTime?
+  tags            String[]
+  communityScore  Float            @default(0)
+  totalVotes      Int              @default(0)
+  // Creator soft delete. Null means the row is still active.
+  // The row, its ratings, and the S3 object are kept.
+  deletedAt       DateTime?
+  deletedById     String?
+  deletedBy       User?            @relation("DeletedByUser", fields: [deletedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  ratings         Rating[]
+  auditLogs       AuditLog[]
+  comments        Comment[]
+
+  @@index([contestId, status])
+  @@index([creatorId])
+  @@map("submissions")
+}
+
+// M07-P01-T01. Documented actions from the planned data model.
+// ISSUE_WARNING and SUSPEND_CREATOR are stored enum values only.
+// M07 does not expose warning or suspension endpoints (those workflows
+// are not specified as moderation routes).
+enum AuditAction {
+  APPROVE
+  REJECT
+  FLAG
+  ISSUE_WARNING
+  SUSPEND_CREATOR
+}
+
+// M07-P01-T01. Append-only. Retention / purge is NOT SPECIFIED.
+// metadata holds previousStatus and newStatus for the decision.
+// reasonCode, when the client sends one, is stored in metadata and is
+// not a closed taxonomy (source chapters do not enumerate categories).
+model AuditLog {
+  id           String      @id @default(uuid())
+  submissionId String?
+  submission   Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  actorId      String
+  actor        User        @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  action       AuditAction
+  reason       String?     @db.Text
+  metadata     Json?
+  createdAt    DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([submissionId])
+  @@map("audit_logs")
+}
+
+// M08-P01-T01 / T02.
+// userId is nullable: visitors may rate without creator registration.
+// voterFingerprint is optional client metadata and is not the vote key.
+// voterIpHash is an HMAC of the normalized client IP. It is not the raw IP.
+// Uniqueness is (submissionId, voterIpHash): one guest identifier per video.
+// PostgreSQL unique indexes allow multiple NULLs, so older rows stay valid.
+// New ratings are integers 1–10, enforced in Zod and JudgingService.
+// There is no database CHECK, so historical 1–5 rows stay valid. Do not migrate them.
+model Rating {
+  id               String     @id @default(uuid())
+  submissionId     String
+  submission       Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  userId           String?
+  user             User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  voterFingerprint String?
+  voterIpHash      String?
+  rating           Int
+  createdAt        DateTime   @default(now())
+
+  @@unique([submissionId, voterIpHash])
+  @@index([submissionId])
+  @@index([voterFingerprint, submissionId])
+  @@map("ratings")
+}
+
+// Comments are stored on the submission, not the contest.
+// Guest comment authorship is NOT SPECIFIED in the product source.
+// authorId is required. Ordering and maximum length are NOT SPECIFIED;
+// the API uses newest-first and an engineering body cap.
+// onDelete Cascade removes comments with their submission or author.
+// It does not remove the contest or other creators' submissions.
+model Comment {
+  id           String     @id @default(uuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body         String     @db.Text
+  createdAt    DateTime   @default(now())
+
+  @@index([submissionId, createdAt])
+  @@map("comments")
+}
+
+// Administrative warning. No automatic block, threshold, or creator notification.
+// A product rule for those behaviors is NOT SPECIFIED.
+model CreatorWarning {
+  id         String   @id @default(uuid())
+  creatorId  String
+  creator    User     @relation("WarningSubject", fields: [creatorId], references: [id], onDelete: Cascade)
+  issuedById String
+  issuedBy   User     @relation("WarningIssuer", fields: [issuedById], references: [id], onDelete: Restrict)
+  reason     String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([creatorId, createdAt])
+  @@map("creator_warnings")
+}
+
+// Append-only creator timeline. relatedSubmissionId and relatedContestId are
+// plain ids, not foreign keys, so a deleted submission still leaves the event.
+// metadata must not contain passwords, JWTs, or storage credentials.
+model CreatorActivityLog {
+  id                  String                @id @default(uuid())
+  creatorId           String
+  creator             User                  @relation("ActivitySubject", fields: [creatorId], references: [id], onDelete: Cascade)
+  action              CreatorActivityAction
+  description         String?               @db.Text
+  metadata            Json?
+  relatedSubmissionId String?
+  relatedContestId    String?
+  performedByUserId   String?
+  performedBy         User?                 @relation("ActivityActor", fields: [performedByUserId], references: [id], onDelete: SetNull)
+  createdAt           DateTime              @default(now())
+
+  @@index([creatorId, createdAt])
+  @@index([relatedContestId])
+  @@index([relatedSubmissionId])
+  @@map("creator_activity_logs")
+}
+
+// Creator friends. One row per unordered pair of users.
+// userLowId is the smaller id so the unique pair cannot be stored twice.
+// requesterId is always one of those two ids (enforced in the migration CHECK).
+// It has no third foreign key, so deleting a user cascades once through low or high.
+// Contest, submission, rating, and leaderboard rows are not related.
+// Chat rows reference this friendship and are deleted with it.
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+model Friendship {
+  id          String           @id @default(uuid())
+  userLowId   String
+  userHighId  String
+  requesterId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  userLow     User             @relation("FriendshipLow", fields: [userLowId], references: [id], onDelete: Cascade)
+  userHigh    User             @relation("FriendshipHigh", fields: [userHighId], references: [id], onDelete: Cascade)
+  chatMessages ChatMessage[]
+  chatReads    ChatRead[]
+
+  @@unique([userLowId, userHighId])
+  @@index([userLowId, status])
+  @@index([userHighId, status])
+  @@map("friendships")
+}
+
+// One-to-one creator chat. Only an accepted friendship may have messages.
+// The migration trigger enforces that the sender is one of the two friends.
+// A separate product limit for body length is NOT SPECIFIED. The column check
+// uses 2000 characters, the same engineering default as ChatService.
+enum ChatAttachmentKind {
+  IMAGE
+  VIDEO
+}
+
+model ChatMessage {
+  id              String              @id @default(uuid())
+  friendshipId    String
+  senderId        String
+  body            String?             @db.Text
+  attachmentKey   String?             @unique
+  attachmentKind  ChatAttachmentKind?
+  attachmentMime  String?
+  attachmentBytes Int?
+  createdAt       DateTime            @default(now())
+  friendship      Friendship          @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
+  sender          User                @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([friendshipId, createdAt])
+  @@map("chat_messages")
+}
+
+// lastReadAt is the newest moment this creator has seen the conversation.
+model ChatRead {
+  friendshipId String
+  userId       String
+  lastReadAt   DateTime   @default(now())
+  friendship   Friendship @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
+  user         User       @relation("ChatReadUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([friendshipId, userId])
+  @@map("chat_reads")
+}

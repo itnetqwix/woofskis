@@ -1,0 +1,81 @@
+erDiagram
+  ORGANIZATION ||--o{ USER : "has members"
+  ORGANIZATION ||--o{ CONTEST : "manages"
+  ORGANIZATION ||--o{ CATEGORY : "defines"
+  
+  CATEGORY ||--o{ CONTEST : "categorizes"
+  
+  USER ||--o{ SUBMISSION : "uploads"
+  USER ||--o{ RATING : "casts"
+  USER ||--o{ AUDIT_LOG : "performs action"
+  
+  CONTEST ||--o{ SUBMISSION : "contains entries"
+  
+  SUBMISSION ||--o{ RATING : "receives ratings"
+  SUBMISSION ||--o{ AUDIT_LOG : "has moderation logs"
+
+  ORGANIZATION {
+    string id PK
+    string name
+    string slug UK
+    json branding
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  USER {
+    string id PK
+    string email UK
+    string passwordHash
+    string name
+    enum role
+    string organizationId FK
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  CONTEST {
+    string id PK
+    string organizationId FK
+    string categoryId FK
+    string title
+    text description
+    enum status
+    datetime startDate
+    datetime endDate
+    string prizeSummary
+    json rules
+    int autoAdvanceDelayMs
+  }
+
+  SUBMISSION {
+    string id PK
+    string contestId FK
+    string creatorId FK
+    string title
+    string videoUrl
+    string thumbnailUrl
+    int durationSeconds
+    enum status
+    string rejectionReason
+    float communityScore
+    int totalVotes
+  }
+
+  RATING {
+    string id PK
+    string submissionId FK
+    string userId FK
+    string voterFingerprint
+    int rating
+    datetime createdAt
+  }
+
+  AUDIT_LOG {
+    string id PK
+    string submissionId FK
+    string actorId FK
+    enum action
+    string reason
+    datetime createdAt
+  }
