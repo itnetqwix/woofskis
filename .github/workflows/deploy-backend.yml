@@ -22,6 +22,7 @@ jobs:
   deploy:
     name: Build and Deploy API
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -42,18 +43,45 @@ jobs:
         working-directory: backend
         run: npm run build
 
-      - name: Configure SSH
+      - name: Configure and Validate SSH
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
+          set -eu
+
+          echo "Checking required secrets..."
+          test -n "$EC2_HOST" || { echo "ERROR: EC2_HOST is empty"; exit 1; }
+          test -n "$EC2_USER" || { echo "ERROR: EC2_USER is empty"; exit 1; }
+          test -n "$EC2_SSH_KEY" || { echo "ERROR: EC2_SSH_KEY is empty"; exit 1; }
+
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
+
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/woofskis_ec2
           chmod 600 ~/.ssh/woofskis_ec2
-          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+          echo "Validating private key..."
+          ssh-keygen -y -f ~/.ssh/woofskis_ec2 > /dev/null
+
+          echo "Checking SSH host connectivity..."
+          ssh-keyscan -T 10 -H "$EC2_HOST" >> ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+
+          echo "SSH configuration completed."
+
+      - name: Test SSH Authentication
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh -i ~/.ssh/woofskis_ec2 \
+            -o BatchMode=yes \
+            -o ConnectTimeout=15 \
+            "$EC2_USER@$EC2_HOST" \
+            'echo "SSH authentication successful"'
 
       - name: Deploy to EC2
         env:
@@ -61,33 +89,42 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           ssh -i ~/.ssh/woofskis_ec2 \
+            -o BatchMode=yes \
             "$EC2_USER@$EC2_HOST" \
             'bash -se' <<'REMOTE'
-              set -e
+              set -eu
+
               cd /tmp/woofskis-repo
               git pull --ff-only origin main
+
               sudo cp -a backend/. /var/www/woofskis/app/
               sudo chown -R ubuntu:ubuntu /var/www/woofskis/app
+
               cd /var/www/woofskis/app
               npm ci
               npm run build
+
               pm2 restart woofskis-api
               pm2 save
+
               for i in $(seq 1 12); do
-                if curl --fail --silent http://127.0.0.1:5000/api/v1/health; then
+                if curl --fail --silent \
+                  http://127.0.0.1:5000/api/v1/health; then
                   echo "Health check passed"
                   exit 0
                 fi
                 sleep 5
               done
-              echo "Health check failed"
+
+              echo "ERROR: Backend health check failed"
+              pm2 logs woofskis-api --lines 50 --nostream
               exit 1
           REMOTE
 
       - name: Verify public HTTPS API
         run: |
           curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --retry-connrefused \
             https://api.woofskis.com/api/v1/health
-
-
-# dl
