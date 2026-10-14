@@ -82,6 +82,7 @@ jobs:
             --comment "Deploy Woofskis backend from GitHub Actions" \
             --parameters 'commands=[
               "set -eu",
+              "export HOME=/root",
               "git config --global --add safe.directory /tmp/woofskis-repo",
               "cd /tmp/woofskis-repo",
               "git pull --ff-only origin main",
