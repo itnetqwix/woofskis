@@ -1,8 +1,8 @@
 # API Map & Endpoint Contract Specification
 
 > **Canonical Path**: `/docs/knowledge/api-map.md`  
-> **Backend Repository**: [cos-backend](file:///D:/woofskis/cos-backend/)  
-> **Base URL**: `http://localhost:5000/api/v1` (`PORT` defaults to `5000` in `cos-backend/src/config/env.ts`; see M01-P01-T02). Frontend `.env.example` `NEXT_PUBLIC_API_BASE_URL` is aligned to this URL (M01-P02-T01). Local FE app: `http://localhost:3000` (M01-P02-T05; `content-operating-system/README.md`).  
+> **Backend Repository**: [backend](file:///D:/woofskis/backend/)  
+> **Base URL**: `http://localhost:5000/api/v1` (`PORT` defaults to `5000` in `backend/src/config/env.ts`; see M01-P01-T02). Frontend `.env.example` `NEXT_PUBLIC_API_BASE_URL` is aligned to this URL (M01-P02-T01). Local FE app: `http://localhost:3000` (M01-P02-T05; `frontend/README.md`).  
 > **OpenAPI Documentation**: `http://localhost:5000/docs` (spec JSON: `http://localhost:5000/docs/json`)  
 > **Last Updated**: 2026-09-22
 
@@ -10,7 +10,7 @@
 
 ## Standard Response Envelope
 
-Frozen by **M01-P01-T01** in `cos-backend/src/utils/response.ts` (`sendSuccess` / `sendError`).
+Frozen by **M01-P01-T01** in `backend/src/utils/response.ts` (`sendSuccess` / `sendError`).
 
 Every JSON API body uses exactly four top-level fields:
 
@@ -34,17 +34,17 @@ HTTP status is **not** inside the body. `sendSuccess` defaults to `200`; `sendEr
 
 **Not in this envelope:** top-level `timestamp` (NOT SPECIFIED at envelope level; health may put `timestamp` inside `data`); nested `{ error: { code, message } }`; top-level `meta` (pagination is `data.pagination`). Endpoint examples below may omit `errors: null` for brevity; the live helpers always include the field.
 
-Frontend `ApiResponse` is aligned **M01-P02-T03** in `content-operating-system/src/types/api.ts` and `src/services/api-client.ts` (`http.*` returns `Promise<ApiResponse<T>>`). Prototype `timestamp` / nested `error` / top-level `meta` were removed from that type. Detailed `errors` item schema remains **NOT SPECIFIED**.
+Frontend `ApiResponse` is aligned **M01-P02-T03** in `frontend/src/types/api.ts` and `src/services/api-client.ts` (`http.*` returns `Promise<ApiResponse<T>>`). Prototype `timestamp` / nested `error` / top-level `meta` were removed from that type. Detailed `errors` item schema remains **NOT SPECIFIED**.
 
 ---
 
 ## 1. Implemented Endpoints
 
-The following endpoints are fully implemented and functional in `cos-backend/src/routes/index.ts`:
+The following endpoints are fully implemented and functional in `backend/src/routes/index.ts`:
 
 ### 1.1 System & Health
 
-Frozen by **M01-P01-T04** in `cos-backend/src/routes/index.ts` (prefix `SYSTEM_CONSTANTS.API_PREFIX` = `/api/v1`). Both routes are public (no `authenticate`). Both use `sendSuccess` (M01-P01-T01 envelope, including `errors: null`).
+Frozen by **M01-P01-T04** in `backend/src/routes/index.ts` (prefix `SYSTEM_CONSTANTS.API_PREFIX` = `/api/v1`). Both routes are public (no `authenticate`). Both use `sendSuccess` (M01-P01-T01 envelope, including `errors: null`).
 
 Health does **not** probe Prisma / `DATABASE_URL`. Database readiness on this endpoint is **NOT SPECIFIED** in `/docs/source` or `/docs/knowledge`; the handler returns a static `healthy` payload plus a live ISO timestamp.
 

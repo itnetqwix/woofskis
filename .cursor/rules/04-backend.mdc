@@ -1,10 +1,10 @@
 ---
 description: Backend development rules, Fastify 5 conventions, Prisma ORM patterns, and REST API standards
-globs: cos-backend/**/*.{ts,js,prisma,json}
+globs: backend/**/*.{ts,js,prisma,json}
 alwaysApply: false
 ---
 
-# 04 - Backend Development Rules (cos-backend)
+# 04 - Backend Development Rules (backend)
 
 ## 1. Backend Architecture Reference
 Consult [docs/knowledge/backend-map.md](file:///D:/woofskis/docs/knowledge/backend-map.md), [docs/knowledge/api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md), and [docs/knowledge/data-model.md](file:///D:/woofskis/docs/knowledge/data-model.md).

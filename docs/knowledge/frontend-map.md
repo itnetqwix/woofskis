@@ -1,7 +1,7 @@
 # Frontend Architecture & Component Map
 
 > **Canonical Path**: `/docs/knowledge/frontend-map.md`  
-> **Repository**: [content-operating-system](file:///D:/woofskis/content-operating-system/)  
+> **Repository**: [frontend](file:///D:/woofskis/frontend/)  
 > **Framework**: Next.js 14.2 (App Router) + React 18 + TypeScript 5.6 + TailwindCSS 3.4 + Redux Toolkit 2.2 + TanStack Query 5.59  
 > **Last Updated**: 2026-09-22
 
@@ -116,7 +116,7 @@ Zod schema in `src/config/env.ts` lists the keys below. **This module is not imp
 | `NEXT_PUBLIC_APP_NAME` | Yes | Unused by axios. `site.ts` hardcodes name. | `Contest Operating System` | Listed in `.env.example`. |
 | `NEXT_PUBLIC_APP_DESCRIPTION` | Yes | Unused by axios. `site.ts` hardcodes description. | existing description string | Listed in `.env.example`. |
 | `NEXT_PUBLIC_APP_URL` | Yes | `site.ts` uses this env var, else `http://localhost:3000` | `http://localhost:3000` | Matches `next dev` / Docker published port **3000**. |
-| `NEXT_PUBLIC_API_BASE_URL` | Yes | `src/lib/axios.ts` `baseURL` (no fallback) | **`http://localhost:5000/api/v1`** (aligned M01-P02-T01; previously template/default was `http://localhost:8000/api/v1`) | Matches frozen backend `PORT` 5000 + `/api/v1`. If unset at runtime, axios `baseURL` is `undefined`. Production build sets `NEXT_PUBLIC_API_BASE_URL=https://api.woofskis.com/api/v1` (`content-operating-system/Dockerfile.prod`). Local `.env.example` remains `http://localhost:5000/api/v1`. |
+| `NEXT_PUBLIC_API_BASE_URL` | Yes | `src/lib/axios.ts` `baseURL` (no fallback) | **`http://localhost:5000/api/v1`** (aligned M01-P02-T01; previously template/default was `http://localhost:8000/api/v1`) | Matches frozen backend `PORT` 5000 + `/api/v1`. If unset at runtime, axios `baseURL` is `undefined`. Production build sets `NEXT_PUBLIC_API_BASE_URL=https://api.woofskis.com/api/v1` (`frontend/Dockerfile.prod`). Local `.env.example` remains `http://localhost:5000/api/v1`. |
 | `NEXT_PUBLIC_API_TIMEOUT` | Yes | `Number(process.env.NEXT_PUBLIC_API_TIMEOUT)` | `15000` | If unset, `Number(undefined)` is `NaN`. Timeout policy: **NOT SPECIFIED** beyond this existing key. |
 | `NEXT_PUBLIC_AUTH_COOKIE_NAME` | Yes | **Not read** by axios | `cos_auth_token` | Axios request interceptor (M01-P02-T02) reads localStorage `STORAGE_KEYS.AUTH_TOKEN` (`cos_auth_token`), not this env key. Cookie vs localStorage: **NOT SPECIFIED**. |
 | `NEXT_PUBLIC_REFRESH_COOKIE_NAME` | Yes | **Not read** by axios | `cos_refresh_token` | Refresh-token HTTP transport: **NOT SPECIFIED**. |
@@ -124,7 +124,7 @@ Zod schema in `src/config/env.ts` lists the keys below. **This module is not imp
 
 `.env.example` (M01-P02-T01) lists placeholders for those keys only. Copy to `.env.local` (gitignored via `.env*.local`). A non-local `.env` is **not** ignored by the current frontend `.gitignore`. Docker Compose does not pass `NEXT_PUBLIC_API_*`. Do not commit real secrets; do not modify gitignored `.env.local`.
 
-Local FE→BE ports (**3000** / **5000**) are documented briefly in `content-operating-system/README.md` (M01-P02-T05).
+Local FE→BE ports (**3000** / **5000**) are documented briefly in `frontend/README.md` (M01-P02-T05).
 
 ### 3.2.2 Axios Bearer request interceptor (`src/lib/axios.ts`) — frozen M01-P02-T02
 
@@ -146,7 +146,7 @@ Local FE→BE ports (**3000** / **5000**) are documented briefly in `content-ope
 
 ### 3.2.3 Frontend `ApiResponse` envelope (`src/types/api.ts` + `src/services/api-client.ts`) — frozen M01-P02-T03
 
-Aligned with M01-P01-T01 `cos-backend/src/utils/response.ts`. Canonical type lives in `src/types/api.ts`; `api-client.ts` re-exports it and types `http.*` return values as `Promise<ApiResponse<T>>`.
+Aligned with M01-P01-T01 `backend/src/utils/response.ts`. Canonical type lives in `src/types/api.ts`; `api-client.ts` re-exports it and types `http.*` return values as `Promise<ApiResponse<T>>`.
 
 | Field | Success | Error |
 |---|---|---|
@@ -180,7 +180,7 @@ Aligned with M01-P01-T01 `cos-backend/src/utils/response.ts`. Canonical type liv
 
 **NOT SPECIFIED:** cookie vs localStorage; refresh-token HTTP; whether to emit only when a token was present. Interceptor still does not clear `AUTH_USER` (frozen). Session hook teardown on the event is M02-P02-T05. RoleGuard dashboard redirects are M03-P02-T03, not this interceptor.
 
-### 3.2.5 Local FE → BE ports (`content-operating-system/README.md`) — documented M01-P02-T05
+### 3.2.5 Local FE → BE ports (`frontend/README.md`) — documented M01-P02-T05
 
 Local development uses two processes. The frontend README records this pairing; this section matches the inspected code (no invented hosts or proxies).
 

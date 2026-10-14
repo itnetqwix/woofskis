@@ -166,6 +166,7 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
                   aria-label="Super Admin Cross-Tenant Switcher"
                 >
                   <div className="flex shrink-0 items-center justify-center p-0.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
                       alt={activeBrand?.name || 'Woofskis'}
@@ -238,6 +239,7 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
             >
               {/* Clean Native Official Logo Asset - Prominent Woofskis Branding */}
               <div className="flex shrink-0 items-center justify-center p-0.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
                   alt="Woofskis Logo"

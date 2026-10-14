@@ -46,7 +46,7 @@ The specialized dual-pane administrative interface featuring synchronized video 
 The visual UI representation displaying the top 3 ranked contest entries (Gold 1st, Silver 2nd, Bronze 3rd) elevated above the tabular rankings *(Source: `features/leaderboard/components/leaderboard-podium.tsx`)*.
 
 ### Role-Based Access Control (RBAC)
-The permission framework enforcing endpoint and UI route access across four standardized roles: `SUPER_ADMIN`, `BRAND_ADMIN`, `CREATOR`, and `VIEWER` *(Source: `cos-backend/src/middleware/auth.middleware.ts`)*.
+The permission framework enforcing endpoint and UI route access across four standardized roles: `SUPER_ADMIN`, `BRAND_ADMIN`, `CREATOR`, and `VIEWER` *(Source: `backend/src/middleware/auth.middleware.ts`)*.
 
 ### Moderation Audit Log
 An append-only record tracking all administrative decisions (approvals, rejections, warnings, suspensions) with actor IDs, timestamps, and reason metadata *(Source: `features/admin/components/moderation-audit-log-modal.tsx`)*.

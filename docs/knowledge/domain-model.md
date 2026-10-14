@@ -2,7 +2,7 @@
 
 > **Canonical Path**: `/docs/knowledge/domain-model.md`  
 > **Source Documents**: [Ch 9 Business Requirements](file:///D:/woofskis/docs/source/9%20Business%20Requirements%20394ca8c5bdf780f59cb7c048b703b9f2.md), [Ch 10 User Journey & Business Process](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 11 Key Features & Capabilities](file:///D:/woofskis/docs/source/11%20Key%20Features%20&%20Capabilities%20394ca8c5bdf78082b980efceda5d1744.md), [Ch 12 Business Rules](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md)  
-> **Code Repositories**: [content-operating-system/src/types/](file:///D:/woofskis/content-operating-system/src/types/), [cos-backend/prisma/schema.prisma](file:///D:/woofskis/cos-backend/prisma/schema.prisma)  
+> **Code Repositories**: [frontend/src/types/](file:///D:/woofskis/frontend/src/types/), [backend/prisma/schema.prisma](file:///D:/woofskis/backend/prisma/schema.prisma)  
 > **Last Updated**: 2026-09-22
 
 ---
@@ -36,8 +36,8 @@
 
 ### 2.1 User
 Represents an authenticated participant, creator, administrator, or brand operator.
-- **Backend Model**: `cos-backend/prisma/schema.prisma:model User` (`IMPLEMENTED`)
-- **Frontend Type**: `content-operating-system/src/types/user.ts` (`IMPLEMENTED`)
+- **Backend Model**: `backend/prisma/schema.prisma:model User` (`IMPLEMENTED`)
+- **Frontend Type**: `frontend/src/types/user.ts` (`IMPLEMENTED`)
 - **Attributes**:
   - `id`: UUID string (Primary Key)
   - `email`: String (Unique, validated format)
@@ -52,7 +52,7 @@ Represents an authenticated participant, creator, administrator, or brand operat
 
 ### 2.1.1 Friendship
 One relationship between two creators. Not specified in the source chapters. Implemented for the creator-friends feature.
-- **Backend Model**: `cos-backend/prisma/schema.prisma:model Friendship`
+- **Backend Model**: `backend/prisma/schema.prisma:model Friendship`
 - **Attributes**:
   - `userLowId` / `userHighId`: the two user ids, stored with the smaller id first. Unique together.
   - `requesterId`: the creator who sent the current pending request. Must be one of the two users.
@@ -70,8 +70,8 @@ One-to-one messages between two accepted friends. Not specified in the source ch
 
 ### 2.2 Organization (Tenant / Brand)
 Represents an isolated brand deployment or organizational tenant within the Contest Operating System.
-- **Backend Model**: `cos-backend/prisma/schema.prisma:model Organization` (`IMPLEMENTED`)
-- **Frontend Type**: `content-operating-system/src/types/tenant.ts` (`IMPLEMENTED`)
+- **Backend Model**: `backend/prisma/schema.prisma:model Organization` (`IMPLEMENTED`)
+- **Frontend Type**: `frontend/src/types/tenant.ts` (`IMPLEMENTED`)
 - **Attributes**:
   - `id`: UUID string (Primary Key)
   - `name`: String (e.g., `"Woofskis Pets"`)
@@ -91,8 +91,8 @@ Represents an isolated brand deployment or organizational tenant within the Cont
 
 ### 2.3 Contest
 Represents a time-bound, category-scoped competition instance.
-- **Backend Model**: `cos-backend/prisma/schema.prisma:model Contest` (`IMPLEMENTED`, M05)
-- **Frontend Type**: `content-operating-system/src/types/contest.ts` plus admin `ContestConfigItem` in `src/types/tenant.ts`
+- **Backend Model**: `backend/prisma/schema.prisma:model Contest` (`IMPLEMENTED`, M05)
+- **Frontend Type**: `frontend/src/types/contest.ts` plus admin `ContestConfigItem` in `src/types/tenant.ts`
 - **Attributes**:
   - `id`: UUID / String (Primary Key, e.g., `"contest-woofskis-s1"`)
   - `tenantId` / `organizationId`: UUID (References `Organization.id`)
@@ -110,8 +110,8 @@ Represents a time-bound, category-scoped competition instance.
 
 ### 2.4 Submission / Video
 Represents an original video uploaded by a Creator into an active Contest.
-- **Backend Model**: `IMPLEMENTED` (`cos-backend/prisma/schema.prisma` `model Submission`, M06 + M07). `objectKey` is stored for S3 identity. Thumbnail generation is **NOT SPECIFIED** (`thumbnailUrl` nullable). `rejectionReason`, `moderatedById`, and `moderatedAt` are written by moderation.
-- **Frontend Type**: `content-operating-system/src/types/creator.ts:CreatorSubmission` (`IMPLEMENTED in UI`)
+- **Backend Model**: `IMPLEMENTED` (`backend/prisma/schema.prisma` `model Submission`, M06 + M07). `objectKey` is stored for S3 identity. Thumbnail generation is **NOT SPECIFIED** (`thumbnailUrl` nullable). `rejectionReason`, `moderatedById`, and `moderatedAt` are written by moderation.
+- **Frontend Type**: `frontend/src/types/creator.ts:CreatorSubmission` (`IMPLEMENTED in UI`)
 - **Attributes**:
   - `id`: UUID / String (Primary Key, e.g., `"sub-101"`)
   - `contestId`: UUID (References `Contest.id`)
@@ -137,7 +137,7 @@ Represents an original video uploaded by a Creator into an active Contest.
 ### 2.5 Rating / Vote
 Represents a single score cast by a viewer evaluating a candidate video in the judging queue.
 - **Backend Model**: `IMPLEMENTED` (`model Rating`, M08). Indexes on `submissionId` and `(voterFingerprint, submissionId)` are not unique.
-- **Frontend Type**: `content-operating-system/src/types/contest.ts:RatingSubmission` (`IMPLEMENTED in UI`)
+- **Frontend Type**: `frontend/src/types/contest.ts:RatingSubmission` (`IMPLEMENTED in UI`)
 - **Attributes**:
   - `id`: UUID string (Primary Key)
   - `submissionId` / `videoId`: UUID (References `Submission.id`)
@@ -149,7 +149,7 @@ Represents a single score cast by a viewer evaluating a candidate video in the j
 ### 2.6 Leaderboard Entry
 Represents a ranked submission in a contest's dynamic leaderboard.
 - **Backend Model**: Derived dynamically from `Submission` by `LeaderboardService` (`IMPLEMENTED`, M09). No separate table is required for MVP.
-- **Frontend Type**: `content-operating-system/src/types/leaderboard.ts:LeaderboardEntry` (`IMPLEMENTED in UI`)
+- **Frontend Type**: `frontend/src/types/leaderboard.ts:LeaderboardEntry` (`IMPLEMENTED in UI`)
 - **Attributes**:
   - `rank`: Integer (1-indexed rank)
   - `submissionId`: UUID
@@ -169,7 +169,7 @@ Represents a ranked submission in a contest's dynamic leaderboard.
 ### 2.7 Moderation Audit Log
 Represents an immutable record of administrative actions taken on contest submissions.
 - **Backend Model**: `IMPLEMENTED` (`model AuditLog`, M07). Stored actor field is `actorId`. `createdAt` is the timestamp. `metadata` may include `previousStatus`, `newStatus`, and an optional `reasonCode`. Retention is **NOT SPECIFIED**. M07 writes `APPROVE`, `REJECT`, and `FLAG` only.
-- **Frontend Type**: `content-operating-system/src/types/admin.ts:ModerationAuditLogEntry` (`IMPLEMENTED in UI`)
+- **Frontend Type**: `frontend/src/types/admin.ts:ModerationAuditLogEntry` (`IMPLEMENTED in UI`)
 - **Attributes**:
   - `id`: UUID string
   - `submissionId`: UUID

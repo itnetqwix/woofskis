@@ -11,8 +11,10 @@ describe('Unit Tests: Environment schema (M01-P01-T02)', () => {
     'AWS_S3_BUCKET',
     'AWS_SECRET_ACCESS_KEY',
     'DATABASE_URL',
+    'DIRECT_URL',
     'JWT_SECRET',
     'LOG_LEVEL',
+    'MEDIA_CDN_BASE_URL',
     'NODE_ENV',
     'PORT',
     'STORAGE_PROVIDER',
@@ -28,7 +30,10 @@ describe('Unit Tests: Environment schema (M01-P01-T02)', () => {
   });
 
   it('keeps S3 as the default storage provider', () => {
-    const envSrc = readFileSync(new URL('../../src/config/env.ts', import.meta.url), 'utf8');
+    const envSrc = readFileSync(
+      new URL('../../src/config/env.ts', import.meta.url),
+      'utf8',
+    );
     assert.match(envSrc, /STORAGE_PROVIDER: z\.enum\(\['s3'\]\)\.default\('s3'\)/);
     assert.equal(env.STORAGE_PROVIDER, 's3');
     assert.equal(envSrc.includes('DEPLOYMENT_ORGANIZATION_SLUG'), false);
@@ -63,7 +68,10 @@ describe('Unit Tests: Environment schema (M01-P01-T02)', () => {
   });
 
   it('uses hardcoded CORS origin star and does not read CORS_ORIGIN', () => {
-    const corsSrc = readFileSync(new URL('../../src/plugins/cors.ts', import.meta.url), 'utf8');
+    const corsSrc = readFileSync(
+      new URL('../../src/plugins/cors.ts', import.meta.url),
+      'utf8',
+    );
     assert.match(corsSrc, /origin:\s*'\*'/);
     assert.equal(corsSrc.includes('env.CORS_ORIGIN'), false);
     assert.equal(corsSrc.includes('process.env.CORS_ORIGIN'), false);

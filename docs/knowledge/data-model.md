@@ -1,7 +1,7 @@
 # Data Model & Database Schema Specification
 
 > **Canonical Path**: `/docs/knowledge/data-model.md`  
-> **Backend Repository**: [cos-backend/prisma/schema.prisma](file:///D:/woofskis/cos-backend/prisma/schema.prisma)  
+> **Backend Repository**: [backend/prisma/schema.prisma](file:///D:/woofskis/backend/prisma/schema.prisma)  
 > **Database Engine**: PostgreSQL 15+ (Hosted on Neon)  
 > **ORM**: Prisma ORM 6.4  
 > **Last Updated**: 2026-09-22
@@ -10,14 +10,15 @@
 
 ## 1. Implemented Database Schema
 
-The following schema is currently implemented and active in `cos-backend/prisma/schema.prisma`.
+The following schema is currently implemented and active in `backend/prisma/schema.prisma`.
 
-`DATABASE_URL` is consumed by Prisma (`env("DATABASE_URL")`) and by Fastify `src/config/env.ts` → `src/config/database.ts` (`datasourceUrl`). Fastify Zod parse currently allows a missing/empty value; Prisma CLI still needs the variable set to connect. See M01-P01-T02.
+`DATABASE_URL` is consumed by Prisma (`env("DATABASE_URL")`) for pooled runtime connections. `DIRECT_URL` is consumed via `directUrl = env("DIRECT_URL")` for direct schema migrations and CLI operations (bypassing PgBouncer). See M01-P01-T02.
 
 ```prisma
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -306,7 +307,7 @@ Implemented in `schema.prisma`. Migration directory: `prisma/migrations/20260925
 
 ## 2. Implemented Model History & MVP Completion
 
-All core models (`Organization`, `User`, `Contest`, `Category`, `Submission`, `Rating`, `AuditLog`) have been fully implemented in `cos-backend/prisma/schema.prisma` across modules M01–M10:
+All core models (`Organization`, `User`, `Contest`, `Category`, `Submission`, `Rating`, `AuditLog`) have been fully implemented in `backend/prisma/schema.prisma` across modules M01–M10:
 - **M01/M02**: Foundation `Organization` and `User` models.
 - **M04/M10**: `Organization` multi-tenancy, `branding Json?`, `OrganizationStatus` (`ACTIVE` | `SUSPENDED`), `suspendedAt`, `suspensionReason`.
 - **M05**: `Contest`, `Category`, `ContestStatus` (DRAFT → SCHEDULED → ACTIVE → JUDGING → COMPLETED → ARCHIVED).

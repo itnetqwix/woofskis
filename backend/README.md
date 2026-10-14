@@ -7,7 +7,7 @@
 ## 🏛️ Architecture & Directory Layout
 
 ```
-cos-backend/
+backend/
 ├── src/
 │   ├── config/
 │   │   ├── env.ts                   # Zod-validated environment config

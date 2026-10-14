@@ -1,7 +1,7 @@
 # Backend Architecture & Module Map
 
 > **Canonical Path**: `/docs/knowledge/backend-map.md`  
-> **Repository**: [cos-backend](file:///D:/woofskis/cos-backend/)  
+> **Repository**: [backend](file:///D:/woofskis/backend/)  
 > **Framework**: Fastify 5.12 + TypeScript 5.9 + Prisma ORM 6.4 + PostgreSQL (Neon) + Zod 4.6 + Fastify-JWT 10.2  
 > **Last Updated**: 2026-09-22
 
@@ -12,7 +12,7 @@
 The backend application is structured as a Clean Architecture / Repository Pattern service:
 
 ```
-cos-backend/src/
+backend/src/
 ├── app.ts                  # Frozen plugin order (M01-P01-T03): cors → helmet → prisma → jwt → swagger → routes
 ├── server.ts               # Process bootstrapper, port listening (PORT=5000), graceful exit
 ├── config/                 # Frozen env.ts (M01-P01-T02), constants.ts, database.ts
@@ -71,7 +71,7 @@ Technical constraint (library, not a business rule): swagger is registered **bef
 | `NODE_ENV` | Yes | No | Enum `'development' \| 'production' \| 'test'`; default `'development'`. Also set in Dockerfile as `production`. | `app.ts`, `database.ts`, `logger.ts`, `error.middleware.ts` |
 | `LOG_LEVEL` | Yes | No | String; default `'info'`. | `app.ts` logger, `logger.ts` |
 
-`.env.example` lists placeholders for `PORT`, `NODE_ENV`, `DATABASE_URL`, `JWT_SECRET`, `LOG_LEVEL`, and M06 AWS keys (`AWS_REGION`, `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). `CORS_ORIGIN` is omitted. `cos-backend/.gitignore` ignores `.env` / `.env.*` and un-ignores `.env.example`. Do not commit real secrets.
+`.env.example` lists placeholders for `PORT`, `NODE_ENV`, `DATABASE_URL`, `JWT_SECRET`, `LOG_LEVEL`, and M06 AWS keys (`AWS_REGION`, `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). `CORS_ORIGIN` is omitted. `backend/.gitignore` ignores `.env` / `.env.*` and un-ignores `.env.example`. Do not commit real secrets.
 
 AWS keys are optional at `env.ts` parse time (empty-string defaults). `S3StorageAdapter` refuses to sign when region/bucket are empty. There is no local-filesystem fallback. **M12-P01-T04:** `PutObjectCommand` does not set an ACL or `public-read`. Presign TTL is an engineering default of 900 seconds. `getPublicUrl` stores an unsigned virtual-hosted reference. Playback responses sign a GET for `Submission.objectKey` at response time (900s engineering default). Signed URLs are not stored. Bucket CORS and Block Public Access stay outside this repo. `.gitignore` ignores `.env` and `.env.*` and keeps `.env.example` (M12-P02-T03). The frontend repo uses the same ignore rule.
 
@@ -104,7 +104,7 @@ AWS keys are optional at `env.ts` parse time (empty-string defaults). `S3Storage
 
 ## 4. Endpoints & Layer Implementation Status
 
-### 4.1 Implemented Endpoints (`cos-backend/src/routes/index.ts`)
+### 4.1 Implemented Endpoints (`backend/src/routes/index.ts`)
 
 Health and root contracts frozen by **M01-P01-T04** (see [api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md) §1.1). Public; `sendSuccess` envelope. Health does not probe Prisma (DB readiness **NOT SPECIFIED**). Root `data.name` is `SYSTEM_CONSTANTS.APP_NAME` (`Contest Operating System Backend`).
 
@@ -160,7 +160,7 @@ Health and root contracts frozen by **M01-P01-T04** (see [api-map.md](file:///D:
 
 ## 5. Database Schema & Prisma State
 
-Current `cos-backend/prisma/schema.prisma` models:
+Current `backend/prisma/schema.prisma` models:
 - **`model Organization`** (`IMPLEMENTED`): `id`, `name`, `slug`, `branding Json?`, `status OrganizationStatus` (`ACTIVE` | `SUSPENDED`), `suspendedAt DateTime?`, `suspensionReason String?`, `createdAt`, `updatedAt`, `users`, `categories`, `contests`. `OrganizationRepository` handles CRUD, branding replacement, and suspend/reinstate operations.
 - **`model User`** (`IMPLEMENTED`): `id`, `email`, `passwordHash`, `name`, `role Role`, `organizationId String?`, `createdAt`, `updatedAt`. Domain-model `handle` / `avatarUrl` are **PLANNED**; persistence is **NOT SPECIFIED** (M02-P01-T05). No Prisma columns, no JWT claims, no sanitized API fields.
 - **`enum Role`** (`IMPLEMENTED`): `SUPER_ADMIN`, `BRAND_ADMIN`, `CREATOR`, `VIEWER`.

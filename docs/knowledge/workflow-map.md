@@ -2,7 +2,7 @@
 
 > **Canonical Path**: `/docs/knowledge/workflow-map.md`  
 > **Source Documents**: [Ch 10 User Journey & Business Process](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 11 Key Features & Capabilities](file:///D:/woofskis/docs/source/11%20Key%20Features%20&%20Capabilities%20394ca8c5bdf78082b980efceda5d1744.md), [Ch 12 Business Rules](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md)  
-> **Code Repositories**: [content-operating-system](file:///D:/woofskis/content-operating-system/), [cos-backend](file:///D:/woofskis/cos-backend/)  
+> **Code Repositories**: [frontend](file:///D:/woofskis/frontend/), [backend](file:///D:/woofskis/backend/)  
 > **Last Updated**: 2026-09-22
 
 ---
@@ -10,7 +10,7 @@
 ## 1. Visitor / Community Voting Workflow (The Continuous Loop)
 
 > **Source**: [Ch 10.2 Visitor Journey](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 10.7 Community Voting Process](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md)  
-> **Frontend Implementation**: `content-operating-system/src/features/judging/hooks/use-contest-queue.ts`
+> **Frontend Implementation**: `frontend/src/features/judging/hooks/use-contest-queue.ts`
 
 ```
 ┌─────────────────┐
@@ -60,7 +60,7 @@
 ## 2. Creator Video Submission Workflow
 
 > **Source**: [Ch 10.3 Creator Journey](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 10.6 Video Submission Process](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md)  
-> **Frontend Implementation**: `content-operating-system/src/features/submissions/components/upload-modal.tsx`
+> **Frontend Implementation**: `frontend/src/features/submissions/components/upload-modal.tsx`
 
 ```
 ┌───────────────────────────┐
@@ -107,7 +107,7 @@
 ## 3. Administrator Content Moderation Workflow
 
 > **Source**: [Ch 10.4 Contest Administration Journey](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 10.6 Video Submission Process](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 12.4 Video Submission Rules](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md)  
-> **Frontend Implementation**: `content-operating-system/src/features/admin/components/moderation-split-viewer.tsx`
+> **Frontend Implementation**: `frontend/src/features/admin/components/moderation-split-viewer.tsx`
 
 ```
 ┌───────────────────────────────┐
@@ -140,7 +140,7 @@
 ## 4. Brand Onboarding & Multi-Tenant Contest Launch Workflow
 
 > **Source**: [Ch 10.5 Organization / Brand Journey](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 11.8 Organization & Brand Management](file:///D:/woofskis/docs/source/11%20Key%20Features%20&%20Capabilities%20394ca8c5bdf78082b980efceda5d1744.md)  
-> **Frontend Implementation**: `content-operating-system/src/features/admin/components/brand-theme-form.tsx`
+> **Frontend Implementation**: `frontend/src/features/admin/components/brand-theme-form.tsx`
 
 ```
 ┌─────────────────────────────────┐

@@ -2,7 +2,7 @@
 
 > **Canonical Path**: `/docs/knowledge/business-rules.md`  
 > **Source Documents**: [Ch 12 Business Rules](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md), [Ch 13 Assumptions & Constraints](file:///D:/woofskis/docs/source/13%20Assumptions%20&%20Constraints%20395ca8c5bdf78075bee7f07e22404768.md), [Ch 4 Proposed Solution](file:///D:/woofskis/docs/source/4%20Proposed%20Solution%20390ca8c5bdf780a0b489efeb96dafd91.md)  
-> **Code Repositories**: [content-operating-system](file:///D:/woofskis/content-operating-system/), [cos-backend](file:///D:/woofskis/cos-backend/)  
+> **Code Repositories**: [frontend](file:///D:/woofskis/frontend/), [backend](file:///D:/woofskis/backend/)  
 > **Last Updated**: 2026-09-22
 
 ---
@@ -51,7 +51,7 @@ Per **[Ch 13.13 Non-Negotiable Platform Constraints](file:///D:/woofskis/docs/so
 ### 2.3 Video Submission & Moderation Rules
 - **Rule BR-VID-01**: All submitted videos must pass moderation review prior to being published in the public judging queue or leaderboard *(Source: [Ch 12.4](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md))*.
 - **Rule BR-VID-02**: Rejected videos must provide a categorized rejection reason and optional reviewer feedback to the creator *(Source: [Ch 10.6](file:///D:/woofskis/docs/source/10%20User%20Journey%20&%20Business%20Process%20394ca8c5bdf78027b716ec91531bf108.md), [Ch 12.4](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md))*.
-- **Rule BR-VID-03**: Video file formats must be MP4, WebM, or MOV (`video/mp4`, `video/webm`, `video/quicktime`) with a maximum duration of 60 seconds and maximum file size of 100MB *(Source: `content-operating-system/src/features/submissions/components/upload-modal.tsx`)*.
+- **Rule BR-VID-03**: Video file formats must be MP4, WebM, or MOV (`video/mp4`, `video/webm`, `video/quicktime`) with a maximum duration of 60 seconds and maximum file size of 100MB *(Source: `frontend/src/features/submissions/components/upload-modal.tsx`)*.
 - **Moderation SLA / Turnaround Time Target**: `NOT SPECIFIED` in source documentation (Identified as operational SLA to be configured by platform operators).
 
 ---
@@ -68,7 +68,7 @@ Per **[Ch 13.13 Non-Negotiable Platform Constraints](file:///D:/woofskis/docs/so
 ---
 
 ### 2.5 Winner Determination & Leaderboard Rules
-- **Rule BR-WIN-01**: Contest winners are ranked strictly in descending order of calculated `communityScore` (with `totalVotes` breaking ties) *(Source: [Ch 12.7](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md), `content-operating-system/src/features/leaderboard/hooks/use-leaderboard.ts`)*.
+- **Rule BR-WIN-01**: Contest winners are ranked strictly in descending order of calculated `communityScore` (with `totalVotes` breaking ties) *(Source: [Ch 12.7](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md), `frontend/src/features/leaderboard/hooks/use-leaderboard.ts`)*.
 - **Rule BR-WIN-02**: Disqualified or rejected entries are immediately purged from active leaderboard rankings *(Source: [Ch 12.7](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md))*.
 - **Rule BR-WIN-03**: Final rankings become official and immutable upon contest closure and publication *(Source: [Ch 12.7](file:///D:/woofskis/docs/source/12%20Business%20Rules%20394ca8c5bdf78008b70ed22f71231996.md))*.
 - **Minimum Votes Required for Official Placement**: `NOT SPECIFIED` in source documentation.

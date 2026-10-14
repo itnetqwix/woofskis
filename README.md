@@ -12,8 +12,8 @@ Woofskis is an independent, single-product deployment of the Contest Operating S
 
 ```
 D:\woofskis\
-|-- content-operating-system/   # Frontend: Next.js 14 App Router, TailwindCSS, Redux Toolkit, React Query
-|-- cos-backend/                # Backend: Fastify 5 REST API, Prisma ORM 6, PostgreSQL
+|-- frontend/                   # Frontend: Next.js 14 App Router, TailwindCSS, Redux Toolkit, React Query
+|-- backend/                    # Backend: Fastify 5 REST API, Prisma ORM 6, PostgreSQL
 |-- infra/                      # Infrastructure configs (Cloudflare media streaming worker)
 |   \-- cloudflare/media-worker/
 |-- .cursor/rules/              # Project instructions & Clean Architecture guidelines
@@ -30,8 +30,8 @@ D:\woofskis\
 
 Before running this application, the following independent resources must be provisioned. **Ensure all secrets, credentials, and databases are strictly unique to Woofskis.**
 
-### 2.1 Backend (`cos-backend/.env`)
-Create `cos-backend/.env` based on `cos-backend/.env.example`:
+### 2.1 Backend (`backend/.env`)
+Create `backend/.env` based on `backend/.env.example`:
 - `PORT=5000`
 - `NODE_ENV=development` (or `production`)
 - `DATABASE_URL`: Dedicated PostgreSQL database connection string for Woofskis.
@@ -42,8 +42,8 @@ Create `cos-backend/.env` based on `cos-backend/.env.example`:
 - `AWS_ACCESS_KEY_ID`: Dedicated AWS IAM credentials with S3 read/write scoped to the Woofskis bucket.
 - `AWS_SECRET_ACCESS_KEY`: AWS IAM secret key.
 
-### 2.2 Frontend (`content-operating-system/.env.local`)
-Create `content-operating-system/.env.local` based on `content-operating-system/.env.example`:
+### 2.2 Frontend (`frontend/.env.local`)
+Create `frontend/.env.local` based on `frontend/.env.example`:
 - `NEXT_PUBLIC_APP_NAME="Woofskis"`
 - `NEXT_PUBLIC_APP_DESCRIPTION="The Premier Dog Video Competition Platform"`
 - `NEXT_PUBLIC_APP_URL="http://localhost:3000"` (Production: `https://woofskis.com`)
@@ -63,7 +63,7 @@ Configure `wrangler.toml` with:
 ## 3. Database Initialization (When Ready)
 
 1. Generate Prisma Client:
-   `npm --prefix cos-backend run prisma generate` (after `npm install`)
+   `npm --prefix backend run prisma generate` (after `npm install`)
 2. Apply database migrations to the fresh database:
    `npx prisma migrate deploy`
 3. Provision the initial Woofskis platform administrator:

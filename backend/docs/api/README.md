@@ -11,7 +11,7 @@ The Contest Operating System (COS) API provides multi-tenant authentication, rol
 
 ## Standard Response Format
 
-Frozen by **M01-P01-T01** (`cos-backend/src/utils/response.ts`: `sendSuccess` / `sendError`).
+Frozen by **M01-P01-T01** (`backend/src/utils/response.ts`: `sendSuccess` / `sendError`).
 
 All API responses strictly adhere to the unified `ApiResponse<T>` envelope. Top-level fields are exactly `success`, `message`, `data`, and `errors` — there is no envelope-level `timestamp`.
 

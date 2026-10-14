@@ -60,16 +60,16 @@ KNOWLEDGE & GRAPH UPDATE (Preserve Persistent Accuracy)
 - **Rule of Thumb**: Avoid re-reading all 17 source chapters for every task; use the processed knowledge layer and graph first.
 
 ### Step 4: Inspect the Actual Codebase
-- Review existing code in `content-operating-system/` or `cos-backend/`.
+- Review existing code in `frontend/` or `backend/`.
 - Verify existing types in `src/types/` and backend schemas in `src/schemas/`.
 - Identify whether the feature is currently using mock state (LocalStorage) or real API calls.
 
 ### Step 5: Identify Cross-Layer Impact
 - Check if changes require:
-  1. Prisma schema migration (`cos-backend/prisma/schema.prisma`).
-  2. Fastify route / Zod schema update (`cos-backend/src/schemas/`, `routes/`).
-  3. Service & Repository pattern implementation (`cos-backend/src/services/`, `repositories/`).
-  4. Frontend Redux / React Query hook update (`content-operating-system/src/features/...`).
+  1. Prisma schema migration (`backend/prisma/schema.prisma`).
+  2. Fastify route / Zod schema update (`backend/src/schemas/`, `routes/`).
+  3. Service & Repository pattern implementation (`backend/src/services/`, `repositories/`).
+  4. Frontend Redux / React Query hook update (`frontend/src/features/...`).
   5. UI component updates matching the Tailwind / Radix design system.
 
 ### Step 6: Implement Following Existing Conventions
@@ -80,11 +80,11 @@ KNOWLEDGE & GRAPH UPDATE (Preserve Persistent Accuracy)
 ### Step 7: Validate & Test
 - Run typecheck in frontend:
   ```bash
-  cd content-operating-system && npm run typecheck
+  cd frontend && npm run typecheck
   ```
 - Run typecheck, lint, and tests in backend:
   ```bash
-  cd cos-backend && npm run typecheck && npm test
+  cd backend && npm run typecheck && npm test
   ```
 - Verify zero regression in existing routes and UI interactions.
 

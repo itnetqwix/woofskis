@@ -1,10 +1,10 @@
 ---
 description: Frontend development rules, Next.js 14 conventions, Tailwind design tokens, and UI state management
-globs: content-operating-system/**/*.{ts,tsx,css,json}
+globs: frontend/**/*.{ts,tsx,css,json}
 alwaysApply: false
 ---
 
-# 03 - Frontend Development Rules (content-operating-system)
+# 03 - Frontend Development Rules (frontend)
 
 ## 1. Frontend Architecture Reference
 Consult [docs/knowledge/frontend-map.md](file:///D:/woofskis/docs/knowledge/frontend-map.md) before implementing UI components or routes.

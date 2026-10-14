@@ -16,7 +16,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/auth.controller.ts",
         "symbol": "AuthController"
       }
@@ -34,7 +34,7 @@
         "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/hooks/use-contest-queue.ts",
         "symbol": "useContestQueue"
       }
@@ -52,7 +52,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/components/upload-modal.tsx",
         "symbol": "UploadModal"
       }
@@ -70,7 +70,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/contest-create-modal.tsx",
         "symbol": "ContestCreateModal"
       }
@@ -88,7 +88,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
         "symbol": "ModerationSplitViewer"
       }
@@ -106,7 +106,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
         "symbol": "LeaderboardPodium"
       }
@@ -124,7 +124,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/brand-theme-form.tsx",
         "symbol": "BrandThemeForm"
       }
@@ -142,7 +142,7 @@
         "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "Role.VIEWER"
       }
@@ -160,7 +160,7 @@
         "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "Role.CREATOR"
       }
@@ -178,7 +178,7 @@
         "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "Role.BRAND_ADMIN"
       }
@@ -196,7 +196,7 @@
         "docPath": "/docs/source/8 Target Audience 390ca8c5bdf7808d9a64f679d23d5075.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "Role.SUPER_ADMIN"
       }
@@ -279,7 +279,7 @@
         "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/components/viewer-container.tsx",
         "symbol": "ViewerContainer"
       }
@@ -297,7 +297,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/components/upload-modal.tsx",
         "symbol": "UploadModal"
       }
@@ -315,7 +315,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
         "symbol": "ModerationSplitViewer"
       }
@@ -333,7 +333,7 @@
         "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
         "symbol": "LeaderboardPodium"
       }
@@ -351,7 +351,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/brand-theme-form.tsx",
         "symbol": "BrandThemeForm"
       }
@@ -369,7 +369,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/hooks/use-contest-queue.ts",
         "symbol": "useContestQueue"
       }
@@ -387,7 +387,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/components/upload-modal.tsx",
         "symbol": "UploadModal"
       }
@@ -405,7 +405,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
         "symbol": "ModerationSplitViewer"
       }
@@ -423,7 +423,7 @@
         "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/components/viewer-container.tsx",
         "symbol": "ViewerContainer"
       }
@@ -441,7 +441,7 @@
         "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/components/rating-bar.tsx",
         "symbol": "RatingBar"
       }
@@ -459,7 +459,7 @@
         "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/components/score-reveal-overlay.tsx",
         "symbol": "ScoreRevealOverlay"
       }
@@ -477,7 +477,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/components/upload-modal.tsx",
         "symbol": "UploadModal"
       }
@@ -495,7 +495,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/components/submissions-table.tsx",
         "symbol": "SubmissionsTable"
       }
@@ -513,7 +513,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/moderation-split-viewer.tsx",
         "symbol": "ModerationSplitViewer"
       }
@@ -531,7 +531,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/reject-reason-dialog.tsx",
         "symbol": "RejectReasonDialog"
       }
@@ -549,7 +549,7 @@
         "docPath": "/docs/source/4 Proposed Solution 390ca8c5bdf780a0b489efeb96dafd91.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/leaderboard/components/leaderboard-podium.tsx",
         "symbol": "LeaderboardPodium"
       }
@@ -567,7 +567,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/brand-theme-form.tsx",
         "symbol": "BrandThemeForm"
       }
@@ -585,7 +585,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/judging/hooks/use-contest-queue.ts",
         "symbol": "useContestQueue"
       }
@@ -603,7 +603,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/submissions/hooks/use-creator-submissions.ts",
         "symbol": "useCreatorSubmissions"
       }
@@ -621,7 +621,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/hooks/use-tenant-theme.ts",
         "symbol": "useTenantTheme"
       }
@@ -639,7 +639,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/auth.controller.ts",
         "symbol": "AuthController.registerCreator"
       }
@@ -657,7 +657,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/auth.controller.ts",
         "symbol": "AuthController.registerBrand"
       }
@@ -675,7 +675,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/auth.controller.ts",
         "symbol": "AuthController.login"
       }
@@ -693,7 +693,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/auth.controller.ts",
         "symbol": "AuthController.getMe"
       }
@@ -711,7 +711,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/user.controller.ts",
         "symbol": "UserController.listUsers"
       }
@@ -729,7 +729,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/user.controller.ts",
         "symbol": "UserController.getUserById"
       }
@@ -742,7 +742,7 @@
       "description": "Optional auth. Anonymous or VIEWER. Returns previousScore, newScore, delta, totalVotes. Contest must be ACTIVE or JUDGING. Submission must be APPROVED. M12: per-IP engineering rate limit 60/minute. Duplicate-vote window remains NOT SPECIFIED.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/judging.controller.ts",
         "symbol": "JudgingController.rate"
       },
@@ -765,7 +765,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/submission.controller.ts",
         "symbol": "SubmissionController.presign"
       }
@@ -783,7 +783,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/submission.controller.ts",
         "symbol": "SubmissionController.complete"
       }
@@ -801,7 +801,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/submission.controller.ts",
         "symbol": "SubmissionController.listMine"
       }
@@ -819,7 +819,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/submission.controller.ts",
         "symbol": "SubmissionController.getById"
       }
@@ -837,7 +837,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/submission.controller.ts",
         "symbol": "SubmissionController.remove"
       }
@@ -855,7 +855,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/submission.service.ts",
         "symbol": "SubmissionService"
       }
@@ -873,7 +873,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/submission.repository.ts",
         "symbol": "SubmissionRepository"
       }
@@ -891,7 +891,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/s3-storage.adapter.ts",
         "symbol": "S3StorageAdapter"
       }
@@ -904,7 +904,7 @@
       "description": "Approves a PENDING_REVIEW submission and writes an AuditLog APPROVE row.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/moderation.controller.ts",
         "symbol": "ModerationController.approve"
       },
@@ -922,7 +922,7 @@
       "description": "Rejects a PENDING_REVIEW submission. reason is required. Writes AuditLog REJECT.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/moderation.controller.ts",
         "symbol": "ModerationController.reject"
       },
@@ -945,7 +945,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/auth.service.ts",
         "symbol": "AuthService"
       }
@@ -963,7 +963,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/user.service.ts",
         "symbol": "UserService"
       }
@@ -976,7 +976,7 @@
       "description": "Queue of APPROVED submissions and transactional community-score updates. Voting window is ACTIVE and JUDGING.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/judging.service.ts",
         "symbol": "JudgingService"
       },
@@ -999,7 +999,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/user.repository.ts",
         "symbol": "UserRepository"
       }
@@ -1017,7 +1017,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/organization.service.ts",
         "symbol": "OrganizationService"
       }
@@ -1035,7 +1035,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/organization.repository.ts",
         "symbol": "OrganizationRepository"
       }
@@ -1053,7 +1053,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/organization.controller.ts",
         "symbol": "OrganizationController.getBrandingBySlug"
       }
@@ -1071,7 +1071,7 @@
         "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/organization.controller.ts",
         "symbol": "OrganizationController.updateBranding"
       }
@@ -1089,7 +1089,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/organization.controller.ts",
         "symbol": "OrganizationController.listForSuperAdmin"
       }
@@ -1107,7 +1107,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/organization.controller.ts",
         "symbol": "OrganizationController.suspend"
       }
@@ -1125,7 +1125,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/organization.controller.ts",
         "symbol": "OrganizationController.reinstate"
       }
@@ -1143,7 +1143,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/app/(dashboard)/super-admin/page.tsx",
         "symbol": "SuperAdminPage"
       }
@@ -1161,7 +1161,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/hooks/use-super-admin-organizations.ts",
         "symbol": "useSuperAdminOrganizations"
       }
@@ -1179,7 +1179,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/components/suspend-organization-dialog.tsx",
         "symbol": "SuspendOrganizationDialog"
       }
@@ -1197,7 +1197,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/auth/components/login-form.tsx",
         "symbol": "LoginForm"
       }
@@ -1215,7 +1215,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/auth/components/creator-register-form.tsx",
         "symbol": "CreatorRegisterForm"
       }
@@ -1233,7 +1233,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/auth/components/brand-register-form.tsx",
         "symbol": "BrandRegisterForm"
       }
@@ -1251,7 +1251,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/auth/hooks/use-auth-session.ts",
         "symbol": "useAuthSession"
       }
@@ -1269,7 +1269,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/components/auth/role-guard.tsx",
         "symbol": "RoleGuard"
       }
@@ -1287,7 +1287,7 @@
         "docPath": "/docs/source/9 Business Requirements 394ca8c5bdf780f59cb7c048b703b9f2.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model User"
       }
@@ -1305,7 +1305,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Organization"
       }
@@ -1323,7 +1323,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Contest"
       }
@@ -1341,7 +1341,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Category"
       }
@@ -1359,7 +1359,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/contest.service.ts",
         "symbol": "ContestService"
       }
@@ -1377,7 +1377,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/contest.repository.ts",
         "symbol": "ContestRepository"
       }
@@ -1395,7 +1395,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/category.repository.ts",
         "symbol": "CategoryRepository"
       }
@@ -1413,7 +1413,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.list"
       }
@@ -1431,7 +1431,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.listDeploymentActive"
       }
@@ -1449,7 +1449,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.create"
       }
@@ -1467,7 +1467,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.presignBanner"
       }
@@ -1485,7 +1485,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.getById"
       }
@@ -1503,7 +1503,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/contest.controller.ts",
         "symbol": "ContestController.update"
       }
@@ -1521,7 +1521,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/hooks/use-contests-management.ts",
         "symbol": "useContestsManagement"
       }
@@ -1539,7 +1539,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Submission"
       }
@@ -1552,7 +1552,7 @@
       "description": "Individual ratings. New votes are integers 1-10. Historical 1-5 rows stay valid. userId and voterFingerprint are optional. Duplicate-vote window is NOT SPECIFIED.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Rating"
       },
@@ -1570,7 +1570,7 @@
       "description": "Append-only audit row: actor, action, optional reason, metadata, createdAt. Retention is NOT SPECIFIED.",
       "status": "IMPLEMENTED",
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model AuditLog"
       },
@@ -1593,7 +1593,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/moderation.controller.ts",
         "symbol": "ModerationController.queue"
       }
@@ -1611,7 +1611,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/moderation.controller.ts",
         "symbol": "ModerationController.auditLogs"
       }
@@ -1629,7 +1629,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/moderation.service.ts",
         "symbol": "ModerationService"
       }
@@ -1647,7 +1647,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/audit-log.repository.ts",
         "symbol": "AuditLogRepository"
       }
@@ -1665,7 +1665,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/admin/hooks/use-moderation-queue.ts",
         "symbol": "useModerationQueue"
       }
@@ -1683,7 +1683,7 @@
         "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/judging.controller.ts",
         "symbol": "JudgingController.queue"
       }
@@ -1701,7 +1701,7 @@
         "docPath": "/docs/source/12 Business Rules 394ca8c5bdf78008b70ed22f71231996.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/rating.repository.ts",
         "symbol": "RatingRepository"
       }
@@ -1719,7 +1719,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/leaderboard.service.ts",
         "symbol": "LeaderboardService"
       }
@@ -1737,7 +1737,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/leaderboard/hooks/use-leaderboard.ts",
         "symbol": "useLeaderboard"
       }
@@ -1755,7 +1755,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/leaderboard.controller.ts",
         "symbol": "LeaderboardController.getLeaderboard"
       }
@@ -1773,7 +1773,7 @@
         "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/plugins/rate-limit.ts",
         "symbol": "rateLimitPlugin"
       }
@@ -1791,7 +1791,7 @@
         "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/routes/index.ts",
         "symbol": "GET /health"
       }
@@ -1809,7 +1809,7 @@
         "docPath": "/docs/source/13 Assumptions & Constraints 395ca8c5bdf78075bee7f07e22404768.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/routes/index.ts",
         "symbol": "GET /"
       }
@@ -1827,7 +1827,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/routes/index.ts",
         "symbol": "creatorGuards"
       }
@@ -1845,7 +1845,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model Friendship"
       }
@@ -1863,7 +1863,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/friendship.service.ts",
         "symbol": "FriendshipService"
       }
@@ -1881,7 +1881,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/friendship.repository.ts",
         "symbol": "FriendshipRepository"
       }
@@ -1899,7 +1899,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.list"
       }
@@ -1917,7 +1917,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.search"
       }
@@ -1935,7 +1935,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.send"
       }
@@ -1953,7 +1953,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.accept"
       }
@@ -1971,7 +1971,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.reject"
       }
@@ -1989,7 +1989,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.cancel"
       }
@@ -2007,7 +2007,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/friendship.controller.ts",
         "symbol": "FriendshipController.remove"
       }
@@ -2025,7 +2025,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/friends/components/friends-panel.tsx",
         "symbol": "FriendsPanel"
       }
@@ -2043,7 +2043,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/friends/hooks/use-creator-friends.ts",
         "symbol": "useCreatorFriends"
       }
@@ -2061,7 +2061,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/routes/index.ts",
         "symbol": "creatorGuards"
       }
@@ -2079,7 +2079,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/chat.service.ts",
         "symbol": "ChatService"
       }
@@ -2097,7 +2097,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model ChatMessage"
       }
@@ -2115,7 +2115,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "prisma/schema.prisma",
         "symbol": "model ChatRead"
       }
@@ -2133,7 +2133,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/services/chat.service.ts",
         "symbol": "ChatService"
       }
@@ -2151,7 +2151,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/repositories/chat.repository.ts",
         "symbol": "ChatRepository"
       }
@@ -2169,7 +2169,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/chat.controller.ts",
         "symbol": "ChatController.list"
       }
@@ -2187,7 +2187,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/chat.controller.ts",
         "symbol": "ChatController.messages"
       }
@@ -2205,7 +2205,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/chat.controller.ts",
         "symbol": "ChatController.send"
       }
@@ -2223,7 +2223,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/chat.controller.ts",
         "symbol": "ChatController.presign"
       }
@@ -2241,7 +2241,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "cos-backend",
+        "repository": "backend",
         "filePath": "src/controllers/chat.controller.ts",
         "symbol": "ChatController.stream"
       }
@@ -2259,7 +2259,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/chat/components/creator-chat.tsx",
         "symbol": "CreatorChat"
       }
@@ -2277,7 +2277,7 @@
         "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
       },
       "codeReference": {
-        "repository": "content-operating-system",
+        "repository": "frontend",
         "filePath": "src/features/chat/hooks/use-creator-chat.ts",
         "symbol": "useCreatorChat"
       }

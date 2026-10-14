@@ -14,7 +14,7 @@ The **Graphify System** is a persistent, machine-readable relationship graph des
 
 Every node and edge in the graph is traceable to:
 1. **Source Documentation**: Source chapter and section citation (e.g., `Ch 10.7`, `Ch 12.5`).
-2. **Codebase Implementation**: File path and code symbol (e.g., `content-operating-system/src/features/judging/hooks/use-contest-queue.ts:submitRating`).
+2. **Codebase Implementation**: File path and code symbol (e.g., `frontend/src/features/judging/hooks/use-contest-queue.ts:submitRating`).
 
 ---
 

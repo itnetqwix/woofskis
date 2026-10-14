@@ -2,14 +2,14 @@
 
 > **Canonical Path**: `/docs/knowledge/implementation-status.md`  
 > **Source Documents**: [All 17 Source Chapters](file:///D:/woofskis/docs/source/)  
-> **Repositories**: [content-operating-system](file:///D:/woofskis/content-operating-system/), [cos-backend](file:///D:/woofskis/cos-backend/)  
+> **Repositories**: [frontend](file:///D:/woofskis/frontend/), [backend](file:///D:/woofskis/backend/)  
 > **Last Updated**: 2026-09-25 (M13-P02-T01)
 
 ---
 
 ## 1. Executive Implementation Summary
 
-| Functional Area | Documentation Req (Ch 7, 9, 11) | Frontend Status (`content-operating-system`) | Backend Status (`cos-backend`) | Overall Module Status |
+| Functional Area | Documentation Req (Ch 7, 9, 11) | Frontend Status (`frontend`) | Backend Status (`backend`) | Overall Module Status |
 |---|---|---|---|---|
 | **Authentication & RBAC** | Creator, Brand, Viewer, Admin auth, JWT, bcrypt. | `IMPLEMENTED` (Forms for Login, Creator, Brand, Session hydration) | `IMPLEMENTED` (JWT, bcrypt, Register, Login, Me, Rate-limits) | `IMPLEMENTED` |
 | **User Management** | Profile lookup, user lists, role assignments. | `IMPLEMENTED` (Profile in session / Redux) | `IMPLEMENTED` (`GET /users`, `GET /users/:id`, SUPER_ADMIN only — M03-P01-T02) | `IMPLEMENTED` |

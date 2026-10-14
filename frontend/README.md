@@ -80,10 +80,10 @@ npm run dev
 
 Two processes for local development (M01-P02-T05):
 
-| App                                   | Default local URL     | Port source                                                                                                         |
-| ------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Frontend (`content-operating-system`) | http://localhost:3000 | `npm run dev` → `next dev` (no `-p`; Next.js default). Docker Compose / Dockerfiles publish **3000**.               |
-| Backend (`cos-backend`)               | http://localhost:5000 | `PORT` default **5000** (`SYSTEM_CONSTANTS.DEFAULT_PORT` in `cos-backend/src/config/env.ts`). API prefix `/api/v1`. |
+| App                   | Default local URL     | Port source                                                                                                     |
+| --------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Frontend (`frontend`) | http://localhost:3000 | `npm run dev` → `next dev` (no `-p`; Next.js default). Docker Compose / Dockerfiles publish **3000**.           |
+| Backend (`backend`)   | http://localhost:5000 | `PORT` default **5000** (`SYSTEM_CONSTANTS.DEFAULT_PORT` in `backend/src/config/env.ts`). API prefix `/api/v1`. |
 
 Point the frontend HTTP client at the backend by copying `.env.example` to `.env.local`:
 

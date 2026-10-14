@@ -36,7 +36,7 @@ You are working on **Woofskis** (`woofskis.com`), an independent single-product 
 1. **Single Task**: Work on one module/task at a time.
 2. **Query Graph**: Run `node docs/graphify/graph-cli.js query --node <ID>` or `trace-path` to identify connected components.
 3. **Read Knowledge**: Consult relevant `/docs/knowledge/` files.
-4. **Inspect Code**: Review actual files in `content-operating-system/` or `cos-backend/`.
+4. **Inspect Code**: Review actual files in `frontend/` or `backend/`.
 5. **Never Invent Rules**: If a business rule or threshold is not specified, treat it as `NOT SPECIFIED` and request clarification.
 6. **Implement**: Follow existing Clean Architecture / feature-first conventions.
 7. **Validate**: Run typechecks (`npm run typecheck`) and tests (`npm test`).
