@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: woofskis-backend-production
@@ -22,7 +23,7 @@ jobs:
   deploy:
     name: Build and Deploy API
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -43,83 +44,97 @@ jobs:
         working-directory: backend
         run: npm run build
 
-      - name: Configure and Validate SSH
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::449112696823:role/WoofskisGitHubDeployRole
+          aws-region: us-east-2
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Deploy through SSM
+        shell: bash
         env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          INSTANCE_ID: i-022a5944c5fd2092e
         run: |
-          set -eu
+          set -euo pipefail
 
-          echo "Checking required secrets..."
-          test -n "$EC2_HOST" || { echo "ERROR: EC2_HOST is empty"; exit 1; }
-          test -n "$EC2_USER" || { echo "ERROR: EC2_USER is empty"; exit 1; }
-          test -n "$EC2_SSH_KEY" || { echo "ERROR: EC2_SSH_KEY is empty"; exit 1; }
+          cat > deploy.sh <<'SCRIPT'
+          #!/bin/bash
+          set -euo pipefail
 
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
+          cd /tmp/woofskis-repo
+          git pull --ff-only origin main
 
-          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/woofskis_ec2
-          chmod 600 ~/.ssh/woofskis_ec2
+          sudo cp -a backend/. /var/www/woofskis/app/
+          sudo chown -R ubuntu:ubuntu /var/www/woofskis/app
 
-          echo "Validating private key..."
-          ssh-keygen -y -f ~/.ssh/woofskis_ec2 > /dev/null
+          sudo -u ubuntu -H bash -lc '
+            set -e
+            cd /var/www/woofskis/app
+            npm ci
+            npm run build
+            pm2 restart woofskis-api
+            pm2 save
+          '
 
-          echo "Checking SSH host connectivity..."
-          ssh-keyscan -T 10 -H "$EC2_HOST" >> ~/.ssh/known_hosts
-          test -s ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+          for i in $(seq 1 12); do
+            if curl --fail --silent http://127.0.0.1:5000/api/v1/health; then
+              echo "Health check passed"
+              exit 0
+            fi
+            sleep 5
+          done
 
-          echo "SSH configuration completed."
+          echo "ERROR: Backend health check failed"
+          sudo -u ubuntu -H pm2 logs woofskis-api --lines 50 --nostream || true
+          exit 1
+          SCRIPT
 
-      - name: Test SSH Authentication
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-        run: |
-          ssh -i ~/.ssh/woofskis_ec2 \
-            -o BatchMode=yes \
-            -o ConnectTimeout=15 \
-            "$EC2_USER@$EC2_HOST" \
-            'echo "SSH authentication successful"'
+          PAYLOAD=$(base64 -w 0 deploy.sh)
 
-      - name: Deploy to EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-        run: |
-          ssh -i ~/.ssh/woofskis_ec2 \
-            -o BatchMode=yes \
-            "$EC2_USER@$EC2_HOST" \
-            'bash -se' <<'REMOTE'
-              set -eu
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy Woofskis backend from GitHub Actions" \
+            --parameters "{\"commands\":[\"echo '$PAYLOAD' | base64 -d > /tmp/woofskis-deploy.sh && bash /tmp/woofskis-deploy.sh\"]}" \
+            --query 'Command.CommandId' \
+            --output text)
 
-              cd /tmp/woofskis-repo
-              git pull --ff-only origin main
+          echo "SSM Command ID: $COMMAND_ID"
 
-              sudo cp -a backend/. /var/www/woofskis/app/
-              sudo chown -R ubuntu:ubuntu /var/www/woofskis/app
+          for i in $(seq 1 60); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID" \
+              --query 'Status' \
+              --output text 2>/dev/null || true)
 
-              cd /var/www/woofskis/app
-              npm ci
-              npm run build
+            case "$STATUS" in
+              Success)
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "$INSTANCE_ID" \
+                  --query 'StandardOutputContent' \
+                  --output text
+                exit 0
+                ;;
+              Failed|Cancelled|TimedOut)
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "$INSTANCE_ID" \
+                  --query '[Status,StandardErrorContent,StandardOutputContent]' \
+                  --output json
+                exit 1
+                ;;
+            esac
 
-              pm2 restart woofskis-api
-              pm2 save
+            sleep 5
+          done
 
-              for i in $(seq 1 12); do
-                if curl --fail --silent \
-                  http://127.0.0.1:5000/api/v1/health; then
-                  echo "Health check passed"
-                  exit 0
-                fi
-                sleep 5
-              done
-
-              echo "ERROR: Backend health check failed"
-              pm2 logs woofskis-api --lines 50 --nostream
-              exit 1
-          REMOTE
+          echo "ERROR: Timed out waiting for SSM deployment"
+          exit 1
 
       - name: Verify public HTTPS API
         run: |
