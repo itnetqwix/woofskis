@@ -63,6 +63,7 @@ export class S3StorageAdapter implements StorageService {
       client ??
       new S3Client({
         region: env.AWS_REGION,
+        requestChecksumCalculation: 'WHEN_REQUIRED',
         credentials:
           env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
             ? {
