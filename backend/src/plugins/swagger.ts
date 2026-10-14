@@ -21,8 +21,8 @@ const swaggerPluginAsync: FastifyPluginAsync = async (fastify: FastifyInstance) 
       },
       servers: [
         {
-          url: 'http://localhost:5000',
-          description: 'Local Development Server',
+          url: '/',
+          description: 'Current server',
         },
       ],
       tags: [
