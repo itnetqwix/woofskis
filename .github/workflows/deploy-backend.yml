@@ -1,0 +1,90 @@
+
+name: Deploy Woofskis Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: woofskis-backend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and Deploy API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Configure SSH
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/woofskis_ec2
+          chmod 600 ~/.ssh/woofskis_ec2
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh -i ~/.ssh/woofskis_ec2 \
+            "$EC2_USER@$EC2_HOST" \
+            'bash -se' <<'REMOTE'
+              set -e
+              cd /tmp/woofskis-repo
+              git pull --ff-only origin main
+              sudo cp -a backend/. /var/www/woofskis/app/
+              sudo chown -R ubuntu:ubuntu /var/www/woofskis/app
+              cd /var/www/woofskis/app
+              npm ci
+              npm run build
+              pm2 restart woofskis-api
+              pm2 save
+              for i in $(seq 1 12); do
+                if curl --fail --silent http://127.0.0.1:5000/api/v1/health; then
+                  echo "Health check passed"
+                  exit 0
+                fi
+                sleep 5
+              done
+              echo "Health check failed"
+              exit 1
+          REMOTE
+
+      - name: Verify public HTTPS API
+        run: |
+          curl --fail --silent --show-error \
+            https://api.woofskis.com/api/v1/health
