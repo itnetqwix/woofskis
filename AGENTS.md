@@ -7,75 +7,43 @@
 
 ---
 
-## 1. Golden Rules of Workspace Isolation & Safety
+## 1. Shared Token-Efficient Workflow Rules
+- **Exact Scope**: Solve only the exact feature or bug requested. Make the smallest changes necessary.
+- **Targeted Inspection**: Inspect only relevant files and necessary dependencies. Avoid broad codebase exploration, repeated file reading, unnecessary research, and lengthy analysis.
+- **No Unrelated Edits**: Do not refactor or modify unrelated files.
+- **Verification on Demand**: Do not run builds, tests, audits, or extra verification unless explicitly requested or genuinely necessary.
+- **Lean Communication**: Do not repeat the user's requirements in lengthy summaries. Ask questions only when a critical detail is missing.
+- **Concise Reporting**: Report only what changed and the modified file paths.
+- **Accurate Completion**: Never claim completion without actually completing the task.
+- **Architecture & Docs**: Follow existing project architecture and documentation when relevant, without rereading everything.
 
-1. **Only Writable Project is `D:\woofskis`**:
-   - `D:\woofskis` is the ONLY writable project directory.
-   - **NEVER** write, edit, delete, or touch any files in `D:\cos` or outside `D:\woofskis`.
-2. **Strict Environment & Infrastructure Isolation**:
+---
+
+## 2. Workspace Isolation & Safety
+1. **Writable Scope**: `D:\woofskis` is the ONLY writable project directory. **NEVER** write, edit, delete, or touch any files outside `D:\woofskis` (e.g. `D:\cos`).
+2. **Environment & Infrastructure Isolation**:
    - **NEVER** access external production databases, AWS S3 buckets, or external Cloudflare deployments.
    - **NEVER** reuse external credentials, third-party secrets, or foreign JWT secrets in Woofskis.
-   - **DO NOT** deploy, start localhost/dev servers, run migrations, or execute admin bootstrap scripts unless explicitly instructed by the user.
-3. **Single-Task Focus**:
-   - Work on **one module or task at a time**.
-   - Always report the specific files changed, verification results, and any remaining gaps at the end of each turn.
+   - **DO NOT** deploy, start localhost/dev servers, run migrations, or execute admin bootstrap scripts unless explicitly instructed.
+3. **Single-Task Focus**: Work on one module or task at a time.
 
 ---
 
-## 2. Graphify & Knowledge Navigation Hierarchy
-
-To avoid wasteful whole-codebase scans and context window pollution, adhere strictly to this discovery sequence:
-
-1. **GRAPHIFY QUERY** (`docs/graphify/graph-cli.js`) — Query node metadata or trace full-stack vertical slices.
-2. **STRUCTURED KNOWLEDGE** (`docs/knowledge/`) — Read module specifications and contracts.
-3. **TARGETED SOURCE INSPECTION** — Inspect only the specific files identified in steps 1 & 2.
-4. **IMPLEMENTATION** — Maintain Clean Architecture and feature-first patterns.
-5. **VERIFICATION** — Run typecheck, lint, and tests for the modified module.
-6. **GRAPH & KNOWLEDGE UPDATE** — Update documentation and Graphify nodes, then run `graph-cli.js validate`.
-
-### Essential Graphify Commands
-All Graphify commands must be executed locally from the repository root:
-```bash
-# 1. Print overall graph statistics
-node docs/graphify/graph-cli.js stats
-
-# 2. Query node metadata and outgoing/incoming edges
-node docs/graphify/graph-cli.js query --node <NODE_ID>
-# Examples:
-# node docs/graphify/graph-cli.js query --node "domain:judging"
-# node docs/graphify/graph-cli.js query --node "api:POST /auth/login"
-
-# 3. Trace full vertical slice from role to database
-node docs/graphify/graph-cli.js trace-path --start <START_NODE> --end <END_NODE>
-# Example:
-# node docs/graphify/graph-cli.js trace-path --start "role:creator" --end "db:Submission"
-
-# 4. List nodes by taxonomy type
-node docs/graphify/graph-cli.js list-by-type --type <APIEndpoint|Feature|DatabaseModel|etc>
-
-# 5. Validate integrity of all nodes and edges
-node docs/graphify/graph-cli.js validate
-```
+## 3. Knowledge & Architecture Navigation
+Follow existing project architecture when relevant without rereading everything:
+- **Knowledge Base (`docs/knowledge/`)**: Consult specific documents only when relevant:
+  - Architecture: `WOOFSKIS-ARCHITECTURE-REFERENCE.md`, `architecture.md`
+  - Data & APIs: `data-model.md`, `backend-map.md`, `api-map.md`
+  - Frontend: `frontend-map.md`
+  - Business Rules: `business-rules.md`
+- **Graphify CLI (`docs/graphify/graph-cli.js`)**: Use targeted queries when dependency tracing is needed:
+  ```bash
+  node docs/graphify/graph-cli.js query --node <NODE_ID>
+  node docs/graphify/graph-cli.js trace-path --start <START_NODE> --end <END_NODE>
+  ```
 
 ---
 
-## 3. Knowledge Layer Reference Directory
-
-Consult structured documentation in `docs/knowledge/` before writing code:
-- **[WOOFSKIS-ARCHITECTURE-REFERENCE.md](docs/knowledge/WOOFSKIS-ARCHITECTURE-REFERENCE.md)**: Full 13-module architecture map, resource checklists, and dependency orders.
-- **[architecture.md](docs/knowledge/architecture.md)**: End-to-end architecture and module boundaries.
-- **[data-model.md](docs/knowledge/data-model.md)**: Prisma schema specifications and relationship constraints.
-- **[backend-map.md](docs/knowledge/backend-map.md)**: Fastify routes, controllers, services, and repositories.
-- **[frontend-map.md](docs/knowledge/frontend-map.md)**: Next.js 14 App Router, feature modules, hooks, and UI components.
-- **[api-map.md](docs/knowledge/api-map.md)**: REST API contracts and Zod payload schemas.
-- **[business-rules.md](docs/knowledge/business-rules.md)**: Community consensus scoring formulas (1–10 rating scale), contest state machines, and rate limits.
-
----
-
-## 4. Post-Implementation Protocol: Updating Graph & Docs
-
-When you finish implementing or adapting a module for Woofskis:
-1. **Never Invent Rules**: If a domain rule or threshold is unspecified, treat it as `NOT SPECIFIED` and request clarification.
-2. **Update Knowledge**: Update the relevant document in `docs/knowledge/` (e.g. `api-map.md`, `data-model.md`).
-3. **Update Graphify**: If models, endpoints, or components were modified or added, update `docs/graphify/cos-project-graph.json`.
-4. **Validate Graph**: Run `node docs/graphify/graph-cli.js validate` to ensure zero dangling edges and full schema compliance.
+## 4. Implementation & Documentation Protocol
+1. **Never Invent Rules**: If a domain rule or threshold is unspecified, treat it as `NOT SPECIFIED` and ask only if critical.
+2. **Update Graph & Docs Only When Needed**: If models, endpoints, or components were modified or added, update the relevant file in `docs/knowledge/` and `docs/graphify/cos-project-graph.json`, then run `node docs/graphify/graph-cli.js validate`.

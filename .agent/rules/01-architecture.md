@@ -1,0 +1,38 @@
+---
+description: System architecture, Clean Architecture patterns, and multi-tenant scoping standards
+globs: **/*.{ts,tsx,js,mjs,prisma}
+alwaysApply: false
+---
+
+# 01 - Architecture & System Design Standards
+
+## 1. Architectural Reference
+Refer to [docs/knowledge/architecture.md](file:///D:/woofskis/docs/knowledge/architecture.md) and [docs/knowledge/domain-model.md](file:///D:/woofskis/docs/knowledge/domain-model.md) when relevant; avoid rereading everything.
+
+## 2. Backend Clean Architecture (backend)
+All backend code MUST follow the 4-layer Clean Architecture pattern:
+1. **Routes & Schemas (`src/routes/`, `src/schemas/`)**:
+   - Register Fastify route plugins under `/api/v1`.
+   - Validate every request body, param, and query string with Zod schemas.
+   - Attach Fastify-Swagger schema definitions for automated OpenAPI docs.
+2. **Controllers (`src/controllers/`)**:
+   - Extract validated inputs from `request.body` / `request.params`.
+   - Delegate business operations to the Service layer.
+   - Format standard HTTP responses via `src/utils/response.ts:sendSuccess` or `sendError`.
+   - Never write raw Prisma queries inside controllers.
+3. **Services (`src/services/`)**:
+   - Contain core domain logic, consensus calculations, and state validations.
+   - Call Repositories for persistence.
+4. **Repositories (`src/repositories/`)**:
+   - Encapsulate all database operations using `fastify.prisma` / Prisma Client.
+
+## 3. Frontend Architecture (frontend)
+- **App Router (`src/app/`)**: Route handlers and page layouts only. Group by personas: `(auth)`, `(dashboard)`, `(viewer)`.
+- **Feature Modules (`src/features/<domain>/`)**:
+   - `components/`: UI components built with TailwindCSS and Radix UI.
+   - `hooks/`: Domain state hooks (`useContestQueue`, `useCreatorSubmissions`, `useLeaderboard`, `useTenantTheme`).
+- **Global State (`src/store/`)**: Redux Toolkit for cross-cutting client sessions (`authSlice`, `uiSlice`).
+- **Server Cache**: TanStack React Query for async backend API synchronization.
+
+## 4. Product scope
+This deployment is a single product (Woofskis). Do not add organization, brand, or tenant selection to the product flow. Database roles are `ADMIN` and `CREATOR`. Guests are unauthenticated. Admin contest and moderation routes require `ADMIN`. Creator submission routes require `CREATOR` and ownership of the creator's own rows.

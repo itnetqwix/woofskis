@@ -135,6 +135,7 @@ Health and root contracts frozen by **M01-P01-T04** (see [api-map.md](file:///D:
 | `POST` | `/api/v1/admin/submissions/:id/reject` | `rejectSubmissionSwaggerSchema` | `ModerationController.reject` (required `reason`) | `IMPLEMENTED` |
 | `GET` | `/api/v1/admin/moderation/audit-logs` | `auditLogsSwaggerSchema` | `ModerationController.auditLogs` | `IMPLEMENTED` |
 | `GET` | `/api/v1/contests/:id/queue` | `judgingQueueSwaggerSchema` | `JudgingController.queue` (public) | `IMPLEMENTED` |
+| `GET` | `/api/v1/submissions/:id/share-preview` | `sharePreviewSwaggerSchema` | `JudgingController.sharePreview` (public, approved + viewable contest only) | `IMPLEMENTED` |
 | `POST` | `/api/v1/contests/:id/videos/:videoId/rate` | `rateSubmissionSwaggerSchema` | `JudgingController.rate` (auth optional; VIEWER/anon) | `IMPLEMENTED` |
 | `GET` | `/api/v1/contests/:id/leaderboard` | `getLeaderboardSwaggerSchema` | `LeaderboardController.getLeaderboard` (public) | `IMPLEMENTED` |
 | `GET` | `/api/v1/submissions/:id/voters` | `listVotersSwaggerSchema` | `VoterController.list` (public, approved submission only) | `IMPLEMENTED` |

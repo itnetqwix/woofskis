@@ -5,6 +5,7 @@ import {
   contestIdParamSchema,
   rateBodySchema,
   rateParamsSchema,
+  voterParamsSchema,
 } from '../schemas/judging.schema.js';
 import { sendSuccess } from '../utils/response.js';
 import { clientIp } from '../utils/client-ip.js';
@@ -56,6 +57,21 @@ export class JudgingController {
         items: queue.items.map(toQueueItemView),
       },
       'Judging queue retrieved successfully',
+      HTTP_STATUS.OK,
+    );
+  }
+
+  /**
+   * GET /api/v1/submissions/:id/share-preview
+   * Public. Open Graph source for a shared approved video.
+   */
+  static async sharePreview(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = voterParamsSchema.parse(request.params);
+    const preview = await JudgingService.getSharePreview(id);
+    return sendSuccess(
+      reply,
+      preview,
+      'Share preview retrieved successfully',
       HTTP_STATUS.OK,
     );
   }

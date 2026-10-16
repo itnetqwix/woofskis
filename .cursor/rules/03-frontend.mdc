@@ -7,7 +7,7 @@ alwaysApply: false
 # 03 - Frontend Development Rules (frontend)
 
 ## 1. Frontend Architecture Reference
-Consult [docs/knowledge/frontend-map.md](file:///D:/woofskis/docs/knowledge/frontend-map.md) before implementing UI components or routes.
+Consult [docs/knowledge/frontend-map.md](file:///D:/woofskis/docs/knowledge/frontend-map.md) when relevant; avoid rereading everything.
 
 ## 2. Next.js 14 App Router Standards
 - Place pages under `src/app/` grouped by persona:
@@ -37,4 +37,4 @@ Consult [docs/knowledge/frontend-map.md](file:///D:/woofskis/docs/knowledge/fron
 
 ## 6. Type Safety & Validation
 - Reference centralized TypeScript interfaces from `src/types/` (`contest.ts`, `creator.ts`, `leaderboard.ts`, `tenant.ts`, `user.ts`).
-- Validate builds with `npm run typecheck` and `npm run lint`.
+- Do not run builds, typechecks, or linters unless explicitly requested or genuinely necessary.

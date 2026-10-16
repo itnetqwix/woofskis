@@ -7,7 +7,7 @@ alwaysApply: false
 # 04 - Backend Development Rules (backend)
 
 ## 1. Backend Architecture Reference
-Consult [docs/knowledge/backend-map.md](file:///D:/woofskis/docs/knowledge/backend-map.md), [docs/knowledge/api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md), and [docs/knowledge/data-model.md](file:///D:/woofskis/docs/knowledge/data-model.md).
+Consult [docs/knowledge/backend-map.md](file:///D:/woofskis/docs/knowledge/backend-map.md), [docs/knowledge/api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md), and [docs/knowledge/data-model.md](file:///D:/woofskis/docs/knowledge/data-model.md) when relevant; avoid rereading everything.
 
 ## 2. Fastify Route & Controller Standards
 - Register all routes under `/api/v1` in `src/routes/index.ts` or domain route plugins.
@@ -27,19 +27,7 @@ Consult [docs/knowledge/backend-map.md](file:///D:/woofskis/docs/knowledge/backe
 - Never execute raw Prisma queries in Controllers or Route files.
 - Place all data access logic in `src/repositories/<domain>.repository.ts`.
 - Encapsulate transactions inside repositories when performing multi-table writes.
-- When updating schema in `prisma/schema.prisma`, run `npx prisma generate` and test with `npm run typecheck`.
+- When updating schema in `prisma/schema.prisma`, run `npx prisma generate` only if schema was changed and genuinely necessary.
 
 ## 6. Testing & Quality Checks
-- Run typechecking:
-  ```bash
-  npm run typecheck
-  ```
-- Run linter and formatting:
-  ```bash
-  npm run lint
-  npm run format
-  ```
-- Run tests:
-  ```bash
-  npm test
-  ```
+- Do not run builds, tests, linters, or extra verification unless explicitly requested or genuinely necessary.

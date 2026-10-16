@@ -7,7 +7,7 @@ alwaysApply: false
 # 02 - Domain Rules & Platform Governance
 
 ## 1. Domain Rules Reference
-Always consult [docs/knowledge/business-rules.md](file:///D:/woofskis/docs/knowledge/business-rules.md) for authoritative rules.
+Consult [docs/knowledge/business-rules.md](file:///D:/woofskis/docs/knowledge/business-rules.md) when relevant; avoid rereading everything.
 
 ## 2. Platform Boundaries (Ch 13.13)
 - **Configurable by Brands**: Theme colors, fonts, logos, banners, contest descriptions, prize summaries, contest schedules.
@@ -32,4 +32,4 @@ Always consult [docs/knowledge/business-rules.md](file:///D:/woofskis/docs/knowl
 If an implementation detail, threshold, or policy is not specified in `/docs/source/` or `/docs/knowledge/`:
 - **DO NOT INVENT AN ASSUMED RULE**.
 - Mark it as `NOT SPECIFIED` in comments and code documents.
-- Prompt the user or flag it as an open configuration item.
+- Ask questions only when a critical detail is missing, or flag it as an open configuration item.

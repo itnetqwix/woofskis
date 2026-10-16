@@ -20,6 +20,7 @@ import {
   judgingQueueSwaggerSchema,
   listVotersSwaggerSchema,
   rateSubmissionSwaggerSchema,
+  sharePreviewSwaggerSchema,
 } from '../schemas/judging.schema.js';
 import { getLeaderboardSwaggerSchema } from '../schemas/leaderboard.schema.js';
 import {
@@ -614,6 +615,12 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     '/contests/:id/queue',
     { schema: judgingQueueSwaggerSchema },
     JudgingController.queue,
+  );
+
+  fastify.get(
+    '/submissions/:id/share-preview',
+    { schema: sharePreviewSwaggerSchema },
+    JudgingController.sharePreview,
   );
 
   fastify.post(

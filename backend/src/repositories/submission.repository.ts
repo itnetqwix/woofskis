@@ -325,6 +325,14 @@ export class SubmissionRepository {
    * createdAt then id ascending is display order so the list is stable.
    * It is not a leaderboard ranking (M09). A business sort key is NOT SPECIFIED.
    */
+  /** Public share preview source. APPROVED and not deleted only. */
+  static async findApprovedById(id: string): Promise<JudgingQueueRecord | null> {
+    return prisma.submission.findFirst({
+      where: { id, status: SubmissionStatus.APPROVED, ...notDeleted },
+      include: judgingInclude,
+    });
+  }
+
   static async listApprovedForContest(contestId: string): Promise<JudgingQueueRecord[]> {
     return prisma.submission.findMany({
       where: {

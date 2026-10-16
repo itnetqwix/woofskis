@@ -1689,6 +1689,24 @@
       }
     },
     {
+      "id": "api:GET /submissions/:id/share-preview",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/submissions/:id/share-preview",
+      "domain": "Judging",
+      "description": "Public link preview metadata (title, description, thumbnailUrl, creatorName) for an APPROVED, non-deleted submission in a viewable contest. Feeds Open Graph tags on /?v=<id>.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.7",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/judging.controller.ts",
+        "symbol": "JudgingController.sharePreview"
+      }
+    },
+    {
       "id": "be_repo:RatingRepository",
       "type": "BackendRepository",
       "label": "RatingRepository",
@@ -2948,6 +2966,13 @@
       "target": "be_svc:JudgingService",
       "relationshipType": "HANDLED_BY",
       "description": "Queue reads are handled by JudgingService."
+    },
+    {
+      "id": "e149",
+      "source": "api:GET /submissions/:id/share-preview",
+      "target": "be_svc:JudgingService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Share preview reads are handled by JudgingService.getSharePreview."
     },
     {
       "id": "e94",

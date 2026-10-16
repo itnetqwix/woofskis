@@ -200,6 +200,37 @@ export const rateSubmissionSwaggerSchema: FastifySchema = {
   },
 };
 
+export const sharePreviewSwaggerSchema: FastifySchema = {
+  tags: ['Judging'],
+  summary: 'Link preview metadata for a shared video',
+  description:
+    'Public. Returns title, description, thumbnailUrl, and creatorName for an APPROVED, non-deleted submission ' +
+    'in a viewable contest (ACTIVE, JUDGING, COMPLETED, ARCHIVED). Used for Open Graph tags on the shared video page.',
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+    },
+  },
+  response: {
+    200: swaggerSuccessEnvelope(
+      {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          title: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          thumbnailUrl: { type: 'string', nullable: true },
+          creatorName: { type: 'string', nullable: true },
+        },
+      },
+      'Share preview retrieved successfully',
+    ),
+    404: swaggerErrorEnvelope('Submission not found'),
+  },
+};
+
 export const voterParamsSchema = z.object({
   id: z.string().uuid('Submission ID must be a valid UUID format'),
 });
