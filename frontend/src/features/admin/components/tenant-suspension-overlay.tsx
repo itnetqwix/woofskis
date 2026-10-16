@@ -37,7 +37,7 @@ export function TenantSuspensionOverlay({ brand }: TenantSuspensionOverlayProps)
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={brand.logoUrl || '/logo/woofskis_logo.png'}
+              src={brand.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
               alt={brand.name}
               className="h-full w-full object-contain p-0.5"
             />

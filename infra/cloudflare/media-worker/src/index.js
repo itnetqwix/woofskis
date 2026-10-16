@@ -96,6 +96,26 @@ export function responseFromCache(stored, method) {
   });
 }
 
+/**
+ * S3 error bodies can echo the access key id and the string to sign.
+ * Only the <Code> element is returned, and only when it is a plain word.
+ */
+export async function originErrorCode(origin) {
+  try {
+    const body = await origin.text();
+    const code = /<Code>([A-Za-z]{1,64})<\/Code>/.exec(body)?.[1];
+    return code || 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+function credentialKind(accessKeyId) {
+  if (accessKeyId.startsWith('AKIA')) return 'long-term';
+  if (accessKeyId.startsWith('ASIA')) return 'temporary';
+  return 'unrecognized';
+}
+
 function mediaHeaders(origin, key) {
   const headers = new Headers();
   for (const name of FORWARDED_HEADERS) {
@@ -133,7 +153,12 @@ export default {
     const key = submissionKeyFromPath(new URL(request.url).pathname);
     if (!key) return new Response('Not found', { status: 404 });
 
-    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.AWS_REGION || !env.S3_BUCKET) {
+    const accessKeyId = env.AWS_ACCESS_KEY_ID?.trim();
+    const secretAccessKey = env.AWS_SECRET_ACCESS_KEY?.trim();
+    const region = env.AWS_REGION?.trim();
+    const bucket = env.S3_BUCKET?.trim();
+
+    if (!accessKeyId || !secretAccessKey || !region || !bucket) {
       return new Response('Media origin is not configured', { status: 503 });
     }
 
@@ -147,19 +172,25 @@ export default {
       .split('/')
       .map((segment) => encodeURIComponent(segment))
       .join('/');
-    const objectUrl = `https://${env.S3_BUCKET}.s3.${env.AWS_REGION}.amazonaws.com/${encoded}`;
+    const objectUrl = `https://${bucket}.s3.${region}.amazonaws.com/${encoded}`;
     const aws = new AwsClient({
-      accessKeyId: env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId,
+      secretAccessKey,
       service: 's3',
-      region: env.AWS_REGION,
+      region,
     });
     const originHeaders = new Headers();
     if (range) originHeaders.set('Range', range);
     const signed = await aws.sign(objectUrl, { method: 'GET', headers: originHeaders });
-    const origin = await fetch(signed, { method: 'GET' });
+    const origin = await fetch(signed);
 
     if (origin.status !== 200 && origin.status !== 206) {
+      const code = await originErrorCode(origin);
+      console.error(
+        `media origin returned status ${origin.status} code ${code} ` +
+          `request-id ${origin.headers.get('x-amz-request-id') || 'none'} ` +
+          `credential ${credentialKind(accessKeyId)} for key ${key}`,
+      );
       return new Response('Media unavailable', {
         status: origin.status === 404 || origin.status === 403 ? 404 : 502,
       });

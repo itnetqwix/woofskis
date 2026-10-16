@@ -168,11 +168,11 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
                   <div className="flex shrink-0 items-center justify-center p-0.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
+                      src={activeBrand?.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
                       alt={activeBrand?.name || 'Woofskis'}
-                      className="h-9 w-auto max-w-[160px] object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:max-w-[200px] md:h-14 md:max-w-[240px]"
-                      width={220}
-                      height={72}
+                      className="h-auto w-[84px] max-h-12 object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105 sm:w-[110px] sm:max-h-16 md:w-[130px] md:max-h-20"
+                      width={160}
+                      height={88}
                     />
                   </div>
 
@@ -241,11 +241,11 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
               <div className="flex shrink-0 items-center justify-center p-0.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
+                  src={activeBrand?.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
                   alt="Woofskis Logo"
-                  className="h-10 w-auto max-w-[170px] object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:h-12 sm:max-w-[210px] md:h-14 md:max-w-[250px] lg:h-16 lg:max-w-[280px]"
-                  width={240}
-                  height={80}
+                  className="h-auto w-[88px] max-h-12 object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:w-[115px] sm:max-h-16 md:w-[135px] md:max-h-20 lg:w-[155px]"
+                  width={160}
+                  height={88}
                 />
               </div>
             </Link>

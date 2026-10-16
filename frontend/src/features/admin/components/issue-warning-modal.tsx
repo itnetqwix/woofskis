@@ -264,7 +264,7 @@ export function IssueWarningModal({
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={b.logoUrl || '/logo/woofskis_logo.png'}
+                        src={b.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
                         alt={b.name}
                         className="h-full w-full object-contain p-0.5"
                       />

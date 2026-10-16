@@ -199,7 +199,7 @@ export function emptyQueueFallback(input: {
     title: `${name} Showcase Showcase #01`,
     creatorName: `${name} Team`,
     creatorHandle: `@${slug}_official`,
-    creatorAvatarUrl: input.logoUrl || '/logo/woofskis_logo.png',
+    creatorAvatarUrl: input.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600&auto=format&fit=crop&q=80',
     videoUrl:

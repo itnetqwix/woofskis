@@ -39,7 +39,7 @@ export default function RegisterCreatorPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={activeBrand?.logoUrl || '/logo/woofskis_logo.png'}
+                  src={activeBrand?.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
                   alt={activeBrand?.name || 'COS Brand'}
                   className="h-full w-full rounded-[14px] object-contain p-0.5"
                 />

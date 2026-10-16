@@ -260,7 +260,7 @@ export function deploymentBrandPlaceholder(slug = deploymentOrganizationSlug()):
     slug,
     subdomain: '',
     customDomain: '',
-    logoUrl: '/logo/woofskis_logo.png',
+    logoUrl: '/logo/woofskis_logo_with_dog_transparent.png',
     tagline: '',
     description: '',
     colors: {

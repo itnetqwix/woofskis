@@ -11,7 +11,7 @@ export const DEFAULT_TENANT_BRANDS: TenantBrandConfig[] = [
     slug: 'woofskis',
     subdomain: 'woofskis.contestos.com',
     customDomain: 'woofskis.com',
-    logoUrl: '/logo/woofskis_logo.png',
+    logoUrl: '/logo/woofskis_logo_with_dog_transparent.png',
     tagline: 'Premier Dog & Pet Video Competitions',
     description:
       'The premier competition platform where talented pets and creators compete for community consensus.',

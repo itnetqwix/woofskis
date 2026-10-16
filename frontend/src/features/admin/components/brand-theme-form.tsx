@@ -73,7 +73,7 @@ const COLOR_PRESETS = [
 const LOGO_PRESETS = [
   {
     label: 'Woofskis (Official)',
-    url: '/logo/woofskis_logo.png',
+    url: '/logo/woofskis_logo_with_dog_transparent.png',
   },
   {
     label: 'Canine (Woofskis)',

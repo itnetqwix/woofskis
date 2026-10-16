@@ -6,7 +6,7 @@ Welcome to the **Woofskis Design System & Visual Foundation**. This document spe
 
 ## 1. Brand Identity & Source of Truth
 
-The visual identity is derived directly from the official **Woofskis** logo asset (`public/logo/woofskis_logo.png`).
+The visual identity is derived directly from the official **Woofskis** logo asset (`public/logo/woofskis_logo_with_dog_transparent.png`).
 
 ### Core Brand Colors
 

@@ -35,7 +35,7 @@ export function UnratedEndDialog({
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo/woofskis_logo.png"
+              src="/logo/woofskis_logo_with_dog_transparent.png"
               alt="Woofskis"
               className="h-6 w-6 shrink-0 object-contain"
               width={24}

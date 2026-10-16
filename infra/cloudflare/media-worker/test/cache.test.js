@@ -99,6 +99,13 @@ function originResponse(request) {
   if (range === 'deny') {
     return new Response('denied', { status: 403 });
   }
+  if (range === 'deny-xml') {
+    return new Response(
+      '<?xml version="1.0" encoding="UTF-8"?><Error><Code>SignatureDoesNotMatch</Code>' +
+        '<AWSAccessKeyId>unit-test-access-key</AWSAccessKeyId><StringToSign>x</StringToSign></Error>',
+      { status: 403, headers: { 'x-amz-request-id': 'REQ123' } },
+    );
+  }
   return new Response('FULL', {
     status: 200,
     headers: {
@@ -248,6 +255,29 @@ describe('media worker cache', () => {
     assert.equal(session.cache.entries.size, 0);
   });
 
+  it('logs the S3 error code without the access key id or secret', async () => {
+    session = install(originResponse);
+    const logged = [];
+    const previousError = console.error;
+    console.error = (...args) => logged.push(args.join(' '));
+    try {
+      const response = await worker.fetch(
+        new Request(MEDIA, { headers: { Range: 'deny-xml' } }),
+        env,
+        session.ctx,
+      );
+      assert.equal(response.status, 404);
+      assert.equal(await response.text(), 'Media unavailable');
+    } finally {
+      console.error = previousError;
+    }
+    assert.equal(logged.length, 1);
+    assert.match(logged[0], /status 403 code SignatureDoesNotMatch request-id REQ123 credential unrecognized/);
+    assert.equal(logged[0].includes(env.AWS_ACCESS_KEY_ID), false);
+    assert.equal(logged[0].includes(SECRET), false);
+    assert.equal(logged[0].includes('StringToSign'), false);
+  });
+
   it('does not put the AWS secret or a public object ACL in the browser response', async () => {
     session = install(originResponse);
     const response = await worker.fetch(
@@ -259,5 +289,26 @@ describe('media worker cache', () => {
     assert.equal(headerText.includes(SECRET), false);
     assert.equal(headerText.includes('public-read'), false);
     assert.equal((await response.text()).includes(SECRET), false);
+  });
+
+  it('trims whitespace and newlines from AWS environment credentials and bucket configuration', async () => {
+    session = install(originResponse);
+    const whitespaceEnv = {
+      AWS_ACCESS_KEY_ID: '  unit-test-access-key\n',
+      AWS_SECRET_ACCESS_KEY: `\n  ${SECRET} \r\n`,
+      AWS_REGION: ' us-east-2\n',
+      S3_BUCKET: ' woofskis-production-media \n',
+    };
+    const response = await worker.fetch(
+      new Request(MEDIA, { headers: { Range: 'bytes=0-1' } }),
+      whitespaceEnv,
+      session.ctx,
+    );
+    assert.equal(response.status, 206);
+    assert.equal(session.calls.length, 1);
+    assert.match(session.calls[0].url, /^https:\/\/woofskis-production-media\.s3\.us-east-2\.amazonaws\.com\//);
+    assert.equal(session.calls[0].url.includes(' '), false);
+    assert.equal(session.calls[0].url.includes('%20'), false);
+    assert.match(session.calls[0].authorization, /Credential=unit-test-access-key\//);
   });
 });

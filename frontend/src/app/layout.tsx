@@ -25,9 +25,9 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: '/logo/woofskis_logo.png',
-    shortcut: '/logo/woofskis_logo.png',
-    apple: '/logo/woofskis_logo.png',
+    icon: '/logo/woofskis_logo_with_dog_transparent.png',
+    shortcut: '/logo/woofskis_logo_with_dog_transparent.png',
+    apple: '/logo/woofskis_logo_with_dog_transparent.png',
   },
   authors: [
     {
