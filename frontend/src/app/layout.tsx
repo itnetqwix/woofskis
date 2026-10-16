@@ -18,6 +18,8 @@ const robotoCondensed = Roboto_Condensed({
   display: 'swap',
 });
 
+const defaultShareImage = new URL('/logo/woofskis_logo_with_dog.png', siteConfig.url).toString();
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -43,11 +45,13 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [{ url: defaultShareImage, alt: siteConfig.name }],
   },
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.name,
     description: siteConfig.description,
+    images: [defaultShareImage],
     creator: '@cos',
   },
 };
