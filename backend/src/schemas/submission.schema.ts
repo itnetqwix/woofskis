@@ -111,6 +111,22 @@ const presignViewSchema = {
     },
     expiresInSeconds: { type: 'integer' },
     method: { type: 'string', enum: ['PUT'] },
+    thumbnail: {
+      type: 'object',
+      nullable: true,
+      description:
+        'Presigned PUT for the image/jpeg poster frame. Send its objectKey as thumbnailUrl on complete.',
+      properties: {
+        uploadUrl: { type: 'string' },
+        objectKey: { type: 'string' },
+        headers: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+        },
+        expiresInSeconds: { type: 'integer' },
+        method: { type: 'string', enum: ['PUT'] },
+      },
+    },
   },
 };
 

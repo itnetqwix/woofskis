@@ -11,7 +11,10 @@ import {
   submissionIdParamSchema,
 } from '../schemas/moderation.schema.js';
 import { ModerationService } from '../services/moderation.service.js';
-import { playbackUrlForSubmission } from '../services/storage.service.js';
+import {
+  playbackUrlForSubmission,
+  resolveThumbnailUrl,
+} from '../services/storage.service.js';
 import { sendSuccess } from '../utils/response.js';
 
 function actorFromRequest(request: FastifyRequest) {
@@ -37,7 +40,7 @@ export async function toModerationSubmissionView(
     description: submission.description,
     videoUrl: await playbackUrlForSubmission(submission.objectKey, submission.videoUrl),
     objectKey: submission.objectKey,
-    thumbnailUrl: submission.thumbnailUrl,
+    thumbnailUrl: await resolveThumbnailUrl(submission.thumbnailUrl),
     durationSeconds: submission.durationSeconds,
     status: submission.status,
     rejectionReason: submission.rejectionReason,

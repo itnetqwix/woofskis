@@ -66,6 +66,8 @@ export interface PresignSubmissionResponse {
   headers: Record<string, string>;
   expiresInSeconds: number;
   method: 'PUT';
+  /** Presigned PUT for the image/jpeg poster frame. Absent for legacy keys. */
+  thumbnail?: Omit<PresignSubmissionResponse, 'thumbnail'> | null;
 }
 
 export interface CompleteSubmissionRequest {

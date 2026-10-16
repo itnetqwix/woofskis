@@ -220,6 +220,7 @@ export class JudgingService {
         videoUrl: await playbackUrlForSubmission(row.objectKey, row.videoUrl, {
           audience: 'public',
         }),
+        thumbnailUrl: await resolveThumbnailUrl(row.thumbnailUrl, { audience: 'public' }),
       })),
     );
     const viewerRatings = voterIpHash
@@ -256,7 +257,7 @@ export class JudgingService {
       id: row.id,
       title: row.title,
       description: row.description,
-      thumbnailUrl: await resolveThumbnailUrl(row.thumbnailUrl),
+      thumbnailUrl: await resolveThumbnailUrl(row.thumbnailUrl, { audience: 'public' }),
       creatorName: row.creator.name?.trim() || null,
     };
   }

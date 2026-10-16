@@ -4,6 +4,7 @@ import { SubmissionRepository } from '../repositories/submission.repository.js';
 import {
   playbackUrlForSubmission,
   resolveContestBannerUrl,
+  resolveThumbnailUrl,
   signedAvatarUrl,
 } from './storage.service.js';
 import { DEFAULT_CONTEST_TIMEZONE } from './contest-schedule.js';
@@ -96,7 +97,7 @@ export class LeaderboardService {
         videoUrl: await playbackUrlForSubmission(record.objectKey, record.videoUrl, {
           audience: 'public',
         }),
-        thumbnailUrl: record.thumbnailUrl,
+        thumbnailUrl: await resolveThumbnailUrl(record.thumbnailUrl, { audience: 'public' }),
         durationSeconds: record.durationSeconds,
         tags: record.tags,
         communityScore: record.communityScore,

@@ -23,6 +23,9 @@ const SUBMISSION_KEY =
 const LEGACY_SUBMISSION_KEY =
   /^org\/[0-9a-f-]{36}\/contests\/[0-9a-f-]{36}\/creators\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(mp4|webm|mov)$/i;
 
+const THUMBNAIL_KEY =
+  /^contests\/[0-9a-f-]{36}\/creators\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/i;
+
 const FORWARDED_HEADERS = [
   'content-type',
   'content-length',
@@ -44,11 +47,18 @@ function submissionKeyFromPath(pathname) {
     return null;
   }
   if (key.includes('..') || key.includes('\\') || key.startsWith('/')) return null;
-  if (!SUBMISSION_KEY.test(key) && !LEGACY_SUBMISSION_KEY.test(key)) return null;
+  if (
+    !SUBMISSION_KEY.test(key) &&
+    !LEGACY_SUBMISSION_KEY.test(key) &&
+    !THUMBNAIL_KEY.test(key)
+  ) {
+    return null;
+  }
   return key;
 }
 
 function contentTypeForKey(key) {
+  if (key.endsWith('.jpg')) return 'image/jpeg';
   if (key.endsWith('.webm')) return 'video/webm';
   if (key.endsWith('.mov')) return 'video/quicktime';
   return 'video/mp4';
