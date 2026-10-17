@@ -1,9 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Search, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
+import {
+  Ban,
+  ChevronRight,
+  Inbox,
+  Loader2,
+  Search,
+  ShieldAlert,
+  ShieldCheck,
+  UserCheck,
+  Users,
+  Video,
+  X,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { listContests } from '@/services/contests-api';
 import {
   listAdminCreators,
@@ -16,6 +29,14 @@ function formatWhen(value: string | null | undefined): string {
   if (!value) return '—';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString();
+}
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return '—';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? '—'
+    : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -33,16 +54,71 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-1 text-2xl font-black text-foreground">{value}</p>
-    </div>
-  );
+interface SummaryCardProps {
+  label: string;
+  value: number;
+  hint: string;
+  icon: React.ReactNode;
+  valueClassName?: string;
+  active?: boolean;
+  onClick?: () => void;
+  href?: string;
 }
+
+function SummaryCard({
+  label,
+  value,
+  hint,
+  icon,
+  valueClassName,
+  active,
+  onClick,
+  href,
+}: SummaryCardProps) {
+  const interactive = Boolean(onClick || href);
+  const body = (
+    <>
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          {label}
+        </span>
+        {icon}
+      </div>
+      <div className={cn('font-mono text-xl font-black leading-tight', valueClassName)}>
+        {value.toLocaleString()}
+      </div>
+      <p className="flex items-center gap-1 truncate text-[11px] text-muted-foreground">
+        <span className="truncate">{hint}</span>
+        {interactive ? <ChevronRight className="h-3 w-3 shrink-0" /> : null}
+      </p>
+    </>
+  );
+  const className = cn(
+    'block w-full space-y-0.5 rounded-xl border bg-card px-3 py-2.5 text-left',
+    active ? 'border-primary bg-primary/10' : 'border-border/80',
+    interactive &&
+      !active &&
+      'transition-colors hover:border-primary/50 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+  );
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {body}
+      </Link>
+    );
+  }
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} aria-pressed={active} className={className}>
+        {body}
+      </button>
+    );
+  }
+  return <div className={className}>{body}</div>;
+}
+
+const SELECT_CLASS =
+  'h-9 min-w-0 rounded-lg border border-border bg-background px-2.5 text-xs font-semibold text-foreground focus:border-primary focus:outline-none';
 
 export function CreatorDirectory() {
   const queryClient = useQueryClient();
@@ -55,6 +131,16 @@ export function CreatorDirectory() {
   const [reason, setReason] = useState('');
   const [statusTarget, setStatusTarget] = useState<ApiAdminCreator | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const next = searchInput.trim();
+    if (next === search) return;
+    const timer = setTimeout(() => {
+      setSearch(next);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput, search]);
 
   const contestsQuery = useQuery({
     queryKey: ['admin-contest-filter'],
@@ -119,53 +205,89 @@ export function CreatorDirectory() {
   const creators = query.data?.creators ?? [];
   const pagination = query.data?.pagination;
 
-  return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-7">
-        <SummaryCard label="Total creators" value={summary?.totalCreators ?? 0} />
-        <SummaryCard label="Active creators" value={summary?.activeCreators ?? 0} />
-        <SummaryCard label="Blocked creators" value={summary?.blockedCreators ?? 0} />
-        <SummaryCard label="Total videos" value={summary?.totalVideos ?? 0} />
-        <SummaryCard label="Approved videos" value={summary?.approvedVideos ?? 0} />
-        <SummaryCard
-          label="Pending / under moderation"
-          value={summary?.underModerationVideos ?? 0}
-        />
-        <SummaryCard label="Rejected videos" value={summary?.rejectedVideos ?? 0} />
-      </div>
-      {summary && summary.flaggedVideos > 0 ? (
-        <p className="text-xs text-muted-foreground">
-          Pending / under moderation includes {summary.pendingVideos} pending review and{' '}
-          {summary.flaggedVideos} flagged.
-        </p>
-      ) : null}
+  const hasActiveFilters = searchInput.trim() !== '' || status !== '' || contestId !== '';
 
-      <form
-        className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-end"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setPage(1);
-          setSearch(searchInput.trim());
-        }}
+  const filterByStatus = (next: '' | 'ACTIVE' | 'BLOCKED') => {
+    setStatus(next);
+    setPage(1);
+    document
+      .getElementById('creator-listing')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const clearFilters = () => {
+    setSearchInput('');
+    setSearch('');
+    setStatus('');
+    setContestId('');
+    setPage(1);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        <SummaryCard
+          label="Total Creators"
+          value={summary?.totalCreators ?? 0}
+          hint="Show all creators"
+          icon={<Users className="h-3.5 w-3.5 text-primary" />}
+          active={status === ''}
+          onClick={() => filterByStatus('')}
+        />
+        <SummaryCard
+          label="Active"
+          value={summary?.activeCreators ?? 0}
+          valueClassName="text-emerald-500"
+          hint="Show active"
+          icon={<UserCheck className="h-3.5 w-3.5 text-emerald-500" />}
+          active={status === 'ACTIVE'}
+          onClick={() => filterByStatus('ACTIVE')}
+        />
+        <SummaryCard
+          label="Blocked"
+          value={summary?.blockedCreators ?? 0}
+          valueClassName="text-rose-500"
+          hint="Show blocked"
+          icon={<Ban className="h-3.5 w-3.5 text-rose-500" />}
+          active={status === 'BLOCKED'}
+          onClick={() => filterByStatus('BLOCKED')}
+        />
+        <SummaryCard
+          label="Videos"
+          value={summary?.totalVideos ?? 0}
+          hint={`${summary?.approvedVideos ?? 0} approved · ${summary?.rejectedVideos ?? 0} rejected`}
+          icon={<Video className="h-3.5 w-3.5 text-blue-500" />}
+        />
+        <SummaryCard
+          label="Under Moderation"
+          value={summary?.underModerationVideos ?? 0}
+          valueClassName="text-amber-500"
+          hint={
+            summary && summary.flaggedVideos > 0
+              ? `${summary.pendingVideos} pending · ${summary.flaggedVideos} flagged`
+              : 'Open moderation queue'
+          }
+          icon={<Inbox className="h-3.5 w-3.5 text-amber-500" />}
+          href="/admin/moderation"
+        />
+      </div>
+
+      <div
+        id="creator-listing"
+        className="flex scroll-mt-20 flex-col gap-2 rounded-xl border border-border/80 bg-card p-2 sm:flex-row sm:items-center"
       >
-        <label className="min-w-0 flex-1 space-y-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Search name or email
-          </span>
-          <span className="flex items-center gap-2 rounded-xl border border-border bg-background px-3">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <input
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Creator name or email"
-              className="h-10 w-full bg-transparent text-sm outline-none"
-            />
-          </span>
-        </label>
-        <label className="space-y-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Status
-          </span>
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder="Search by name or email…"
+            aria-label="Search creators"
+            className="h-9 w-full rounded-lg border border-border bg-background pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
           <select
             aria-label="Status filter"
             value={status}
@@ -173,17 +295,12 @@ export function CreatorDirectory() {
               setStatus(event.target.value as '' | 'ACTIVE' | 'BLOCKED');
               setPage(1);
             }}
-            className="h-10 rounded-xl border border-border bg-background px-3 text-sm"
+            className={SELECT_CLASS}
           >
             <option value="">All statuses</option>
             <option value="ACTIVE">Active</option>
             <option value="BLOCKED">Blocked</option>
           </select>
-        </label>
-        <label className="min-w-[12rem] space-y-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Contest
-          </span>
           <select
             aria-label="Contest filter"
             value={contestId}
@@ -191,7 +308,7 @@ export function CreatorDirectory() {
               setContestId(event.target.value);
               setPage(1);
             }}
-            className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
+            className={cn(SELECT_CLASS, 'sm:max-w-[14rem]')}
           >
             <option value="">All contests</option>
             {(contestsQuery.data ?? []).map((contest) => (
@@ -200,16 +317,28 @@ export function CreatorDirectory() {
               </option>
             ))}
           </select>
-        </label>
-        <button
-          type="submit"
-          className="h-10 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground"
-        >
-          Search
-        </button>
-      </form>
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="col-span-2 inline-flex h-9 items-center justify-center gap-1 rounded-lg px-2.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground sm:col-span-1"
+            >
+              <X className="h-3.5 w-3.5" />
+              Clear
+            </button>
+          ) : null}
+        </div>
+      </div>
 
-      {notice ? <p className="text-sm font-semibold text-primary">{notice}</p> : null}
+      <p className="px-1 text-[11px] text-muted-foreground">
+        {query.isFetching && !query.isLoading
+          ? 'Updating…'
+          : pagination
+            ? `Showing ${creators.length} of ${pagination.totalCount} creators`
+            : null}
+      </p>
+
+      {notice ? <p className="text-xs font-semibold text-primary">{notice}</p> : null}
       {query.isError ? (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {query.error instanceof Error ? query.error.message : 'Creators could not be loaded'}
@@ -229,123 +358,115 @@ export function CreatorDirectory() {
           Loading creators…
         </div>
       ) : creators.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card px-4 py-10 text-center">
-          <Users className="mx-auto h-5 w-5 text-muted-foreground" />
-          <p className="mt-2 text-sm text-muted-foreground">No creators match this view.</p>
+        <div className="space-y-2 rounded-xl border border-dashed border-border bg-card/40 p-8 text-center">
+          <Users className="mx-auto h-6 w-6 text-muted-foreground" />
+          <p className="text-sm font-bold text-foreground">No creators match this view</p>
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="h-8 rounded-lg border border-border px-3 text-xs font-semibold hover:bg-muted"
+            >
+              Clear filters
+            </button>
+          ) : null}
         </div>
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-2xl border border-border lg:block">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-muted/50 text-[11px] uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Creator</th>
-                  <th className="px-3 py-3 font-semibold">Status</th>
-                  <th className="px-3 py-3 font-semibold">Videos</th>
-                  <th className="px-3 py-3 font-semibold">Approved</th>
-                  <th className="px-3 py-3 font-semibold">Pending</th>
-                  <th className="px-3 py-3 font-semibold">Rejected</th>
-                  <th className="px-3 py-3 font-semibold">Contests</th>
-                  <th className="px-3 py-3 font-semibold">Joined</th>
-                  <th className="px-3 py-3 font-semibold">Last activity</th>
-                  <th className="px-4 py-3 font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {creators.map((creator) => (
-                  <tr key={creator.id} className="border-t border-border">
-                    <td className="px-4 py-3">
-                      <p className="font-bold text-foreground">{creator.name}</p>
-                      <p className="break-all text-xs text-muted-foreground">{creator.email}</p>
-                    </td>
-                    <td className="px-3 py-3">
+          <div className="overflow-hidden rounded-xl border border-border/80 bg-card">
+            <div className="hidden grid-cols-[minmax(0,1fr)_80px_170px_70px_130px_auto] items-center gap-3 border-b border-border/60 bg-muted/30 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground lg:grid">
+              <span>Creator</span>
+              <span>Status</span>
+              <span>Videos · Approved / Pending / Rejected</span>
+              <span className="text-right">Contests</span>
+              <span>Last activity</span>
+              <span className="w-[150px] text-right">Actions</span>
+            </div>
+            <ul className="divide-y divide-border/60">
+              {creators.map((creator) => (
+                <li
+                  key={creator.id}
+                  className="grid grid-cols-1 gap-1.5 px-3 py-2.5 transition-colors hover:bg-muted/20 lg:grid-cols-[minmax(0,1fr)_80px_170px_70px_130px_auto] lg:items-center lg:gap-3"
+                >
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/admin/creators/${creator.id}`}
+                        className="block truncate text-sm font-bold text-foreground hover:text-primary"
+                      >
+                        {creator.name}
+                      </Link>
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {creator.email}
+                        <span className="hidden lg:inline">
+                          {' · '}joined {formatDate(creator.createdAt)}
+                        </span>
+                      </p>
+                    </div>
+                    <span className="lg:hidden">
                       <StatusBadge status={creator.accountStatus} />
-                    </td>
-                    <td className="px-3 py-3">{creator.totalVideos}</td>
-                    <td className="px-3 py-3">{creator.approvedVideos}</td>
-                    <td className="px-3 py-3">
+                    </span>
+                  </div>
+
+                  <div className="hidden lg:block">
+                    <StatusBadge status={creator.accountStatus} />
+                  </div>
+
+                  <div className="flex items-center gap-2 font-mono text-[11px] lg:text-xs">
+                    <span className="font-bold text-foreground">{creator.totalVideos}</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-emerald-500" title="Approved">
+                      {creator.approvedVideos}
+                    </span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="text-amber-500" title="Pending">
                       {creator.pendingVideos}
                       {creator.flaggedVideos > 0 ? (
-                        <span className="mt-1 block text-[10px] text-muted-foreground">
-                          {creator.flaggedVideos} flagged
+                        <span
+                          className="ml-1 inline-flex items-center gap-0.5 text-warning"
+                          title={`${creator.flaggedVideos} flagged`}
+                        >
+                          <ShieldAlert className="h-3 w-3" />
+                          {creator.flaggedVideos}
                         </span>
                       ) : null}
-                    </td>
-                    <td className="px-3 py-3">{creator.rejectedVideos}</td>
-                    <td className="px-3 py-3">{creator.contestsParticipated}</td>
-                    <td className="px-3 py-3 text-xs">{formatWhen(creator.createdAt)}</td>
-                    <td className="px-3 py-3 text-xs">{formatWhen(creator.lastActivityAt)}</td>
-                    <td className="px-4 py-3">
-                      <CreatorActions
-                        creator={creator}
-                        onWarn={() => {
-                          setReason('');
-                          setWarnTarget(creator);
-                        }}
-                        onStatus={() => setStatusTarget(creator)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="text-rose-500" title="Rejected">
+                      {creator.rejectedVideos}
+                    </span>
+                    <span className="ml-auto text-muted-foreground lg:hidden">
+                      {creator.contestsParticipated} contests · active{' '}
+                      {formatDate(creator.lastActivityAt)}
+                    </span>
+                  </div>
+
+                  <div className="hidden text-right font-mono text-xs font-bold lg:block">
+                    {creator.contestsParticipated}
+                  </div>
+
+                  <div
+                    className="hidden text-xs text-muted-foreground lg:block"
+                    title={formatWhen(creator.lastActivityAt)}
+                  >
+                    {formatDate(creator.lastActivityAt)}
+                  </div>
+
+                  <div className="lg:w-[150px]">
+                    <CreatorActions
+                      creator={creator}
+                      onWarn={() => {
+                        setReason('');
+                        setWarnTarget(creator);
+                      }}
+                      onStatus={() => setStatusTarget(creator)}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <ul className="space-y-3 lg:hidden">
-            {creators.map((creator) => (
-              <li key={creator.id} className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-black text-foreground">{creator.name}</p>
-                    <p className="mt-1 break-all text-xs text-muted-foreground">{creator.email}</p>
-                  </div>
-                  <StatusBadge status={creator.accountStatus} />
-                </div>
-                <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <dt className="text-muted-foreground">Videos</dt>
-                    <dd className="font-semibold">{creator.totalVideos}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground">Approved</dt>
-                    <dd className="font-semibold">{creator.approvedVideos}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground">Pending</dt>
-                    <dd className="font-semibold">
-                      {creator.pendingVideos}
-                      {creator.flaggedVideos > 0 ? ` · ${creator.flaggedVideos} flagged` : ''}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground">Rejected</dt>
-                    <dd className="font-semibold">{creator.rejectedVideos}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground">Contests</dt>
-                    <dd className="font-semibold">{creator.contestsParticipated}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground">Joined</dt>
-                    <dd className="font-semibold">{formatWhen(creator.createdAt)}</dd>
-                  </div>
-                </dl>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Last activity {formatWhen(creator.lastActivityAt)}
-                </p>
-                <div className="mt-3">
-                  <CreatorActions
-                    creator={creator}
-                    onWarn={() => {
-                      setReason('');
-                      setWarnTarget(creator);
-                    }}
-                    onStatus={() => setStatusTarget(creator)}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
         </>
       )}
 
@@ -474,25 +595,27 @@ function CreatorActions({
   onStatus: () => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex items-center gap-1.5 lg:justify-end">
       <Link
         href={`/admin/creators/${creator.id}`}
-        className="inline-flex h-9 items-center rounded-lg border border-border px-2.5 text-xs font-bold"
+        className="inline-flex h-7 flex-1 items-center justify-center rounded-md border border-border px-2 text-[11px] font-semibold hover:bg-muted lg:flex-none"
       >
-        View profile
+        View
       </Link>
       <button
         type="button"
         onClick={onWarn}
-        className="inline-flex h-9 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-bold"
+        title="Warn creator"
+        className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border px-2 text-[11px] font-semibold hover:bg-muted lg:flex-none"
       >
-        <ShieldAlert className="h-3.5 w-3.5" />
+        <ShieldAlert className="h-3.5 w-3.5 text-warning" />
         Warn
       </button>
       <button
         type="button"
         onClick={onStatus}
-        className="inline-flex h-9 items-center gap-1 rounded-lg border border-destructive/40 px-2.5 text-xs font-bold text-destructive"
+        title={creator.accountStatus === 'BLOCKED' ? 'Unblock creator' : 'Block creator'}
+        className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-destructive/40 px-2 text-[11px] font-semibold text-destructive hover:bg-destructive/10 lg:flex-none"
       >
         <ShieldCheck className="h-3.5 w-3.5" />
         {creator.accountStatus === 'BLOCKED' ? 'Unblock' : 'Block'}

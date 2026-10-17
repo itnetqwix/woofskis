@@ -15,13 +15,22 @@ import {
 } from '../middleware/auth.middleware.js';
 import { JudgingController } from '../controllers/judging.controller.js';
 import { LeaderboardController } from '../controllers/leaderboard.controller.js';
+import { VideoCategoryController } from '../controllers/video-category.controller.js';
 import { VoterController } from '../controllers/voter.controller.js';
 import {
   judgingQueueSwaggerSchema,
   listVotersSwaggerSchema,
   rateSubmissionSwaggerSchema,
+  sharePreviewSwaggerSchema,
 } from '../schemas/judging.schema.js';
 import { getLeaderboardSwaggerSchema } from '../schemas/leaderboard.schema.js';
+import {
+  createVideoCategorySwaggerSchema,
+  deleteVideoCategorySwaggerSchema,
+  listActiveVideoCategoriesSwaggerSchema,
+  listAdminVideoCategoriesSwaggerSchema,
+  updateVideoCategorySwaggerSchema,
+} from '../schemas/video-category.schema.js';
 import {
   registerCreatorSwaggerSchema,
   loginSwaggerSchema,
@@ -94,6 +103,12 @@ import {
   presignChatAttachmentSwaggerSchema,
   sendChatMessageSwaggerSchema,
 } from '../schemas/chat.schema.js';
+import { NotificationController } from '../controllers/notification.controller.js';
+import {
+  listNotificationsSwaggerSchema,
+  markAllNotificationsReadSwaggerSchema,
+  markNotificationReadSwaggerSchema,
+} from '../schemas/notification.schema.js';
 
 import { sendSuccess } from '../utils/response.js';
 import { SYSTEM_CONSTANTS, HTTP_STATUS } from '../config/constants.js';
@@ -307,6 +322,26 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     '/chat/conversations/:id/read',
     { schema: markChatReadSwaggerSchema, onRequest: creatorGuards },
     ChatController.read,
+  );
+
+  // In-app notifications. Any authenticated user reads only their own rows.
+  // Register /notifications/read-all before /notifications/:id/read.
+  fastify.get(
+    '/notifications',
+    { schema: listNotificationsSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.list,
+  );
+
+  fastify.post(
+    '/notifications/read-all',
+    { schema: markAllNotificationsReadSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.markAllRead,
+  );
+
+  fastify.post(
+    '/notifications/:id/read',
+    { schema: markNotificationReadSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.markRead,
   );
 
   // -------------------------------------------------------------
@@ -616,6 +651,12 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     JudgingController.queue,
   );
 
+  fastify.get(
+    '/submissions/:id/share-preview',
+    { schema: sharePreviewSwaggerSchema },
+    JudgingController.sharePreview,
+  );
+
   fastify.post(
     '/contests/:id/videos/:videoId/rate',
     {
@@ -624,6 +665,58 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       config: { rateLimit: ratingRateLimit },
     },
     JudgingController.rate,
+  );
+
+  // -------------------------------------------------------------
+  // Video categories. Official catalog shared with contest categories.
+  // Creator Other text is stored on the submission, not as a Category row.
+  // -------------------------------------------------------------
+
+  fastify.get(
+    '/video-categories',
+    {
+      schema: listActiveVideoCategoriesSwaggerSchema,
+      onRequest: [fastify.authenticate],
+    },
+    VideoCategoryController.listActive,
+  );
+
+  const videoCategoryGuards = [fastify.authenticate, authorizeRoles(Role.ADMIN)];
+
+  fastify.get(
+    '/admin/video-categories',
+    {
+      schema: listAdminVideoCategoriesSwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.listAdmin,
+  );
+
+  fastify.post(
+    '/admin/video-categories',
+    {
+      schema: createVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.create,
+  );
+
+  fastify.patch(
+    '/admin/video-categories/:id',
+    {
+      schema: updateVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.update,
+  );
+
+  fastify.delete(
+    '/admin/video-categories/:id',
+    {
+      schema: deleteVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.remove,
   );
 
   // -------------------------------------------------------------

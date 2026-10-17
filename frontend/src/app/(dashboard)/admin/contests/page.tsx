@@ -116,33 +116,23 @@ export default function AdminContestsPage() {
         )}
 
         {/* MAIN CONTAINER */}
-        <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-          {/* HERO TITLE & ACTION ROW */}
-          <div className="flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-                  Contests & Tournament Director
-                </h1>
-                <span className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
-                  ADMIN
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground sm:text-sm">
-                Create contests and move them through the contest lifecycle.
+        <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">
+                Contests
+              </h1>
+              <p className="truncate text-xs text-muted-foreground">
+                Create contests, manage their lifecycle, and review submissions.
               </p>
             </div>
-
-            {/* Quick Actions */}
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <Button
-                onClick={handleOpenCreate}
-                className="h-9 gap-1.5 bg-primary text-xs font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary-hover"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Create Contest</span>
-              </Button>
-            </div>
+            <Button
+              onClick={handleOpenCreate}
+              className="h-9 shrink-0 gap-1.5 bg-primary text-xs font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary-hover"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Contest</span>
+            </Button>
           </div>
 
           {/* 1. ADMIN TABS NAVIGATION (Contests, Brands, Moderation) */}
@@ -164,7 +154,6 @@ export default function AdminContestsPage() {
             onSearchChange={setSearchQuery}
             onStatusFilterChange={setStatusFilter}
             onSortByChange={setSortBy}
-            onOpenCreateModal={handleOpenCreate}
             onEditContest={handleEditContest}
             onTransitionStatus={handleTransitionStatus}
             onDuplicateContest={handleDuplicate}

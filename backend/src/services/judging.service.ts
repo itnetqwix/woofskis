@@ -15,7 +15,11 @@ import {
   computeUpdatedCommunityScore,
   CommunityScoreResult,
 } from './community-score.js';
-import { playbackUrlForSubmission, signedAvatarUrl } from './storage.service.js';
+import {
+  playbackUrlForSubmission,
+  resolveThumbnailUrl,
+  signedAvatarUrl,
+} from './storage.service.js';
 import {
   ConflictError,
   ForbiddenError,
@@ -91,6 +95,14 @@ export interface JudgingQueueItem {
   category: string | null;
   creator: { id: string; name: string; avatarUrl?: string | null };
   createdAt: Date;
+}
+
+export interface SharePreview {
+  id: string;
+  title: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  creatorName: string | null;
 }
 
 export interface JudgingQueueView {
@@ -208,6 +220,7 @@ export class JudgingService {
         videoUrl: await playbackUrlForSubmission(row.objectKey, row.videoUrl, {
           audience: 'public',
         }),
+        thumbnailUrl: await resolveThumbnailUrl(row.thumbnailUrl, { audience: 'public' }),
       })),
     );
     const viewerRatings = voterIpHash
@@ -228,6 +241,24 @@ export class JudgingService {
         ...item,
         viewerRating: viewerRatingBySubmission.get(item.id) ?? null,
       })),
+    };
+  }
+
+  /**
+   * Link preview metadata for one shared video.
+   * Same visibility as the queue: APPROVED, not deleted, viewable contest.
+   */
+  static async getSharePreview(submissionId: string): Promise<SharePreview> {
+    const row = await SubmissionRepository.findApprovedById(submissionId);
+    if (!row || !VIEWABLE_CONTEST_STATUSES.has(row.contest.status)) {
+      throw new NotFoundError('Submission not found');
+    }
+    return {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      thumbnailUrl: await resolveThumbnailUrl(row.thumbnailUrl, { audience: 'public' }),
+      creatorName: row.creator.name?.trim() || null,
     };
   }
 

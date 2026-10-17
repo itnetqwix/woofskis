@@ -7,6 +7,7 @@ import {
   type PresignSubmissionResponse,
 } from '@/services/submissions-api';
 import { resolveVideoContentType } from './video-constraints';
+import { captureVideoThumbnail } from './video-thumbnail';
 
 export interface DirectS3UploadProgress {
   loaded: number;
@@ -16,7 +17,7 @@ export interface DirectS3UploadProgress {
 
 export async function putFileToPresignedUrl(
   upload: Pick<PresignSubmissionResponse, 'method' | 'uploadUrl' | 'headers'>,
-  file: File,
+  file: Blob,
   onProgress?: (progress: DirectS3UploadProgress) => void,
   failureLabel = 'Video upload failed'
 ): Promise<void> {
@@ -55,6 +56,8 @@ export interface CreatorUploadInput {
   durationSeconds: number;
   tags?: string[];
   thumbnailUrl?: string | null;
+  categoryId?: string;
+  otherCategoryLabel?: string;
 }
 
 export async function uploadCreatorSubmission(
@@ -78,6 +81,9 @@ export async function uploadCreatorSubmission(
 
   await putFileToPresignedUrl(presignEnvelope.data, input.file, onProgress);
 
+  const thumbnailUrl =
+    input.thumbnailUrl ?? (await uploadCapturedThumbnail(input.file, presignEnvelope.data));
+
   const completeBody: CompleteSubmissionRequest = {
     contestId: input.contestId,
     objectKey: presignEnvelope.data.objectKey,
@@ -85,7 +91,9 @@ export async function uploadCreatorSubmission(
     description: input.description || null,
     durationSeconds: input.durationSeconds,
     tags: input.tags,
-    thumbnailUrl: input.thumbnailUrl ?? null,
+    thumbnailUrl,
+    categoryId: input.categoryId,
+    otherCategoryLabel: input.otherCategoryLabel,
   };
 
   const completeEnvelope = await completeSubmission(completeBody);
@@ -93,6 +101,22 @@ export async function uploadCreatorSubmission(
     throw new Error(completeEnvelope.message || 'Could not register the submission');
   }
   return completeEnvelope.data;
+}
+
+/** Best effort. A failed capture or PUT never blocks the video submission. */
+async function uploadCapturedThumbnail(
+  file: File,
+  presign: PresignSubmissionResponse
+): Promise<string | null> {
+  if (!presign.thumbnail) return null;
+  try {
+    const frame = await captureVideoThumbnail(file);
+    if (!frame) return null;
+    await putFileToPresignedUrl(presign.thumbnail, frame, undefined, 'Thumbnail upload failed');
+    return presign.thumbnail.objectKey;
+  } catch {
+    return null;
+  }
 }
 
 export function uploadFailureMessage(error: unknown): string {

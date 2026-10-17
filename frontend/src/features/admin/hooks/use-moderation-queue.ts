@@ -245,7 +245,11 @@ export function useModerationQueue(): UseModerationQueueReturn {
         } else if (filterStatus !== 'ALL' && item.status !== filterStatus) {
           return false;
         }
-        if (categoryFilter !== 'ALL' && item.category !== categoryFilter) return false;
+        if (categoryFilter === '__other__') {
+          if (!item.category.startsWith('Other:')) return false;
+        } else if (categoryFilter !== 'ALL' && item.category !== categoryFilter) {
+          return false;
+        }
         if (searchQuery.trim()) {
           const query = searchQuery.toLowerCase().trim();
           const matches = [

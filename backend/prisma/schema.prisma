@@ -58,6 +58,7 @@ model User {
   friendshipsAsHigh    Friendship[]         @relation("FriendshipHigh")
   chatMessagesSent     ChatMessage[]        @relation("ChatMessageSender")
   chatReads            ChatRead[]           @relation("ChatReadUser")
+  notifications        Notification[]
 
   // Private storage key for the creator profile image.
   // The API returns a short-lived presigned avatarUrl. That URL is not stored.
@@ -87,13 +88,22 @@ enum ContestStatus {
 }
 
 // Slug is unique for this deployment. There is no organization scope.
+// Official video categories and contest categories share this catalog.
+// Case-insensitive name uniqueness is the SQL index categories_name_lower_key.
+// Prisma cannot declare lower(btrim(name)). isActive was not in the original
+// model; it exists so administrators can retire a category without deleting
+// contests or submissions that already reference it. Default true keeps
+// existing rows selectable.
 model Category {
-  id          String    @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
-  slug        String    @unique
+  slug        String       @unique
   description String?
+  isActive    Boolean      @default(true)
   contests    Contest[]
-  createdAt   DateTime  @default(now())
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("categories")
 }
@@ -165,6 +175,13 @@ model Submission {
   moderatedBy     User?            @relation("ModeratedByUser", fields: [moderatedById], references: [id], onDelete: SetNull)
   moderatedAt     DateTime?
   tags            String[]
+  // Official video category. Null when the creator chose Other, and null on
+  // rows created before video categories were stored. Contest.categoryId is
+  // a different association and is not copied here.
+  categoryId         String?
+  videoCategory      Category?        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  // Free text for the creator "Other" choice. Never inserts a Category row.
+  otherCategoryLabel String?
   communityScore  Float            @default(0)
   totalVotes      Int              @default(0)
   // Creator soft delete. Null means the row is still active.
@@ -180,6 +197,7 @@ model Submission {
 
   @@index([contestId, status])
   @@index([creatorId])
+  @@index([categoryId])
   @@map("submissions")
 }
 
@@ -362,4 +380,30 @@ model ChatRead {
 
   @@id([friendshipId, userId])
   @@map("chat_reads")
+}
+
+// In-app notifications. submissionId is a plain id, not a foreign key, so a
+// deleted submission still leaves the notification. The unique key makes a
+// repeated event for the same user and submission a no-op.
+enum NotificationType {
+  SUBMISSION_PENDING_REVIEW
+  SUBMISSION_APPROVED
+  SUBMISSION_DELETED
+}
+
+model Notification {
+  id           String           @id @default(uuid())
+  userId       String
+  type         NotificationType
+  title        String
+  body         String?          @db.Text
+  submissionId String?
+  readAt       DateTime?
+  createdAt    DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, submissionId])
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }

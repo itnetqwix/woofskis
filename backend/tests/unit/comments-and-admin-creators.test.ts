@@ -217,7 +217,12 @@ describe('submission comments and admin creator management', { concurrency: fals
     };
 
     await assert.rejects(
-      () => AdminCreatorService.deleteSubmission({ id: CREATOR, role: Role.CREATOR }, VIDEO),
+      () =>
+        AdminCreatorService.deleteSubmission(
+          { id: CREATOR, role: Role.CREATOR },
+          VIDEO,
+          'Policy violation',
+        ),
       /Forbidden/,
     );
     assert.equal(deletedId, null);
@@ -225,6 +230,7 @@ describe('submission comments and admin creator management', { concurrency: fals
     const result = await AdminCreatorService.deleteSubmission(
       { id: ADMIN, role: Role.ADMIN },
       VIDEO,
+      'Policy violation',
     );
     assert.equal(deletedId, VIDEO);
     assert.equal(result.deleted, true);

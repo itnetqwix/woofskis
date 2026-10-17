@@ -28,6 +28,10 @@ export const creatorPageQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
+export const deleteSubmissionSchema = z.object({
+  reason: z.string().trim().min(1, 'Deletion reason is required').max(1000),
+});
+
 export const warnCreatorSchema = z.object({
   reason: z.string().trim().min(1, 'Warning reason is required').max(2000),
 });
@@ -318,7 +322,17 @@ const contestParticipantsDataSchema = {
           submissionCount: { type: 'integer' },
           firstSubmissionAt: { type: 'string', nullable: true },
           latestSubmissionAt: { type: 'string', nullable: true },
-          submissions: { type: 'array', items: participationVideoSchema },
+          submissions: {
+            type: 'array',
+            items: {
+              ...participationVideoSchema,
+              properties: {
+                ...participationVideoSchema.properties,
+                videoUrl: { type: 'string', nullable: true },
+                thumbnailUrl: { type: 'string', nullable: true },
+              },
+            },
+          },
         },
       },
     },
@@ -491,12 +505,19 @@ export const deleteCreatorSubmissionSwaggerSchema: FastifySchema = {
   tags: ['Admin'],
   summary: 'Delete a creator submission',
   description:
-    'ADMIN only. Deletes the submission row. Ratings and comments cascade. The creator account, contest, and other submissions are kept. The S3 object is not deleted.',
+    'ADMIN only. Requires a deletion reason, which is sent to the creator as an in-app notification. Deletes the submission row. Ratings and comments cascade. The creator account, contest, and other submissions are kept. The S3 object is not deleted.',
   security: [{ bearerAuth: [] }],
   params: {
     type: 'object',
     required: ['id'],
     properties: { id: { type: 'string', format: 'uuid' } },
+  },
+  body: {
+    type: 'object',
+    required: ['reason'],
+    properties: {
+      reason: { type: 'string', minLength: 1, maxLength: 1000 },
+    },
   },
   response: {
     200: swaggerSuccessEnvelope(

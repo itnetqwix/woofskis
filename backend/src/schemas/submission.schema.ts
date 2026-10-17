@@ -49,8 +49,28 @@ export const completeSubmissionSchema = z
       .max(VIDEO_CONSTRAINTS.MAX_DURATION_SECONDS),
     tags: z.array(z.string().trim().min(1)).max(20).optional(),
     thumbnailUrl: z.string().trim().min(1).nullable().optional(),
+    categoryId: z.string().uuid('categoryId must be a valid UUID').optional(),
+    otherCategoryLabel: z
+      .string()
+      .trim()
+      .min(1, 'Please specify your video category.')
+      .max(80)
+      .optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, ctx) => {
+    const hasCategory = Boolean(value.categoryId);
+    const hasOther = Boolean(value.otherCategoryLabel);
+    if (hasCategory === hasOther) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: hasCategory
+          ? 'Provide either categoryId or otherCategoryLabel, not both'
+          : 'Select a category or specify otherCategoryLabel',
+        path: ['categoryId'],
+      });
+    }
+  });
 
 export type CompleteSubmissionInput = z.infer<typeof completeSubmissionSchema>;
 
@@ -92,6 +112,18 @@ const submissionViewSchema = {
     durationSeconds: { type: 'integer' },
     status: { type: 'string', enum: [...SUBMISSION_STATUSES] },
     tags: { type: 'array', items: { type: 'string' } },
+    categoryId: { type: 'string', format: 'uuid', nullable: true },
+    otherCategoryLabel: { type: 'string', nullable: true },
+    videoCategory: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        name: { type: 'string' },
+        slug: { type: 'string' },
+        isActive: { type: 'boolean' },
+      },
+    },
     communityScore: { type: 'number' },
     totalVotes: { type: 'integer' },
     createdAt: { type: 'string', format: 'date-time' },
@@ -111,6 +143,22 @@ const presignViewSchema = {
     },
     expiresInSeconds: { type: 'integer' },
     method: { type: 'string', enum: ['PUT'] },
+    thumbnail: {
+      type: 'object',
+      nullable: true,
+      description:
+        'Presigned PUT for the image/jpeg poster frame. Send its objectKey as thumbnailUrl on complete.',
+      properties: {
+        uploadUrl: { type: 'string' },
+        objectKey: { type: 'string' },
+        headers: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+        },
+        expiresInSeconds: { type: 'integer' },
+        method: { type: 'string', enum: ['PUT'] },
+      },
+    },
   },
 };
 
@@ -168,7 +216,7 @@ export const presignSubmissionSwaggerSchema: FastifySchema = {
 export const completeSubmissionSwaggerSchema: FastifySchema = {
   tags: ['Submissions'],
   summary: 'Finalize a submission after the S3 PUT',
-  description: `${creatorOnlyDescription} Persists PENDING_REVIEW when the contest is ACTIVE. objectKey must be the backend-issued key from presign. Status, videoUrl, and storage path are not client-chosen. Retrying the same objectKey is idempotent for the owning creator.`,
+  description: `${creatorOnlyDescription} Persists PENDING_REVIEW when the contest is ACTIVE. objectKey must be the backend-issued key from presign. Status, videoUrl, and storage path are not client-chosen. Send categoryId for an active official category, or otherCategoryLabel when the creator chooses Other. Do not send both. Other does not create a category. Retrying the same objectKey is idempotent for the owning creator and keeps the category stored on the first complete.`,
   security: [{ bearerAuth: [] }],
   body: {
     type: 'object',
@@ -186,6 +234,8 @@ export const completeSubmissionSwaggerSchema: FastifySchema = {
       },
       tags: { type: 'array', items: { type: 'string' } },
       thumbnailUrl: { type: 'string', nullable: true },
+      categoryId: { type: 'string', format: 'uuid' },
+      otherCategoryLabel: { type: 'string' },
     },
   },
   response: {

@@ -7,7 +7,7 @@ alwaysApply: false
 # 01 - Architecture & System Design Standards
 
 ## 1. Architectural Reference
-Always refer to [docs/knowledge/architecture.md](file:///D:/woofskis/docs/knowledge/architecture.md) and [docs/knowledge/domain-model.md](file:///D:/woofskis/docs/knowledge/domain-model.md) before designing or extending components.
+Refer to [docs/knowledge/architecture.md](file:///D:/woofskis/docs/knowledge/architecture.md) and [docs/knowledge/domain-model.md](file:///D:/woofskis/docs/knowledge/domain-model.md) when relevant; avoid rereading everything.
 
 ## 2. Backend Clean Architecture (backend)
 All backend code MUST follow the 4-layer Clean Architecture pattern:

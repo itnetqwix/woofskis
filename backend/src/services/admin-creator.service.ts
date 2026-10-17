@@ -13,9 +13,10 @@ import { UserRepository } from '../repositories/user.repository.js';
 import { buildPaginationMeta, parsePaginationParams } from '../utils/pagination.js';
 import { ForbiddenError, NotFoundError, ValidationError } from '../utils/response.js';
 import { CreatorActivityService } from './creator-activity.service.js';
+import { NotificationService } from './notification.service.js';
 import {
-  isSignableObjectKey,
   playbackUrlForSubmission,
+  resolveThumbnailUrl,
   signedAvatarUrl,
 } from './storage.service.js';
 
@@ -119,26 +120,6 @@ async function toVideo<
         : null,
     thumbnailUrl: await resolveThumbnailUrl(submission.thumbnailUrl),
   };
-}
-
-/**
- * Stored poster when it is already an http(s) URL.
- * A private object key is exchanged for a short-lived download URL.
- * Anything else becomes null so the client can show a fallback
- * without requesting a thumbnail per row or exposing a raw key.
- */
-async function resolveThumbnailUrl(
-  value: string | null | undefined,
-): Promise<string | null> {
-  if (!value) return null;
-  if (/^https?:\/\//i.test(value)) return value;
-  if (!isSignableObjectKey(value)) return null;
-  try {
-    const signed = await playbackUrlForSubmission(value, value);
-    return /^https?:\/\//i.test(signed) ? signed : null;
-  } catch {
-    return null;
-  }
 }
 
 export class AdminCreatorService {
@@ -511,14 +492,8 @@ export class AdminCreatorService {
       submissionsByCreator.set(submission.creatorId, list);
     }
 
-    return {
-      contest: {
-        id: contest.id,
-        title: contest.title,
-        status: contest.status,
-      },
-      participatingCreatorCount,
-      creators: pageResult.groups.map((group) => {
+    const creators = await Promise.all(
+      pageResult.groups.map(async (group) => {
         const creator = creatorsById.get(group.creatorId);
         return {
           id: group.creatorId,
@@ -528,27 +503,51 @@ export class AdminCreatorService {
           submissionCount: group._count._all,
           firstSubmissionAt: group._min.createdAt,
           latestSubmissionAt: group._max.createdAt,
-          submissions: (submissionsByCreator.get(group.creatorId) ?? []).map(
-            (submission) => ({
-              id: submission.id,
-              title: submission.title,
-              status: submission.status,
-              createdAt: submission.createdAt,
-              updatedAt: submission.updatedAt,
-              communityScore: submission.communityScore,
-              totalVotes: submission.totalVotes,
-              deletedAt: submission.deletedAt,
-              deletedBy: submission.deletedBy,
-            }),
+          submissions: await Promise.all(
+            (submissionsByCreator.get(group.creatorId) ?? []).map(
+              async (submission) => ({
+                id: submission.id,
+                title: submission.title,
+                status: submission.status,
+                createdAt: submission.createdAt,
+                updatedAt: submission.updatedAt,
+                communityScore: submission.communityScore,
+                totalVotes: submission.totalVotes,
+                videoUrl:
+                  !submission.deletedAt && submission.objectKey && submission.videoUrl
+                    ? await playbackUrlForSubmission(
+                        submission.objectKey,
+                        submission.videoUrl,
+                      )
+                    : null,
+                thumbnailUrl: await resolveThumbnailUrl(submission.thumbnailUrl),
+                deletedAt: submission.deletedAt,
+                deletedBy: submission.deletedBy,
+              }),
+            ),
           ),
         };
       }),
+    );
+
+    return {
+      contest: {
+        id: contest.id,
+        title: contest.title,
+        status: contest.status,
+      },
+      participatingCreatorCount,
+      creators,
       pagination: buildPaginationMeta(participatingCreatorCount, page, limit),
     };
   }
 
-  static async deleteSubmission(actor: AdminActor, submissionId: string) {
+  static async deleteSubmission(actor: AdminActor, submissionId: string, reason: string) {
     assertAdmin(actor);
+    const trimmedReason = reason.trim();
+    if (!trimmedReason) {
+      throw new ValidationError('Deletion reason is required');
+    }
     const existing = await SubmissionRepository.findById(submissionId);
     if (!existing) {
       throw new NotFoundError('Submission not found');
@@ -558,15 +557,25 @@ export class AdminCreatorService {
       await CreatorActivityService.record({
         creatorId: existing.creatorId,
         action: CreatorActivityAction.SUBMISSION_DELETED,
-        description: 'Submission deleted',
+        description: `Submission deleted by admin: ${trimmedReason}`,
         relatedSubmissionId: existing.id,
         relatedContestId: existing.contestId,
         performedByUserId: actor.id,
         metadata: {
           submissionTitle: existing.title,
           contestTitle: existing.contest?.title ?? '',
+          reason: trimmedReason,
         },
       });
+      await NotificationService.notifySubmissionDeleted(
+        {
+          id: existing.id,
+          title: existing.title,
+          creatorId: existing.creatorId,
+          contest: { title: existing.contest?.title ?? 'the contest' },
+        },
+        trimmedReason,
+      );
     }
     return {
       id: submissionId,

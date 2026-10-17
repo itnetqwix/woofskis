@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "projectName": "Woofskis",
-  "lastUpdated": "2026-10-11",
+  "lastUpdated": "2026-10-17",
   "nodes": [
     {
       "id": "domain:auth",
@@ -1689,6 +1689,24 @@
       }
     },
     {
+      "id": "api:GET /submissions/:id/share-preview",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/submissions/:id/share-preview",
+      "domain": "Judging",
+      "description": "Public link preview metadata (title, description, thumbnailUrl, creatorName) for an APPROVED, non-deleted submission in a viewable contest. Feeds Open Graph tags on /?v=<id>.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 10",
+        "section": "10.7",
+        "docPath": "/docs/source/10 User Journey & Business Process 394ca8c5bdf78027b716ec91531bf108.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/judging.controller.ts",
+        "symbol": "JudgingController.sharePreview"
+      }
+    },
+    {
       "id": "be_repo:RatingRepository",
       "type": "BackendRepository",
       "label": "RatingRepository",
@@ -1758,6 +1776,78 @@
         "repository": "backend",
         "filePath": "src/controllers/leaderboard.controller.ts",
         "symbol": "LeaderboardController.getLeaderboard"
+      }
+    },
+    {
+      "id": "api:GET /video-categories",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/video-categories",
+      "domain": "Submissions",
+      "description": "Authenticated list of active official video categories for upload and filters. Other is not a stored row.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/video-category.controller.ts",
+        "symbol": "VideoCategoryController.listActive"
+      }
+    },
+    {
+      "id": "api:admin video-categories",
+      "type": "APIEndpoint",
+      "label": "Admin video category management",
+      "domain": "Submissions",
+      "description": "ADMIN list, create, update, and delete for the shared Category catalog. Delete is refused while a contest or submission still references the category.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/services/video-category.service.ts",
+        "symbol": "VideoCategoryService"
+      }
+    },
+    {
+      "id": "ui:admin-leaderboard",
+      "type": "UIComponent",
+      "label": "Admin leaderboard",
+      "domain": "Leaderboard",
+      "description": "Admin leaderboard for ACTIVE contests. Metrics and ranks come from GET /contests/:id/leaderboard.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/app/(dashboard)/admin/leaderboard/page.tsx",
+        "symbol": "AdminLeaderboardPage"
+      }
+    },
+    {
+      "id": "ui:admin-video-categories",
+      "type": "UIComponent",
+      "label": "Admin video categories",
+      "domain": "Submissions",
+      "description": "Admin screen for official video categories used by the creator upload form.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/features/admin/components/video-categories-panel.tsx",
+        "symbol": "VideoCategoriesPanel"
       }
     },
     {
@@ -2280,6 +2370,150 @@
         "repository": "frontend",
         "filePath": "src/features/chat/hooks/use-creator-chat.ts",
         "symbol": "useCreatorChat"
+      }
+    },
+    {
+      "id": "db:Notification",
+      "type": "DatabaseModel",
+      "label": "Notification",
+      "domain": "Moderation",
+      "description": "In-app notification for one user. Unique on (userId, type, submissionId) so repeated events are skipped.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "prisma/schema.prisma",
+        "symbol": "model Notification"
+      }
+    },
+    {
+      "id": "be_repo:NotificationRepository",
+      "type": "BackendRepository",
+      "label": "NotificationRepository",
+      "domain": "Moderation",
+      "description": "Prisma access for notifications and admin recipient lookup.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/repositories/notification.repository.ts",
+        "symbol": "NotificationRepository"
+      }
+    },
+    {
+      "id": "be_svc:NotificationService",
+      "type": "BackendService",
+      "label": "NotificationService",
+      "domain": "Moderation",
+      "description": "Notifies admins when a video awaits review and the creator when it is approved. Lists and marks the caller's notifications read.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/services/notification.service.ts",
+        "symbol": "NotificationService"
+      }
+    },
+    {
+      "id": "api:GET /notifications",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/notifications",
+      "domain": "Moderation",
+      "description": "The caller's newest 30 notifications and unread count. Any authenticated user.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/notification.controller.ts",
+        "symbol": "NotificationController.list"
+      }
+    },
+    {
+      "id": "api:POST /notifications/:id/read",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/notifications/:id/read",
+      "domain": "Moderation",
+      "description": "Marks one of the caller's notifications read.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/notification.controller.ts",
+        "symbol": "NotificationController.markRead"
+      }
+    },
+    {
+      "id": "api:POST /notifications/read-all",
+      "type": "APIEndpoint",
+      "label": "POST /api/v1/notifications/read-all",
+      "domain": "Moderation",
+      "description": "Marks all of the caller's notifications read.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/notification.controller.ts",
+        "symbol": "NotificationController.markAllRead"
+      }
+    },
+    {
+      "id": "fe_comp:NotificationBell",
+      "type": "FrontendComponent",
+      "label": "NotificationBell",
+      "domain": "Moderation",
+      "description": "Header bell with unread badge. Polls notifications every 60 seconds.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/components/layout/notification-bell.tsx",
+        "symbol": "NotificationBell"
+      }
+    },
+    {
+      "id": "fe_comp:HeaderMenuSheet",
+      "type": "FrontendComponent",
+      "label": "HeaderMenuSheet",
+      "domain": "Authentication",
+      "description": "Header hamburger sheet with Account, role-grouped navigation, and Appearance sections. Signed-in top bar shows only logo, NotificationBell, and this menu.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.2",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/components/layout/header-menu-sheet.tsx",
+        "symbol": "HeaderMenuSheet"
       }
     }
   ],
@@ -2950,6 +3184,13 @@
       "description": "Queue reads are handled by JudgingService."
     },
     {
+      "id": "e149",
+      "source": "api:GET /submissions/:id/share-preview",
+      "target": "be_svc:JudgingService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Share preview reads are handled by JudgingService.getSharePreview."
+    },
+    {
       "id": "e94",
       "source": "be_svc:JudgingService",
       "target": "be_repo:RatingRepository",
@@ -3305,6 +3546,62 @@
       "target": "be_svc:ChatService",
       "relationshipType": "HANDLED_BY",
       "description": "Presign is handled by ChatService.presignAttachment."
+    },
+    {
+      "id": "e149",
+      "source": "be_svc:NotificationService",
+      "target": "be_repo:NotificationRepository",
+      "relationshipType": "ACCESSES_REPO",
+      "description": "NotificationService writes and reads notifications through NotificationRepository."
+    },
+    {
+      "id": "e150",
+      "source": "be_repo:NotificationRepository",
+      "target": "db:Notification",
+      "relationshipType": "PERSISTS_TO",
+      "description": "Notifications are stored on notifications."
+    },
+    {
+      "id": "e151",
+      "source": "be_svc:SubmissionService",
+      "target": "be_svc:NotificationService",
+      "relationshipType": "DEPENDS_ON",
+      "description": "A newly completed upload notifies every ADMIN that a video awaits review."
+    },
+    {
+      "id": "e152",
+      "source": "be_svc:ModerationService",
+      "target": "be_svc:NotificationService",
+      "relationshipType": "DEPENDS_ON",
+      "description": "Approval notifies the submission's creator."
+    },
+    {
+      "id": "e153",
+      "source": "api:GET /notifications",
+      "target": "be_svc:NotificationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "List is handled by NotificationService.list."
+    },
+    {
+      "id": "e154",
+      "source": "api:POST /notifications/:id/read",
+      "target": "be_svc:NotificationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Mark read is handled by NotificationService.markRead."
+    },
+    {
+      "id": "e155",
+      "source": "api:POST /notifications/read-all",
+      "target": "be_svc:NotificationService",
+      "relationshipType": "HANDLED_BY",
+      "description": "Mark all read is handled by NotificationService.markAllRead."
+    },
+    {
+      "id": "e156",
+      "source": "fe_comp:NotificationBell",
+      "target": "api:GET /notifications",
+      "relationshipType": "CALLS_API",
+      "description": "The bell polls the caller's notifications."
     }
   ]
 }

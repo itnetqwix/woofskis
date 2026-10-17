@@ -23,6 +23,8 @@ export const APP_ROUTES = {
   ADMIN: {
     MODERATION: '/admin/moderation',
     CONTESTS: '/admin/contests',
+    LEADERBOARD: '/admin/leaderboard',
+    CATEGORIES: '/admin/categories',
     BRANDS: '/admin/brands',
   },
   PUBLIC_CONTESTS: {

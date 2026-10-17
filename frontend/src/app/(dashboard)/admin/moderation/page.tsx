@@ -21,6 +21,7 @@ import { TenantSwitcherHUD } from '@/components/layout/tenant-switcher-hud';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { AdminTabsNav } from '@/features/admin/components/admin-tabs-nav';
 import { ModerationMetrics } from '@/features/admin/components/moderation-metrics';
+import { ModerationFilterBar } from '@/features/admin/components/moderation-filter-bar';
 import { ModerationSplitViewer } from '@/features/admin/components/moderation-split-viewer';
 import { ModerationTable } from '@/features/admin/components/moderation-table';
 import { RejectReasonDialog } from '@/features/admin/components/reject-reason-dialog';
@@ -229,84 +230,72 @@ export default function AdminModerationPage() {
         )}
 
         {/* DASHBOARD CONTENT CONTAINER */}
-        <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-          {/* HERO TITLE & VIEW MODE SWITCHER */}
-          <div className="flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-                  Video Moderation Portal
-                </h1>
-                <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500">
-                  ADMIN
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground sm:text-sm">
-                Review, validate 9:16 vertical video submissions, enforce copyright & safety rules,
-                and publish to the active contest voting pool.
+        <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">
+                Moderation
+              </h1>
+              <p className="truncate text-xs text-muted-foreground">
+                Review video submissions before they enter public voting.
               </p>
             </div>
 
-            {/* VIEW SWITCHER & TOOLBAR */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Split / Table Switch */}
-              <div className="flex items-center rounded-xl border border-border bg-muted/80 p-1">
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center rounded-lg border border-border bg-muted/60 p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode('split')}
+                  aria-pressed={viewMode === 'split'}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all',
+                    'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition-colors',
                     viewMode === 'split'
-                      ? 'shadow-xs bg-card font-bold text-foreground ring-1 ring-border'
+                      ? 'bg-card text-foreground ring-1 ring-border'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   <Layers className="h-3.5 w-3.5" />
-                  <span>Split Inspection</span>
+                  <span>Inspect</span>
                 </button>
-
                 <button
                   type="button"
                   onClick={() => setViewMode('table')}
+                  aria-pressed={viewMode === 'table'}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all',
+                    'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition-colors',
                     viewMode === 'table'
-                      ? 'shadow-xs bg-card font-bold text-foreground ring-1 ring-border'
+                      ? 'bg-card text-foreground ring-1 ring-border'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   <Table className="h-3.5 w-3.5" />
-                  <span>Batch Table</span>
+                  <span>Table</span>
                 </button>
               </div>
 
-              {/* Shortcuts Help Button */}
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => setShortcutsModalOpen(true)}
-                className="h-9 gap-1.5 text-xs font-semibold"
+                className="h-8 w-8 p-0"
+                title="Keyboard shortcuts (?)"
+                aria-label="Keyboard shortcuts"
               >
-                <Keyboard className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="hidden md:inline">Hotkeys</span>
-                <span className="py-0.2 rounded bg-muted px-1.5 font-mono text-[10px]">?</span>
+                <Keyboard className="h-4 w-4" />
               </Button>
-
-              {/* Audit Trail Button */}
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   reloadAuditLogs();
                   setAuditLogModalOpen(true);
                 }}
-                className="h-9 gap-1.5 text-xs font-semibold"
+                className="h-8 w-8 p-0"
+                title="Audit logs"
+                aria-label="Audit logs"
               >
-                <History className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="hidden md:inline">Audit Logs</span>
+                <History className="h-4 w-4" />
               </Button>
-
-              {/* Reset Queue Data */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -314,60 +303,48 @@ export default function AdminModerationPage() {
                   resetQueue();
                   showToast('Reloaded moderation queue.');
                 }}
-                className="h-9 gap-1 text-xs text-muted-foreground hover:text-foreground"
+                className="h-8 w-8 p-0"
                 title="Reload moderation queue"
+                aria-label="Reload moderation queue"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span className="hidden lg:inline">Reset</span>
+                <RotateCcw className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          {/* ADMIN TABS NAVIGATION */}
           <AdminTabsNav pendingModerationCount={statusCounts.PENDING_REVIEW} />
 
-          {!isHydrated && (
-            <p className="text-xs text-muted-foreground">Loading moderation queue…</p>
-          )}
           {loadError && (
             <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-500">
               {loadError}
             </p>
           )}
-          {isActing && <p className="text-xs text-muted-foreground">Saving moderation decision…</p>}
 
-          {/* 1. OPERATIONAL KPI METRICS CARDS */}
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Moderation Operational Velocity & Health
-              </h2>
-            </div>
-            <ModerationMetrics
-              metrics={metrics}
-              activeFilter={filterStatus}
-              onFilterSelect={setFilterStatus}
-              onOpenAuditLogs={() => setAuditLogModalOpen(true)}
+          <ModerationMetrics
+            metrics={metrics}
+            activeFilter={filterStatus}
+            onFilterSelect={setFilterStatus}
+          />
+
+          <section className="space-y-2">
+            <ModerationFilterBar
+              filterStatus={filterStatus}
+              statusCounts={statusCounts}
+              searchQuery={searchQuery}
+              categoryFilter={categoryFilter}
+              sortBy={sortBy}
+              onFilterStatusChange={setFilterStatus}
+              onSearchChange={setSearchQuery}
+              onCategoryFilterChange={setCategoryFilter}
+              onSortByChange={setSortBy}
             />
-          </section>
-
-          {/* 2. MAIN MODERATION WORKSPACE (SPLIT DECK OR BATCH TABLE) */}
-          <section className="space-y-4">
-            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-              <div className="space-y-0.5">
-                <h2 className="text-lg font-bold tracking-tight text-foreground">
-                  {viewMode === 'split'
-                    ? 'Split-Screen Inspection Deck'
-                    : 'Batch Data Table & Actions'}{' '}
-                  ({filteredSubmissions.length})
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  {viewMode === 'split'
-                    ? 'Inspect 9:16 vertical video stream, verify technical compliance, and trigger one-click moderation decisions.'
-                    : 'Manage submissions across multiple statuses, perform bulk approvals, and audit historical reviews.'}
-                </p>
-              </div>
-            </div>
+            <p className="px-1 text-[11px] text-muted-foreground">
+              {!isHydrated
+                ? 'Loading moderation queue…'
+                : isActing
+                  ? 'Saving moderation decision…'
+                  : `Showing ${filteredSubmissions.length} of ${submissions.length} submissions`}
+            </p>
 
             {viewMode === 'split' ? (
               <ModerationSplitViewer
@@ -387,16 +364,7 @@ export default function AdminModerationPage() {
             ) : (
               <ModerationTable
                 submissions={filteredSubmissions}
-                filterStatus={filterStatus}
-                statusCounts={statusCounts}
-                searchQuery={searchQuery}
-                categoryFilter={categoryFilter}
-                sortBy={sortBy}
                 selectedBatchIds={selectedBatchIds}
-                onFilterStatusChange={setFilterStatus}
-                onSearchChange={setSearchQuery}
-                onCategoryFilterChange={setCategoryFilter}
-                onSortByChange={setSortBy}
                 onToggleBatchSelect={toggleBatchSelect}
                 onSelectAllBatch={selectAllBatch}
                 onClearBatchSelection={clearBatchSelection}

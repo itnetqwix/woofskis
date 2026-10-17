@@ -4,7 +4,8 @@ import type { UserRole } from '../../types/auth';
  * M03-P02 frontend route-guard policy.
  *
  * Backend roles are ADMIN and CREATOR.
- * ADMIN may open /admin/contests, /admin/creators, and /admin/moderation.
+ * ADMIN may open /admin/contests, /admin/creators, /admin/leaderboard,
+ * /admin/categories, and /admin/moderation.
  * CREATOR may open /creator and /creator/friends.
  *
  * Axios HTTP 401 still does not redirect (frozen M01-P02-T04). These
@@ -32,10 +33,18 @@ export const ROLE_GUARD_PAGE_FILES = [
   'src/app/(dashboard)/admin/creators/page.tsx',
   'src/app/(dashboard)/admin/creators/[id]/page.tsx',
   'src/app/(dashboard)/admin/contests/[id]/creators/page.tsx',
+  'src/app/(dashboard)/admin/leaderboard/page.tsx',
+  'src/app/(dashboard)/admin/categories/page.tsx',
 ] as const;
 
 export type ProtectedDashboardRoute =
-  '/creator' | '/creator/friends' | '/admin/moderation' | '/admin/contests' | '/admin/creators';
+  | '/creator'
+  | '/creator/friends'
+  | '/admin/moderation'
+  | '/admin/contests'
+  | '/admin/creators'
+  | '/admin/leaderboard'
+  | '/admin/categories';
 
 export interface ProtectedRoutePolicy {
   allowedSessionRoles: readonly UserRole[];
@@ -78,6 +87,18 @@ export const PROTECTED_DASHBOARD_ROUTES: Record<ProtectedDashboardRoute, Protect
     unauthenticatedRedirect: UNAUTHENTICATED_REDIRECT,
     unauthorizedRedirect: '/',
     unauthorizedMessage: 'Admin authorization is required to manage creators.',
+  },
+  '/admin/leaderboard': {
+    allowedSessionRoles: ['ADMIN'],
+    unauthenticatedRedirect: UNAUTHENTICATED_REDIRECT,
+    unauthorizedRedirect: '/',
+    unauthorizedMessage: 'Admin authorization is required to view the leaderboard.',
+  },
+  '/admin/categories': {
+    allowedSessionRoles: ['ADMIN'],
+    unauthenticatedRedirect: UNAUTHENTICATED_REDIRECT,
+    unauthorizedRedirect: '/',
+    unauthorizedMessage: 'Admin authorization is required to manage video categories.',
   },
 };
 

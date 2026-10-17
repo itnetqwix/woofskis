@@ -228,6 +228,7 @@ describe('M06 submission APIs', { concurrency: false }, () => {
         description: 'Late night VFX skit',
         durationSeconds: 42,
         tags: ['#ViralComedy'],
+        otherCategoryLabel: 'Pet tricks',
       },
     });
     assert.equal(complete.statusCode, 201);
@@ -248,6 +249,7 @@ describe('M06 submission APIs', { concurrency: false }, () => {
         objectKey: presignBody.data.objectKey,
         title: 'Quantum Coffee Spill',
         durationSeconds: 42,
+        otherCategoryLabel: 'Pet tricks',
       },
     });
     assert.equal(retry.statusCode, 200);
@@ -421,6 +423,7 @@ describe('M06 submission APIs', { concurrency: false }, () => {
         objectKey: stolenKey,
         title: 'Stolen',
         durationSeconds: 10,
+        otherCategoryLabel: 'Pet tricks',
       },
     });
     assert.equal(stolen.statusCode, 403);
@@ -440,6 +443,7 @@ describe('M06 submission APIs', { concurrency: false }, () => {
         objectKey: ownKey,
         title: 'Mine',
         durationSeconds: 12,
+        otherCategoryLabel: 'Pet tricks',
       },
     });
     assert.equal(created.statusCode, 201);

@@ -11,7 +11,10 @@ import {
   submissionIdParamSchema,
 } from '../schemas/moderation.schema.js';
 import { ModerationService } from '../services/moderation.service.js';
-import { playbackUrlForSubmission } from '../services/storage.service.js';
+import {
+  playbackUrlForSubmission,
+  resolveThumbnailUrl,
+} from '../services/storage.service.js';
 import { sendSuccess } from '../utils/response.js';
 
 function actorFromRequest(request: FastifyRequest) {
@@ -37,13 +40,25 @@ export async function toModerationSubmissionView(
     description: submission.description,
     videoUrl: await playbackUrlForSubmission(submission.objectKey, submission.videoUrl),
     objectKey: submission.objectKey,
-    thumbnailUrl: submission.thumbnailUrl,
+    thumbnailUrl: await resolveThumbnailUrl(submission.thumbnailUrl),
     durationSeconds: submission.durationSeconds,
     status: submission.status,
     rejectionReason: submission.rejectionReason,
     moderatedById: submission.moderatedById,
     moderatedAt: iso(submission.moderatedAt),
     tags: submission.tags,
+    categoryId: 'categoryId' in submission ? (submission.categoryId ?? null) : null,
+    otherCategoryLabel:
+      'otherCategoryLabel' in submission ? (submission.otherCategoryLabel ?? null) : null,
+    videoCategory:
+      'videoCategory' in submission && submission.videoCategory
+        ? {
+            id: submission.videoCategory.id,
+            name: submission.videoCategory.name,
+            slug: submission.videoCategory.slug,
+            isActive: submission.videoCategory.isActive,
+          }
+        : null,
     communityScore: submission.communityScore,
     totalVotes: submission.totalVotes,
     createdAt: iso(submission.createdAt),

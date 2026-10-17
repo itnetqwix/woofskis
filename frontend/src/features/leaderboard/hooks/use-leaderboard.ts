@@ -1,26 +1,41 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   ContestLeaderboardMetadata,
   LeaderboardItem,
   LeaderboardViewMode,
   TimeframeFilter,
 } from '@/types/leaderboard';
-import { PRIZE_TIER_CONFIG } from '@/constants/mock-leaderboard-data';
-import { loadDeploymentActiveContests } from '@/features/deployment/load-deployment-contests';
 import { getLeaderboard, ApiLeaderboardData } from '@/services/leaderboard-api';
+import { listDeploymentActiveContests, type ApiContest } from '@/services/contests-api';
+import { AppApiError } from '@/lib/axios';
 import {
   apiItemToLeaderboardItem,
   buildContestMetadata,
   isUuid,
-  selectLeaderboardContestId,
 } from '../lib/leaderboard-flow';
 
 function contestIdFromLocation(): string {
   if (typeof window === 'undefined') return '';
   const id = new URLSearchParams(window.location.search).get('contest') ?? '';
   return isUuid(id) ? id : '';
+}
+
+export interface LeaderboardContestOption {
+  id: string;
+  title: string;
+  status: string;
+  prizeSummary: string | null;
+  endDate: string;
+  updatedAt: string;
+}
+
+export interface LeaderboardSummary {
+  totalEntries: number;
+  totalParticipants: number;
+  totalVotes: number;
+  leading: { title: string; communityScore: number; totalVotes: number } | null;
 }
 
 export interface UseLeaderboardReturn {
@@ -38,8 +53,11 @@ export interface UseLeaderboardReturn {
   totalCount: number;
   avgScore: number;
   totalVotes: number;
+  summary: LeaderboardSummary | null;
   isLoading: boolean;
+  catalogReady: boolean;
   error: string | null;
+  catalogError: string | null;
   setTimeframe: (tf: TimeframeFilter) => void;
   setCategory: (cat: string) => void;
   setSearchQuery: (query: string) => void;
@@ -47,76 +65,56 @@ export interface UseLeaderboardReturn {
   setViewMode: (mode: LeaderboardViewMode) => void;
   openPreview: (item: LeaderboardItem) => void;
   closePreview: () => void;
-  contestOptions: Array<{ id: string; title: string }>;
+  contestOptions: LeaderboardContestOption[];
 }
 
-import { getStoredContests } from '@/lib/theme-utils';
+function activeContests(contests: ApiContest[]): LeaderboardContestOption[] {
+  return contests
+    .filter((contest) => contest.status === 'ACTIVE' && isUuid(contest.id))
+    .map((contest) => ({
+      id: contest.id,
+      title: contest.title,
+      status: contest.status,
+      prizeSummary: contest.prizeSummary,
+      endDate: contest.endDate,
+      updatedAt: contest.updatedAt,
+    }))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
+function defaultActiveContestId(options: LeaderboardContestOption[], fromUrl: string): string {
+  if (fromUrl && options.some((contest) => contest.id === fromUrl)) return fromUrl;
+  return options[0]?.id ?? '';
+}
 
 export function useLeaderboard(): UseLeaderboardReturn {
-  const [deploymentContests, setDeploymentContests] = useState<
-    Array<{
-      id: string;
-      title: string;
-      status: string;
-      updatedAt: string;
-      organizationSlug: string;
-    }>
-  >([]);
+  const [contestOptions, setContestOptions] = useState<LeaderboardContestOption[]>([]);
   const [catalogReady, setCatalogReady] = useState(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    void loadDeploymentActiveContests()
-      .then((contests) => {
+    void listDeploymentActiveContests()
+      .then((envelope) => {
         if (cancelled) return;
-        const stored = getStoredContests();
-        const map = new Map<
-          string,
-          { id: string; title: string; status: string; updatedAt: string; organizationSlug: string }
-        >();
-        for (const contest of contests) {
-          if (isUuid(contest.id)) {
-            map.set(contest.id, {
-              id: contest.id,
-              title: contest.title,
-              status: contest.status,
-              updatedAt: contest.updatedAt,
-              organizationSlug: 'woofskis',
-            });
-          }
+        if (!envelope.success || !Array.isArray(envelope.data)) {
+          setCatalogError(envelope.message || 'Could not load active contests');
+          setContestOptions([]);
+          return;
         }
-        for (const s of stored) {
-          if (isUuid(s.id) && !map.has(s.id)) {
-            map.set(s.id, {
-              id: s.id,
-              title: s.title,
-              status: s.status,
-              updatedAt: s.updatedAt || new Date().toISOString(),
-              organizationSlug: s.tenantId || 'woofskis',
-            });
-          }
-        }
-        setDeploymentContests(Array.from(map.values()));
+        setCatalogError(null);
+        setContestOptions(activeContests(envelope.data));
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (cancelled) return;
-        const stored = getStoredContests();
-        const map = new Map<
-          string,
-          { id: string; title: string; status: string; updatedAt: string; organizationSlug: string }
-        >();
-        for (const s of stored) {
-          if (isUuid(s.id) && !map.has(s.id)) {
-            map.set(s.id, {
-              id: s.id,
-              title: s.title,
-              status: s.status,
-              updatedAt: s.updatedAt || new Date().toISOString(),
-              organizationSlug: s.tenantId || 'woofskis',
-            });
-          }
-        }
-        setDeploymentContests(Array.from(map.values()));
+        const message =
+          error instanceof AppApiError
+            ? error.message
+            : error instanceof Error
+              ? error.message
+              : 'Could not load active contests';
+        setCatalogError(message);
+        setContestOptions([]);
       })
       .finally(() => {
         if (!cancelled) setCatalogReady(true);
@@ -125,42 +123,6 @@ export function useLeaderboard(): UseLeaderboardReturn {
       cancelled = true;
     };
   }, []);
-
-  const defaultContestId = useMemo(() => {
-    const list =
-      deploymentContests.length > 0
-        ? deploymentContests
-        : getStoredContests()
-            .filter((c) => isUuid(c.id))
-            .map((c) => ({
-              id: c.id,
-              tenantId: c.tenantId || 'woofskis',
-              organizationSlug: c.tenantId || 'woofskis',
-              status: c.status,
-              updatedAt: c.updatedAt || '',
-            }));
-
-    const selectedId = selectLeaderboardContestId({
-      contests: list.map((contest) => ({
-        id: contest.id,
-        tenantId: (contest as any).organizationSlug || (contest as any).tenantId || 'woofskis',
-        status: contest.status,
-        updatedAt: contest.updatedAt,
-      })),
-      tenantKeys: ['woofskis'],
-      preferredContestId: list[0]?.id ?? null,
-    });
-    return selectedId || '';
-  }, [deploymentContests]);
-
-  const contestOptions = useMemo(() => {
-    if (deploymentContests.length > 0) {
-      return deploymentContests.map((contest) => ({ id: contest.id, title: contest.title }));
-    }
-    return getStoredContests()
-      .filter((c) => isUuid(c.id))
-      .map((c) => ({ id: c.id, title: c.title }));
-  }, [deploymentContests]);
 
   const [timeframe, setTimeframe] = useState<TimeframeFilter>('ALL_TIME');
   const [category, setCategory] = useState<string>('ALL');
@@ -174,6 +136,7 @@ export function useLeaderboard(): UseLeaderboardReturn {
   const [rawItems, setRawItems] = useState<LeaderboardItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const requestSeq = useRef(0);
 
   const setSelectedContestId = useCallback((id: string) => {
     setSelectedContestIdState(id);
@@ -185,20 +148,37 @@ export function useLeaderboard(): UseLeaderboardReturn {
   }, []);
 
   useEffect(() => {
+    if (!catalogReady) return;
     const fromUrl = contestIdFromLocation();
-    if (fromUrl) {
-      setSelectedContestIdState(fromUrl);
+    setSelectedContestIdState((current) => {
+      if (current && contestOptions.some((contest) => contest.id === current)) return current;
+      return defaultActiveContestId(contestOptions, fromUrl);
+    });
+  }, [catalogReady, contestOptions]);
+
+  useEffect(() => {
+    if (!catalogReady) return;
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (isUuid(selectedContestId)) url.searchParams.set('contest', selectedContestId);
+    else url.searchParams.delete('contest');
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== next) {
+      window.history.replaceState(null, '', next);
+    }
+  }, [catalogReady, selectedContestId]);
+
+  const fetchLeaderboard = useCallback(async () => {
+    const seq = ++requestSeq.current;
+    const selectedIsActive = contestOptions.some((contest) => contest.id === selectedContestId);
+
+    if (!catalogReady) {
+      setIsLoading(true);
       return;
     }
-    if (defaultContestId) setSelectedContestId(defaultContestId);
-  }, [defaultContestId, setSelectedContestId]);
 
-  // Fetch leaderboard data from API
-  const fetchLeaderboard = useCallback(async () => {
-    if (!isUuid(selectedContestId)) {
-      const waiting = !catalogReady || Boolean(defaultContestId);
-      setIsLoading(waiting);
-      if (waiting) return;
+    if (!isUuid(selectedContestId) || !selectedIsActive) {
+      setIsLoading(false);
       setError(null);
       setApiData(null);
       setRawItems([]);
@@ -207,114 +187,91 @@ export function useLeaderboard(): UseLeaderboardReturn {
 
     setIsLoading(true);
     setError(null);
+    setApiData(null);
+    setRawItems([]);
 
     try {
-      const envelope = await getLeaderboard(selectedContestId, {
-        category: category !== 'ALL' ? category : undefined,
-        timeframe: timeframe !== 'ALL_TIME' ? timeframe : undefined,
-      });
+      const envelope = await getLeaderboard(selectedContestId);
+      if (seq !== requestSeq.current) return;
 
-      if (envelope.success && envelope.data) {
+      if (envelope.success && envelope.data && envelope.data.contest?.id === selectedContestId) {
         setApiData(envelope.data);
-        const mapped = envelope.data.items.map((item, idx) =>
-          apiItemToLeaderboardItem(item, idx + 1)
-        );
-        setRawItems(mapped);
+        setRawItems(envelope.data.items.map((item) => apiItemToLeaderboardItem(item)));
       } else {
         setError(envelope.message || 'Failed to load leaderboard');
+        setApiData(null);
         setRawItems([]);
       }
-    } catch (err: any) {
-      setError(err?.message || 'Error loading leaderboard data');
+    } catch (err: unknown) {
+      if (seq !== requestSeq.current) return;
+      const message =
+        err instanceof AppApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : 'Error loading leaderboard data';
+      setError(message);
+      setApiData(null);
       setRawItems([]);
     } finally {
-      setIsLoading(false);
+      if (seq === requestSeq.current) setIsLoading(false);
     }
-  }, [selectedContestId, category, timeframe, catalogReady, defaultContestId]);
+  }, [selectedContestId, catalogReady, contestOptions]);
 
   useEffect(() => {
-    fetchLeaderboard();
+    void fetchLeaderboard();
   }, [fetchLeaderboard]);
 
-  // Contest Metadata
   const metadata = useMemo<ContestLeaderboardMetadata | null>(() => {
-    if (apiData?.contest) {
-      return buildContestMetadata(apiData.contest, {
-        totalEntries: apiData.totalEntries,
-        totalVotes: apiData.totalVotes,
-        averageScore: apiData.averageScore,
-      });
-    }
+    if (!apiData?.contest || apiData.contest.id !== selectedContestId) return null;
+    return buildContestMetadata(apiData.contest, {
+      totalEntries: apiData.totalEntries,
+      totalVotes: apiData.totalVotes,
+      averageScore: apiData.averageScore,
+    });
+  }, [apiData, selectedContestId]);
 
-    return null;
-  }, [apiData]);
-
-  // Filter and compute ranking
   const rankedItems = useMemo(() => {
-    const filtered = rawItems.filter((item) => {
-      // Search Query
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchTitle = item.title.toLowerCase().includes(q);
-        const matchCreator = item.creatorName.toLowerCase().includes(q);
-        const matchHandle = item.creatorHandle.toLowerCase().includes(q);
-        const matchCategory = item.category.toLowerCase().includes(q);
-        const matchTags = item.tags?.some((t) => t.toLowerCase().includes(q)) ?? false;
-
-        if (!matchTitle && !matchCreator && !matchHandle && !matchCategory && !matchTags) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-
-    // Re-rank based on communityScore DESC, then totalVotes DESC
-    const sorted = [...filtered].sort((a, b) => {
-      if (b.communityScore !== a.communityScore) {
-        return b.communityScore - a.communityScore;
-      }
-      return b.totalVotes - a.totalVotes;
-    });
-
-    return sorted.map((item, index) => {
-      const dynamicRank = index + 1;
-      const prizeTier = PRIZE_TIER_CONFIG[dynamicRank];
-
-      return {
-        ...item,
-        rank: dynamicRank,
-        prizeTier,
-      };
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return rawItems;
+    return rawItems.filter((item) => {
+      const matchTitle = item.title.toLowerCase().includes(query);
+      const matchCreator = item.creatorName.toLowerCase().includes(query);
+      const matchTags = item.tags?.some((tag) => tag.toLowerCase().includes(query)) ?? false;
+      return matchTitle || matchCreator || matchTags;
     });
   }, [rawItems, searchQuery]);
 
-  // Podium items: top 3
   const podiumItems = useMemo(() => {
-    return rankedItems.slice(0, 3);
-  }, [rankedItems]);
+    if (!apiData || apiData.contest.id !== selectedContestId) return [];
+    return apiData.podium.map((item) => apiItemToLeaderboardItem(item));
+  }, [apiData, selectedContestId]);
 
-  // Table items: ranks #4+ if podium_table mode, or all items if full_table mode
   const tableItems = useMemo(() => {
-    if (viewMode === 'full_table') {
-      return rankedItems;
-    }
+    if (viewMode === 'full_table') return rankedItems;
     return rankedItems.slice(3);
   }, [rankedItems, viewMode]);
 
-  // Aggregate statistics
-  const totalCount = rankedItems.length;
-  const totalVotes = useMemo(
-    () => rankedItems.reduce((acc, curr) => acc + curr.totalVotes, 0),
-    [rankedItems]
-  );
-  const avgScore = useMemo(() => {
-    if (totalCount === 0) return 0;
-    const sum = rankedItems.reduce((acc, curr) => acc + curr.communityScore, 0);
-    return Math.round((sum / totalCount) * 100) / 100;
-  }, [rankedItems, totalCount]);
+  const summary = useMemo<LeaderboardSummary | null>(() => {
+    if (!apiData || apiData.contest.id !== selectedContestId) return null;
+    const leading = apiData.podium[0] ?? apiData.items[0] ?? null;
+    const totalParticipants =
+      apiData.totalParticipants ??
+      new Set(apiData.items.map((item) => item.creator.id)).size;
+    return {
+      totalEntries: apiData.totalEntries,
+      totalParticipants,
+      totalVotes: apiData.totalVotes,
+      leading: leading
+        ? {
+            title: leading.title,
+            communityScore: leading.communityScore,
+            totalVotes: leading.totalVotes,
+          }
+        : null,
+    };
+  }, [apiData, selectedContestId]);
 
-  // Preview Modal handlers
   const openPreview = useCallback((item: LeaderboardItem) => {
     setPreviewItem(item);
     setIsPreviewOpen(true);
@@ -336,11 +293,14 @@ export function useLeaderboard(): UseLeaderboardReturn {
     tableItems,
     previewItem,
     isPreviewOpen,
-    totalCount,
-    avgScore,
-    totalVotes,
+    totalCount: rankedItems.length,
+    avgScore: apiData?.contest.id === selectedContestId ? apiData.averageScore : 0,
+    totalVotes: summary?.totalVotes ?? 0,
+    summary,
     isLoading,
+    catalogReady,
     error,
+    catalogError,
     setTimeframe,
     setCategory,
     setSearchQuery,

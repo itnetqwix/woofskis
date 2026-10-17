@@ -1,0 +1,35 @@
+---
+description: Business rules, scoring formulas, contest state transitions, and platform governance
+globs: **/*
+alwaysApply: false
+---
+
+# 02 - Domain Rules & Platform Governance
+
+## 1. Domain Rules Reference
+Consult [docs/knowledge/business-rules.md](file:///D:/woofskis/docs/knowledge/business-rules.md) when relevant; avoid rereading everything.
+
+## 2. Platform Boundaries (Ch 13.13)
+- **Configurable by Brands**: Theme colors, fonts, logos, banners, contest descriptions, prize summaries, contest schedules.
+- **Centrally Platform Governed (CANNOT BE OVERRIDDEN)**: Authentication, RBAC, voting calculation algorithm, anti-fraud rate-limiting, moderation pipelines, database schemas, and platform security.
+
+## 3. Core Business Formulas & Constants
+- **Rating Scale**: New ratings are integers in the range `[1, 10]`. Historical stored ratings of 1–5 remain valid and are not migrated.
+- **Community Consensus Score Formula**:
+  $$\text{NewScore} = \text{round}\left(\frac{\text{PreviousScore} \times \text{PreviousVotes} + \text{Rating}}{\text{PreviousVotes} + 1}, 1\right)$$
+  $$\Delta = \text{round}(\text{NewScore} - \text{PreviousScore}, 1)$$
+- **Auto-Advance Delay**: Default delay after score submission is `1800 ms` (1.8 seconds).
+- **Video Submission Constraints**: Format must be MP4, WebM, or MOV (`video/mp4`, `video/webm`, `video/quicktime`); Max file size 100MB; Max duration 60 seconds.
+
+## 4. State Machines & Validation
+- **Contest Statuses**: `DRAFT` &rarr; `SCHEDULED` &rarr; `ACTIVE` &rarr; `JUDGING` &rarr; `COMPLETED` &rarr; `ARCHIVED`.
+  - Submissions and community ratings are ONLY accepted while contest is `ACTIVE`.
+- **Submission Statuses**: `PENDING_REVIEW` &rarr; `APPROVED` / `REJECTED` / `FLAGGED`.
+  - Only `APPROVED` submissions appear in the public live judging queue and leaderboard.
+  - Every rejection MUST include a categorized rejection reason.
+
+## 5. Unspecified Rules Protocol
+If an implementation detail, threshold, or policy is not specified in `/docs/source/` or `/docs/knowledge/`:
+- **DO NOT INVENT AN ASSUMED RULE**.
+- Mark it as `NOT SPECIFIED` in comments and code documents.
+- Ask questions only when a critical detail is missing, or flag it as an open configuration item.

@@ -20,6 +20,8 @@ const PAGE_ROUTE: Record<(typeof ROLE_GUARD_PAGE_FILES)[number], ProtectedDashbo
   'src/app/(dashboard)/admin/creators/page.tsx': '/admin/creators',
   'src/app/(dashboard)/admin/creators/[id]/page.tsx': '/admin/creators',
   'src/app/(dashboard)/admin/contests/[id]/creators/page.tsx': '/admin/contests',
+  'src/app/(dashboard)/admin/leaderboard/page.tsx': '/admin/leaderboard',
+  'src/app/(dashboard)/admin/categories/page.tsx': '/admin/categories',
 };
 
 describe('RoleGuard page audit', () => {
@@ -35,11 +37,15 @@ describe('RoleGuard page audit', () => {
         'src/app/(dashboard)/admin/creators/page.tsx',
         'src/app/(dashboard)/admin/creators/[id]/page.tsx',
         'src/app/(dashboard)/admin/contests/[id]/creators/page.tsx',
+        'src/app/(dashboard)/admin/leaderboard/page.tsx',
+        'src/app/(dashboard)/admin/categories/page.tsx',
       ]
     );
     assert.deepEqual(Object.keys(PROTECTED_DASHBOARD_ROUTES).sort(), [
+      '/admin/categories',
       '/admin/contests',
       '/admin/creators',
+      '/admin/leaderboard',
       '/admin/moderation',
       '/creator',
       '/creator/friends',

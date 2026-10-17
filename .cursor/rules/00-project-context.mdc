@@ -14,31 +14,18 @@ You are working on **Woofskis** (`woofskis.com`), an independent single-product 
 2. **Resource Isolation**: Never access external production databases, S3 buckets, Cloudflare workers, or foreign secrets.
 3. **Execution Guardrails**: Do not run migrations, bootstrap admin, start dev servers, or deploy unless explicitly authorized.
 
-## 3. Source of Truth & Knowledge Hierarchy
-- `/docs/knowledge/`: Processed, structured, actionable project documentation. Consult this first:
-  - [WOOFSKIS-ARCHITECTURE-REFERENCE.md](file:///D:/woofskis/docs/knowledge/WOOFSKIS-ARCHITECTURE-REFERENCE.md) — Architecture map & resource checklists
-  - [project-overview.md](file:///D:/woofskis/docs/knowledge/project-overview.md) — Vision, roadmap, personas
-  - [architecture.md](file:///D:/woofskis/docs/knowledge/architecture.md) — End-to-end system architecture
-  - [domain-model.md](file:///D:/woofskis/docs/knowledge/domain-model.md) — Entities, attributes, states
-  - [feature-map.md](file:///D:/woofskis/docs/knowledge/feature-map.md) — Implemented vs Planned feature matrix
-  - [workflow-map.md](file:///D:/woofskis/docs/knowledge/workflow-map.md) — User journeys & flowcharts
-  - [frontend-map.md](file:///D:/woofskis/docs/knowledge/frontend-map.md) — Next.js App Router & components
-  - [backend-map.md](file:///D:/woofskis/docs/knowledge/backend-map.md) — Fastify routes, services, repos
-  - [api-map.md](file:///D:/woofskis/docs/knowledge/api-map.md) — REST API contracts & Zod schemas
-  - [data-model.md](file:///D:/woofskis/docs/knowledge/data-model.md) — Prisma database schema
-  - [business-rules.md](file:///D:/woofskis/docs/knowledge/business-rules.md) — Governing rules & constraints
-  - [implementation-status.md](file:///D:/woofskis/docs/knowledge/implementation-status.md) — Gap analysis
-  - [ai-development-workflow.md](file:///D:/woofskis/docs/knowledge/ai-development-workflow.md) — AI agent protocol
-- `/docs/graphify/`: Machine-readable relationship graph system (`cos-project-graph.json`, `graph-cli.js`). Use to trace dependencies across:
-  $$\text{User} \longrightarrow \text{Role} \longrightarrow \text{Permission} \longrightarrow \text{Feature} \longrightarrow \text{Workflow} \longrightarrow \text{Frontend} \longrightarrow \text{API} \longrightarrow \text{Backend} \longrightarrow \text{Database}$$
+## 3. Shared Token-Efficient Workflow Rules
+- **Exact Scope**: Solve only the exact feature or bug requested. Make the smallest changes necessary.
+- **Targeted Inspection**: Inspect only relevant files and necessary dependencies. Avoid broad codebase exploration, repeated file reading, unnecessary research, and lengthy analysis.
+- **No Unrelated Edits**: Do not refactor or modify unrelated files.
+- **Verification on Demand**: Do not run builds, tests, audits, or extra verification unless explicitly requested or genuinely necessary.
+- **Lean Communication**: Do not repeat the user's requirements in lengthy summaries. Ask questions only when a critical detail is missing.
+- **Concise Reporting**: Report only what changed and the modified file paths.
+- **Accurate Completion**: Never claim completion without actually completing the task.
+- **Architecture & Docs**: Follow existing project architecture and documentation when relevant, without rereading everything.
 
-## 4. Mandatory AI Execution Protocol
-1. **Single Task**: Work on one module/task at a time.
-2. **Query Graph**: Run `node docs/graphify/graph-cli.js query --node <ID>` or `trace-path` to identify connected components.
-3. **Read Knowledge**: Consult relevant `/docs/knowledge/` files.
-4. **Inspect Code**: Review actual files in `frontend/` or `backend/`.
-5. **Never Invent Rules**: If a business rule or threshold is not specified, treat it as `NOT SPECIFIED` and request clarification.
-6. **Implement**: Follow existing Clean Architecture / feature-first conventions.
-7. **Validate**: Run typechecks (`npm run typecheck`) and tests (`npm test`).
-8. **Update Knowledge & Graph**: When introducing new models, endpoints, or components, update `/docs/knowledge/` and validate with `node docs/graphify/graph-cli.js validate`.
-9. **Report**: Always report changed files, verification results, and any remaining gaps.
+## 4. Knowledge Navigation & Execution Protocol
+1. **Targeted Reference**: Refer to `/docs/knowledge/` or `/docs/graphify/` only when relevant to the task; avoid rereading everything.
+2. **Never Invent Rules**: If a business rule or threshold is not specified, treat it as `NOT SPECIFIED` and ask only if a critical detail is missing.
+3. **Clean Implementation**: Maintain Clean Architecture and feature-first conventions for touched code.
+4. **Update Knowledge & Graph**: When introducing new models, endpoints, or components, update relevant `/docs/knowledge/` files and validate with `node docs/graphify/graph-cli.js validate`.

@@ -22,7 +22,8 @@ import {
   FileVideo,
   Clock,
 } from 'lucide-react';
-import { SUBMISSION_CATEGORIES } from '@/constants/mock-creator-data';
+import { useActiveVideoCategories } from '@/features/categories/hooks/use-active-video-categories';
+import { OTHER_VIDEO_CATEGORY } from '@/services/video-categories-api';
 import { loadDeploymentActiveContests } from '@/features/deployment/load-deployment-contests';
 import { isUuid } from '@/lib/is-uuid';
 import { CreatorSubmissionItem } from '@/types/creator';
@@ -130,7 +131,13 @@ export function UploadModal({
   // Form fields
   const [title, setTitle] = useState('');
   const [contestId, setContestId] = useState('');
-  const [category, setCategory] = useState(SUBMISSION_CATEGORIES[0].name);
+  const [categoryChoice, setCategoryChoice] = useState('');
+  const [otherCategoryLabel, setOtherCategoryLabel] = useState('');
+  const {
+    categories: categoryOptions,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useActiveVideoCategories(open);
   const [tags, setTags] = useState<string[]>(['#ViralComedy', '#Woofskis2026']);
   const [tagInput, setTagInput] = useState('');
   const [description, setDescription] = useState('');
@@ -184,7 +191,15 @@ export function UploadModal({
 
         if (initialData) {
           setTitle(initialData.title || '');
-          setCategory((initialData.category as any) || SUBMISSION_CATEGORIES[0].name);
+          setCategoryChoice('');
+          setOtherCategoryLabel(
+            initialData.category?.startsWith('Other:')
+              ? initialData.category.slice('Other:'.length).trim()
+              : ''
+          );
+          if (initialData.category?.startsWith('Other:')) {
+            setCategoryChoice(OTHER_VIDEO_CATEGORY);
+          }
           setTags(
             initialData.tags && initialData.tags.length > 0 ? initialData.tags : ['#Woofskis2026']
           );
@@ -193,7 +208,8 @@ export function UploadModal({
         } else {
           // Reset defaults
           setTitle('');
-          setCategory(SUBMISSION_CATEGORIES[0].name);
+          setCategoryChoice('');
+          setOtherCategoryLabel('');
           setTags(['#ViralComedy', '#Woofskis2026']);
           setDescription('');
           setContestId(defaultContestId);
@@ -217,7 +233,13 @@ export function UploadModal({
       prevOpenRef.current = false;
       prevInitialDataRef.current = undefined;
     }
-  }, [open, initialData, preferredContestId, availableContests]);
+  }, [open, initialData, availableContests, preferredContestId]);
+
+  useEffect(() => {
+    if (!open || !initialData?.category || initialData.category.startsWith('Other:')) return;
+    const match = categoryOptions.find((item) => item.name === initialData.category);
+    if (match) setCategoryChoice(match.id);
+  }, [open, initialData, categoryOptions]);
 
   // Synchronize contestId if availableContests populates while open, without overwriting existing user selection
   useEffect(() => {
@@ -339,11 +361,28 @@ export function UploadModal({
   };
 
   // Form Validation & Submission
+  const selectedCategoryName =
+    categoryChoice === OTHER_VIDEO_CATEGORY
+      ? `Other: ${otherCategoryLabel.trim()}`
+      : categoryOptions.find((item) => item.id === categoryChoice)?.name || '';
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
 
     if (!title.trim() || title.trim().length < 3) {
       errors.title = 'Title must be at least 3 characters.';
+    }
+    if (!categoryChoice) {
+      errors.category = categoriesLoading
+        ? 'Categories are still loading.'
+        : 'Select a category.';
+    } else if (categoryChoice === OTHER_VIDEO_CATEGORY && !otherCategoryLabel.trim()) {
+      errors.otherCategoryLabel = 'Please specify your video category.';
+    } else if (
+      categoryChoice !== OTHER_VIDEO_CATEGORY &&
+      !categoryOptions.some((item) => item.id === categoryChoice && item.isActive)
+    ) {
+      errors.category = 'Select an active category.';
     }
     if (!isUuid(contestId)) {
       errors.contest =
@@ -389,6 +428,9 @@ export function UploadModal({
           description: description.trim(),
           durationSeconds: videoDuration,
           tags,
+          categoryId: categoryChoice === OTHER_VIDEO_CATEGORY ? undefined : categoryChoice,
+          otherCategoryLabel:
+            categoryChoice === OTHER_VIDEO_CATEGORY ? otherCategoryLabel.trim() : undefined,
         },
         (event) => {
           setStage('uploading');
@@ -404,7 +446,7 @@ export function UploadModal({
       setStage('success');
       setCreatedItemSummary({
         title: mapped.title,
-        category,
+        category: mapped.category || selectedCategoryName,
         durationSeconds: mapped.durationSeconds,
       });
 
@@ -414,7 +456,7 @@ export function UploadModal({
         title: mapped.title,
         contestId: mapped.contestId,
         contestName: mapped.contestName,
-        category,
+        category: mapped.category || selectedCategoryName,
         videoUrl: mapped.videoUrl,
         thumbnailUrl: mapped.thumbnailUrl,
         durationSeconds: mapped.durationSeconds,
@@ -901,16 +943,55 @@ export function UploadModal({
                   </label>
                   <select
                     id="submission-category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value as any)}
-                    className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={categoryChoice}
+                    onChange={(e) => setCategoryChoice(e.target.value)}
+                    disabled={categoriesLoading}
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
                   >
-                    {SUBMISSION_CATEGORIES.map((cat) => (
-                      <option key={cat.name} value={cat.name}>
+                    <option value="">
+                      {categoriesLoading ? 'Loading categories…' : 'Select a category'}
+                    </option>
+                    {categoryOptions.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
                         {cat.name}
                       </option>
                     ))}
+                    <option value={OTHER_VIDEO_CATEGORY}>Other</option>
                   </select>
+                  {categoriesError && (
+                    <p className="text-xs text-destructive">{categoriesError}</p>
+                  )}
+                  {!categoriesLoading && categoryOptions.length === 0 && !categoriesError && (
+                    <p className="text-xs text-muted-foreground">
+                      No official categories yet. Choose Other and describe the video.
+                    </p>
+                  )}
+                  {formErrors.category && (
+                    <p className="flex items-center gap-1 text-xs text-destructive">
+                      <AlertCircle className="h-3 w-3" />
+                      {formErrors.category}
+                    </p>
+                  )}
+                  {categoryChoice === OTHER_VIDEO_CATEGORY && (
+                    <div className="space-y-1">
+                      <label htmlFor="submission-other-category" className="text-xs font-semibold">
+                        Which category best describes this video?
+                      </label>
+                      <input
+                        id="submission-other-category"
+                        value={otherCategoryLabel}
+                        onChange={(event) => setOtherCategoryLabel(event.target.value)}
+                        maxLength={80}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        Please specify your video category.
+                      </p>
+                      {formErrors.otherCategoryLabel && (
+                        <p className="text-xs text-destructive">{formErrors.otherCategoryLabel}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

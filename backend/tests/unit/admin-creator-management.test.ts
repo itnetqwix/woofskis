@@ -406,11 +406,16 @@ describe('admin creator management', { concurrency: false }, () => {
     const result = await AdminCreatorService.deleteSubmission(
       { id: ADMIN, role: Role.ADMIN },
       VIDEO,
+      'Copyrighted music',
     );
     assert.equal(result.deleted, true);
     assert.equal(result.mediaObjectRetained, true);
     assert.equal(deleted, VIDEO);
     assert.equal(activities[0].action, 'SUBMISSION_DELETED');
+    assert.deepEqual(
+      (activities[0].metadata as Record<string, unknown> | undefined)?.reason,
+      'Copyrighted music',
+    );
     assert.equal(activities[0].performedByUserId, ADMIN);
     assert.equal(activities[0].creatorId, CREATOR);
   });
@@ -476,6 +481,7 @@ describe('admin creator management', { concurrency: false }, () => {
         objectKey: `contests/${CONTEST}/creators/${CREATOR}/${VIDEO}.mp4`,
         title: 'Bit',
         durationSeconds: 12,
+        otherCategoryLabel: 'Pet tricks',
       },
     );
     assert.equal(uploaded.created, true);
