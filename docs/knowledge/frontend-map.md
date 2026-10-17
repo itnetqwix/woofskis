@@ -19,9 +19,11 @@
 | `/creator/friends/[friendshipId]` | `src/app/(dashboard)/creator/friends/[friendshipId]/page.tsx` | One accepted-friend conversation. Same CREATOR RoleGuard as `/creator/friends`. | `IMPLEMENTED` |
 | `/admin/moderation` | `src/app/(dashboard)/admin/moderation/page.tsx` | Split-screen video moderation review queue and decision workflows. | `IMPLEMENTED` |
 | `/admin/contests` | `src/app/(dashboard)/admin/contests/page.tsx` | Contest management table, lifecycle state badges, and contest creation modal. Banner upload, contest timezone, and the review step use `ContestPresentation`. | `IMPLEMENTED` |
+| `/admin/leaderboard` | `src/app/(dashboard)/admin/leaderboard/page.tsx` | Admin leaderboard for ACTIVE contests. Uses `GET /contests/active` and `GET /contests/:id/leaderboard`. | `IMPLEMENTED` |
+| `/admin/categories` | `src/app/(dashboard)/admin/categories/page.tsx` | Admin video category list, create, edit, activate, and safe delete. | `IMPLEMENTED` |
 | `/admin/brands` | `src/app/(dashboard)/admin/brands/page.tsx` | Brand theme customizer (colors, logos, typography, headers). | `IMPLEMENTED` |
 | `/super-admin` | `src/app/(dashboard)/super-admin/page.tsx` | Multi-tenant overview. Tenant fleet and status from `GET /super-admin/organizations` (`useSuperAdminOrganizations`); Suspend opens `SuspendOrganizationDialog` (required reason); Reactivate calls reinstate. Compliance notices are still a local prototype. | `IMPLEMENTED` |
-| `/leaderboard` | `src/app/(viewer)/leaderboard/page.tsx` | Contest scoreboard. The header uses the shared `ContestPresentation` (contest banner, schedule, status). `?contest=` selects the contest and survives refresh. Table shows video, creator, 1–10 average, votes, voters, and comments. | `IMPLEMENTED` |
+| `/leaderboard` | `src/app/(viewer)/leaderboard/page.tsx` | Public scoreboard for ACTIVE contests only. Ranks come from the leaderboard API. Search does not re-rank. | `IMPLEMENTED` |
 
 ---
 

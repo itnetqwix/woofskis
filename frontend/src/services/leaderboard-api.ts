@@ -56,6 +56,7 @@ export interface ApiLeaderboardContest {
 export interface ApiLeaderboardData {
   contest: ApiLeaderboardContest;
   totalEntries: number;
+  totalParticipants?: number;
   totalVotes: number;
   averageScore: number;
   items: ApiLeaderboardItem[];

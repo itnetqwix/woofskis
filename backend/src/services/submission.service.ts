@@ -19,6 +19,7 @@ import {
 import { assertCreatorAccountActive } from './creator-account.service.js';
 import { CreatorActivityService } from './creator-activity.service.js';
 import { NotificationService } from './notification.service.js';
+import { resolveSubmissionCategory } from './video-category.service.js';
 import {
   buildSubmissionObjectKey,
   getStorageService,
@@ -97,7 +98,9 @@ function storedThumbnail(videoObjectKey: string, value: string | null | undefine
   if (!value) return null;
   if (!parseThumbnailObjectKey(value)) return value;
   if (value !== thumbnailKeyForSubmission(videoObjectKey)) {
-    throw new ValidationError('thumbnailUrl is not the thumbnail key issued for this video');
+    throw new ValidationError(
+      'thumbnailUrl is not the thumbnail key issued for this video',
+    );
   }
   return value;
 }
@@ -184,6 +187,8 @@ export class SubmissionService {
       throw new ConflictError('objectKey is already registered');
     }
 
+    const category = await resolveSubmissionCategory(input);
+
     const data: CreateSubmissionData = {
       contestId: contest.id,
       creatorId: actor.id,
@@ -194,6 +199,8 @@ export class SubmissionService {
       thumbnailUrl: storedThumbnail(input.objectKey, input.thumbnailUrl),
       durationSeconds: input.durationSeconds,
       tags: input.tags ?? [],
+      categoryId: category.categoryId,
+      otherCategoryLabel: category.otherCategoryLabel,
     };
 
     try {

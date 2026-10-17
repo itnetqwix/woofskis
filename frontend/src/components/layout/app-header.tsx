@@ -16,6 +16,7 @@ import {
   Sparkles,
   Radar,
   Menu,
+  Tags,
   User,
   Users,
 } from 'lucide-react';
@@ -190,6 +191,18 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
           label: 'Creators',
           icon: User,
           active: pathname.startsWith('/admin/creators'),
+        },
+        {
+          href: '/admin/leaderboard',
+          label: 'Leaderboard',
+          icon: Trophy,
+          active: pathname.startsWith('/admin/leaderboard'),
+        },
+        {
+          href: '/admin/categories',
+          label: 'Video Categories',
+          icon: Tags,
+          active: pathname.startsWith('/admin/categories'),
         },
         {
           href: '/admin/moderation',

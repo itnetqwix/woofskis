@@ -56,6 +56,8 @@ export interface CreatorUploadInput {
   durationSeconds: number;
   tags?: string[];
   thumbnailUrl?: string | null;
+  categoryId?: string;
+  otherCategoryLabel?: string;
 }
 
 export async function uploadCreatorSubmission(
@@ -90,6 +92,8 @@ export async function uploadCreatorSubmission(
     durationSeconds: input.durationSeconds,
     tags: input.tags,
     thumbnailUrl,
+    categoryId: input.categoryId,
+    otherCategoryLabel: input.otherCategoryLabel,
   };
 
   const completeEnvelope = await completeSubmission(completeBody);

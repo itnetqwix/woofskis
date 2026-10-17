@@ -15,6 +15,7 @@ import {
 } from '../middleware/auth.middleware.js';
 import { JudgingController } from '../controllers/judging.controller.js';
 import { LeaderboardController } from '../controllers/leaderboard.controller.js';
+import { VideoCategoryController } from '../controllers/video-category.controller.js';
 import { VoterController } from '../controllers/voter.controller.js';
 import {
   judgingQueueSwaggerSchema,
@@ -23,6 +24,13 @@ import {
   sharePreviewSwaggerSchema,
 } from '../schemas/judging.schema.js';
 import { getLeaderboardSwaggerSchema } from '../schemas/leaderboard.schema.js';
+import {
+  createVideoCategorySwaggerSchema,
+  deleteVideoCategorySwaggerSchema,
+  listActiveVideoCategoriesSwaggerSchema,
+  listAdminVideoCategoriesSwaggerSchema,
+  updateVideoCategorySwaggerSchema,
+} from '../schemas/video-category.schema.js';
 import {
   registerCreatorSwaggerSchema,
   loginSwaggerSchema,
@@ -657,6 +665,58 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       config: { rateLimit: ratingRateLimit },
     },
     JudgingController.rate,
+  );
+
+  // -------------------------------------------------------------
+  // Video categories. Official catalog shared with contest categories.
+  // Creator Other text is stored on the submission, not as a Category row.
+  // -------------------------------------------------------------
+
+  fastify.get(
+    '/video-categories',
+    {
+      schema: listActiveVideoCategoriesSwaggerSchema,
+      onRequest: [fastify.authenticate],
+    },
+    VideoCategoryController.listActive,
+  );
+
+  const videoCategoryGuards = [fastify.authenticate, authorizeRoles(Role.ADMIN)];
+
+  fastify.get(
+    '/admin/video-categories',
+    {
+      schema: listAdminVideoCategoriesSwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.listAdmin,
+  );
+
+  fastify.post(
+    '/admin/video-categories',
+    {
+      schema: createVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.create,
+  );
+
+  fastify.patch(
+    '/admin/video-categories/:id',
+    {
+      schema: updateVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.update,
+  );
+
+  fastify.delete(
+    '/admin/video-categories/:id',
+    {
+      schema: deleteVideoCategorySwaggerSchema,
+      onRequest: videoCategoryGuards,
+    },
+    VideoCategoryController.remove,
   );
 
   // -------------------------------------------------------------

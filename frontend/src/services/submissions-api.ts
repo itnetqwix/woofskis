@@ -46,6 +46,9 @@ export interface ApiSubmission {
   moderatedById?: string | null;
   moderatedAt?: string | null;
   tags: string[];
+  categoryId?: string | null;
+  otherCategoryLabel?: string | null;
+  videoCategory?: { id: string; name: string; slug: string; isActive?: boolean } | null;
   communityScore: number;
   totalVotes: number;
   createdAt: string;
@@ -78,6 +81,8 @@ export interface CompleteSubmissionRequest {
   durationSeconds: number;
   tags?: string[];
   thumbnailUrl?: string | null;
+  categoryId?: string;
+  otherCategoryLabel?: string;
 }
 
 export function presignSubmission(

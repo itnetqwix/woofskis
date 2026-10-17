@@ -4,7 +4,7 @@ import React from 'react';
 import { Search, X } from 'lucide-react';
 import { ModerationFilterStatus, ModerationSortOption } from '@/types/admin';
 import { Button } from '@/components/ui/button';
-import { SUBMISSION_CATEGORIES } from '@/constants/mock-creator-data';
+import { useActiveVideoCategories } from '@/features/categories/hooks/use-active-video-categories';
 
 const STATUS_OPTIONS: { id: ModerationFilterStatus; label: string }[] = [
   { id: 'ALL', label: 'All statuses' },
@@ -40,6 +40,7 @@ export function ModerationFilterBar({
   onCategoryFilterChange,
   onSortByChange,
 }: ModerationFilterBarProps) {
+  const { categories } = useActiveVideoCategories();
   const hasActiveFilters =
     searchQuery.trim() !== '' || filterStatus !== 'ALL' || categoryFilter !== 'ALL';
 
@@ -76,11 +77,12 @@ export function ModerationFilterBar({
           className={SELECT_CLASS}
         >
           <option value="ALL">All categories</option>
-          {SUBMISSION_CATEGORIES.map((c) => (
-            <option key={c.name} value={c.name}>
-              {c.name}
+          {categories.map((category) => (
+            <option key={category.id} value={category.name}>
+              {category.name}
             </option>
           ))}
+          <option value="__other__">Other</option>
         </select>
         <select
           value={sortBy}

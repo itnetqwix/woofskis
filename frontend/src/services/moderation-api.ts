@@ -44,6 +44,9 @@ export interface ApiModerationSubmission {
   moderatedById: string | null;
   moderatedAt: string | null;
   tags: string[];
+  categoryId?: string | null;
+  otherCategoryLabel?: string | null;
+  videoCategory?: { id: string; name: string; slug: string; isActive?: boolean } | null;
   communityScore: number;
   totalVotes: number;
   createdAt: string;

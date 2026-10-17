@@ -47,6 +47,18 @@ export async function toModerationSubmissionView(
     moderatedById: submission.moderatedById,
     moderatedAt: iso(submission.moderatedAt),
     tags: submission.tags,
+    categoryId: 'categoryId' in submission ? (submission.categoryId ?? null) : null,
+    otherCategoryLabel:
+      'otherCategoryLabel' in submission ? (submission.otherCategoryLabel ?? null) : null,
+    videoCategory:
+      'videoCategory' in submission && submission.videoCategory
+        ? {
+            id: submission.videoCategory.id,
+            name: submission.videoCategory.name,
+            slug: submission.videoCategory.slug,
+            isActive: submission.videoCategory.isActive,
+          }
+        : null,
     communityScore: submission.communityScore,
     totalVotes: submission.totalVotes,
     createdAt: iso(submission.createdAt),

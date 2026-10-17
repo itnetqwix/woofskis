@@ -51,6 +51,7 @@ export interface ContestLeaderboardView {
     } | null;
   };
   totalEntries: number;
+  totalParticipants: number;
   totalVotes: number;
   averageScore: number;
   items: LeaderboardItemView[];
@@ -97,7 +98,9 @@ export class LeaderboardService {
         videoUrl: await playbackUrlForSubmission(record.objectKey, record.videoUrl, {
           audience: 'public',
         }),
-        thumbnailUrl: await resolveThumbnailUrl(record.thumbnailUrl, { audience: 'public' }),
+        thumbnailUrl: await resolveThumbnailUrl(record.thumbnailUrl, {
+          audience: 'public',
+        }),
         durationSeconds: record.durationSeconds,
         tags: record.tags,
         communityScore: record.communityScore,
@@ -112,6 +115,7 @@ export class LeaderboardService {
     );
 
     const totalEntries = items.length;
+    const totalParticipants = new Set(items.map((item) => item.creator.id)).size;
     const totalVotes = items.reduce((sum, item) => sum + item.totalVotes, 0);
     const sumScore = items.reduce((sum, item) => sum + item.communityScore, 0);
     const averageScore =
@@ -145,6 +149,7 @@ export class LeaderboardService {
           : null,
       },
       totalEntries,
+      totalParticipants,
       totalVotes,
       averageScore,
       items,

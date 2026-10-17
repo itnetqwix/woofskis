@@ -26,7 +26,13 @@ describe('RoleGuard policy', () => {
   });
 
   it('protects admin contest and moderation routes for ADMIN', () => {
-    for (const route of ['/admin/moderation', '/admin/contests', '/admin/creators'] as const) {
+    for (const route of [
+      '/admin/moderation',
+      '/admin/contests',
+      '/admin/creators',
+      '/admin/leaderboard',
+      '/admin/categories',
+    ] as const) {
       const policy = PROTECTED_DASHBOARD_ROUTES[route];
       assert.deepEqual([...policy.allowedSessionRoles], ['ADMIN']);
       assert.equal(policy.unauthenticatedRedirect, UNAUTHENTICATED_REDIRECT);

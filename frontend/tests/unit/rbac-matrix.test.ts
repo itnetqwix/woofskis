@@ -41,6 +41,8 @@ const ROUTES: ProtectedDashboardRoute[] = [
   '/admin/moderation',
   '/admin/contests',
   '/admin/creators',
+  '/admin/leaderboard',
+  '/admin/categories',
 ];
 
 const ROUTE_MATRIX: Record<ProtectedDashboardRoute, Record<SessionActor, ExpectedDecision>> = {
@@ -65,6 +67,16 @@ const ROUTE_MATRIX: Record<ProtectedDashboardRoute, Record<SessionActor, Expecte
     ADMIN: { status: 'allow' },
   },
   '/admin/creators': {
+    UNAUTH: { status: 'unauthenticated', redirectTo: '/login' },
+    CREATOR: { status: 'unauthorized', redirectTo: '/' },
+    ADMIN: { status: 'allow' },
+  },
+  '/admin/leaderboard': {
+    UNAUTH: { status: 'unauthenticated', redirectTo: '/login' },
+    CREATOR: { status: 'unauthorized', redirectTo: '/' },
+    ADMIN: { status: 'allow' },
+  },
+  '/admin/categories': {
     UNAUTH: { status: 'unauthenticated', redirectTo: '/login' },
     CREATOR: { status: 'unauthorized', redirectTo: '/' },
     ADMIN: { status: 'allow' },

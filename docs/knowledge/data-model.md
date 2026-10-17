@@ -100,6 +100,8 @@ model Category {
   @@map("categories")
 }
 
+The live `Category` model no longer has `organizationId`. It has `isActive` (default `true`), `updatedAt`, and `submissions`. Video upload and contest assignment share this catalog. Creator Other text is `Submission.otherCategoryLabel`, not a new category row. `Submission.categoryId` is optional, `onDelete: Restrict`. A case-insensitive unique index on `lower(btrim(name))` is in migration `20261017233000_video_categories` because Prisma cannot declare that expression.
+
 model Contest {
   id                 String        @id @default(uuid())
   organizationId     String
@@ -146,8 +148,11 @@ model Submission {
   moderatedById   String?
   moderatedBy     User?            @relation("ModeratedByUser", fields: [moderatedById], references: [id], onDelete: SetNull)
   moderatedAt     DateTime?
-  tags            String[]
-  communityScore  Float            @default(0)
+  tags               String[]
+  categoryId         String?
+  videoCategory      Category?        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  otherCategoryLabel String?
+  communityScore     Float            @default(0)
   totalVotes      Int              @default(0)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

@@ -23,7 +23,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { CreatorSubmissionItem, SubmissionFilterStatus } from '@/types/creator';
-import { SUBMISSION_CATEGORIES } from '@/constants/mock-creator-data';
+import { useActiveVideoCategories } from '@/features/categories/hooks/use-active-video-categories';
 import { SubmissionStatusBadge } from '@/features/submissions/components/submission-status-badge';
 import { VideoThumbnailCard } from '@/components/common/video-thumbnail-card';
 import { Button } from '@/components/ui/button';
@@ -73,6 +73,7 @@ export function SubmissionsTable({
   onOpenUploadModal,
   onResetMockData,
 }: SubmissionsTableProps) {
+  const { categories } = useActiveVideoCategories();
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [expandedRejections, setExpandedRejections] = useState<Record<string, boolean>>({});
 
@@ -199,11 +200,12 @@ export function SubmissionsTable({
             className="rounded-xl border border-input bg-card px-3 py-1.5 text-xs text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="ALL">All Categories</option>
-            {SUBMISSION_CATEGORIES.map((c) => (
-              <option key={c.name} value={c.name}>
-                {c.name}
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
               </option>
             ))}
+            <option value="__other__">Other</option>
           </select>
 
           {/* Sort Selector */}

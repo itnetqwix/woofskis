@@ -14,6 +14,35 @@ interface LeaderboardTableProps {
   onOpenPreview: (item: LeaderboardItem) => void;
   onViewVoters: (item: LeaderboardItem) => void;
   onViewComments: (item: LeaderboardItem) => void;
+  emptyTitle?: string;
+  emptyDetail?: string;
+}
+
+function formatSubmitted(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function RankLabel({ rank }: { rank: number }) {
+  const tone =
+    rank === 1
+      ? 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+      : rank === 2
+        ? 'border-zinc-400/45 bg-zinc-400/10 text-zinc-600 dark:text-zinc-300'
+        : rank === 3
+          ? 'border-orange-800/35 bg-orange-800/10 text-orange-900 dark:text-orange-400'
+          : 'border-transparent text-muted-foreground';
+  return (
+    <span
+      className={cn(
+        'inline-flex h-5 min-w-[1.7rem] shrink-0 items-center justify-center rounded px-1 text-[10px] font-bold tabular-nums leading-none tracking-tight',
+        tone
+      )}
+    >
+      #{rank}
+    </span>
+  );
 }
 
 function Thumb({
@@ -30,28 +59,36 @@ function Thumb({
       title={item.title}
       durationSeconds={item.durationSeconds}
       onClick={() => onOpen(item)}
-      className="h-14 w-10"
+      className="h-12 w-8 shrink-0"
       showDuration={false}
     />
   );
 }
 
-function Creator({ item }: { item: LeaderboardItem }) {
+function Creator({ item, compact = false }: { item: LeaderboardItem; compact?: boolean }) {
+  const size = compact ? 'h-5 w-5 text-[9px]' : 'h-7 w-7 text-[10px]';
   return (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-1.5">
       {item.creatorAvatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.creatorAvatarUrl}
           alt=""
-          className="h-7 w-7 shrink-0 rounded-full object-cover"
+          className={cn(size, 'shrink-0 rounded-full object-cover')}
         />
       ) : (
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fa4616] text-[10px] font-bold text-white">
+        <span
+          className={cn(
+            size,
+            'flex shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground'
+          )}
+        >
           {initials(item.creatorName)}
         </span>
       )}
-      <span className="truncate text-sm font-medium text-foreground">{item.creatorName}</span>
+      <span className={cn('truncate font-medium text-foreground', compact ? 'text-xs' : 'text-sm')}>
+        {item.creatorName}
+      </span>
     </div>
   );
 }
@@ -69,39 +106,19 @@ function Score({ item }: { item: LeaderboardItem }) {
   );
 }
 
-function RowActions({
-  item,
-  onViewVoters,
-  onViewComments,
-}: {
-  item: LeaderboardItem;
-  onViewVoters: (item: LeaderboardItem) => void;
-  onViewComments: (item: LeaderboardItem) => void;
-}) {
-  const buttonClass =
-    'rounded-lg border border-border bg-background px-2.5 py-1.5 text-[11px] font-semibold text-foreground hover:bg-muted';
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      <button type="button" className={buttonClass} onClick={() => onViewVoters(item)}>
-        View voters
-      </button>
-      <button type="button" className={buttonClass} onClick={() => onViewComments(item)}>
-        View comments
-      </button>
-    </div>
-  );
-}
-
 export function LeaderboardTable({
   items,
   onOpenPreview,
   onViewVoters,
   onViewComments,
+  emptyTitle = 'No approved submissions',
+  emptyDetail = 'Approved videos for this contest will show up here.',
 }: LeaderboardTableProps) {
   const [page, setPage] = useState(1);
   const pageCount = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
-  const slice = items.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = items.slice(start, start + PAGE_SIZE);
 
   useEffect(() => {
     setPage(1);
@@ -111,63 +128,73 @@ export function LeaderboardTable({
     return (
       <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
         <Trophy className="mx-auto mb-3 h-6 w-6 text-muted-foreground" />
-        <h3 className="text-sm font-bold text-foreground">No submissions</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Approved videos for this contest will show up here.
-        </p>
+        <h3 className="text-sm font-bold text-foreground">{emptyTitle}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{emptyDetail}</p>
       </div>
     );
   }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="hidden md:block">
-        <table className="w-full border-collapse text-left text-sm">
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[760px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-border text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              <th className="px-4 py-3">Video</th>
-              <th className="px-4 py-3">Creator</th>
-              <th className="px-4 py-3 text-right">Overall rating</th>
-              <th className="px-4 py-3 text-right">Total votes</th>
-              <th className="px-4 py-3">Voters</th>
-              <th className="px-4 py-3">Comments</th>
+              <th className="px-3 py-3">Rank</th>
+              <th className="px-3 py-3">Video</th>
+              <th className="px-3 py-3">Creator</th>
+              <th className="px-3 py-3 text-right">Score</th>
+              <th className="px-3 py-3 text-right">Votes</th>
+              <th className="px-3 py-3">Status</th>
+              <th className="px-3 py-3">Submitted</th>
+              <th className="px-3 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {slice.map((item) => (
-              <tr key={item.id} className="border-b border-border/70 last:border-0">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
+              <tr
+                key={item.id}
+                className={cn(
+                  'border-b border-border/70 last:border-0',
+                  item.rank === 1 && 'bg-amber-500/10'
+                )}
+              >
+                <td className="px-3 py-3">
+                  <RankLabel rank={item.rank} />
+                </td>
+                <td className="px-3 py-3">
+                  <button
+                    type="button"
+                    onClick={() => onOpenPreview(item)}
+                    className="flex min-w-0 items-center gap-3 text-left"
+                  >
                     <Thumb item={item} onOpen={onOpenPreview} />
                     <span className="line-clamp-2 font-semibold text-foreground">{item.title}</span>
-                  </div>
+                  </button>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   <Creator item={item} />
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   <Score item={item} />
                 </td>
-                <td className="px-4 py-3 text-right font-semibold tabular-nums text-foreground">
-                  {item.totalVotes}
+                <td className="px-3 py-3 text-right font-semibold tabular-nums text-foreground">
+                  {item.totalVotes.toLocaleString()}
                 </td>
-                <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => onViewVoters(item)}
-                    className="rounded-lg border border-border px-2.5 py-1.5 text-[11px] font-semibold hover:bg-muted"
-                  >
-                    View voters
-                  </button>
+                <td className="px-3 py-3">
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-600">
+                    Approved
+                  </span>
                 </td>
-                <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => onViewComments(item)}
-                    className="rounded-lg border border-border px-2.5 py-1.5 text-[11px] font-semibold hover:bg-muted"
-                  >
-                    View comments
-                  </button>
+                <td className="whitespace-nowrap px-3 py-3 text-xs text-muted-foreground">
+                  {formatSubmitted(item.submittedAt)}
+                </td>
+                <td className="px-3 py-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    <ActionButton onClick={() => onOpenPreview(item)}>View</ActionButton>
+                    <ActionButton onClick={() => onViewVoters(item)}>Voters</ActionButton>
+                    <ActionButton onClick={() => onViewComments(item)}>Comments</ActionButton>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -177,36 +204,53 @@ export function LeaderboardTable({
 
       <ul className="divide-y divide-border md:hidden">
         {slice.map((item) => (
-          <li key={item.id} className="space-y-3 p-3">
-            <div className="flex items-start gap-3">
+          <li
+            key={item.id}
+            className={cn('min-w-0 px-2.5 py-2', item.rank === 1 && 'bg-amber-500/[0.07]')}
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <RankLabel rank={item.rank} />
               <Thumb item={item} onOpen={onOpenPreview} />
               <div className="min-w-0 flex-1">
-                <p className="line-clamp-2 text-sm font-semibold text-foreground">{item.title}</p>
-                <div className="mt-2">
-                  <Creator item={item} />
+                <button
+                  type="button"
+                  onClick={() => onOpenPreview(item)}
+                  className="block w-full truncate text-left text-sm font-semibold text-foreground"
+                >
+                  {item.title}
+                </button>
+                <div className="mt-0.5">
+                  <Creator item={item} compact />
                 </div>
               </div>
-              <Score item={item} />
+              <div className="shrink-0 pl-1 text-right">
+                <p className="text-sm font-black tabular-nums leading-none text-foreground">
+                  {item.totalVotes > 0 ? item.communityScore.toFixed(1) : '—'}
+                </p>
+                <p className="mt-1 text-[10px] font-semibold tabular-nums text-muted-foreground">
+                  {item.totalVotes.toLocaleString()}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-xs text-muted-foreground">
-                <span className="font-semibold tabular-nums text-foreground">
-                  {item.totalVotes}
-                </span>{' '}
-                votes
-              </p>
-              <RowActions item={item} onViewVoters={onViewVoters} onViewComments={onViewComments} />
+            <div className="mt-1.5 flex min-w-0 flex-wrap items-center justify-between gap-1.5 pl-8">
+              <span className="text-[10px] text-muted-foreground">
+                Approved · {formatSubmitted(item.submittedAt)}
+              </span>
+              <div className="flex flex-wrap justify-end gap-1">
+                <ActionButton onClick={() => onOpenPreview(item)}>View</ActionButton>
+                <ActionButton onClick={() => onViewVoters(item)}>Voters</ActionButton>
+                <ActionButton onClick={() => onViewComments(item)}>Comments</ActionButton>
+              </div>
             </div>
           </li>
         ))}
       </ul>
 
-      {pageCount > 1 ? (
-        <div
-          className={cn(
-            'flex items-center justify-between border-t border-border px-4 py-3 text-xs'
-          )}
-        >
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-2.5 text-xs">
+        <span className="text-muted-foreground">
+          {start + 1}–{start + slice.length} of {items.length}
+        </span>
+        <div className="flex items-center gap-3">
           <button
             type="button"
             disabled={currentPage <= 1}
@@ -227,7 +271,25 @@ export function LeaderboardTable({
             Next
           </button>
         </div>
-      ) : null}
+      </div>
     </div>
+  );
+}
+
+function ActionButton({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-md border border-border bg-background px-2 py-1 text-[10px] font-semibold text-foreground hover:bg-muted"
+    >
+      {children}
+    </button>
   );
 }

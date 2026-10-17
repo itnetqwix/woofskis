@@ -419,7 +419,24 @@ Auth on all four routes: `BRAND_ADMIN` or `SUPER_ADMIN`. `CREATOR` and `VIEWER` 
 - **Unknown Contest**: Returns **404** `Contest not found`.
 - **Invalid UUID**: Returns **400** with validation errors.
 - **Empty Leaderboard**: Returns **200** with `totalEntries: 0`, `totalVotes: 0`, `averageScore: 0`, `items: []`, and `podium: []`.
-- **Response Shape**: Frozen envelope `{ success: true, message: "Leaderboard retrieved successfully", data: { contest, totalEntries, totalVotes, averageScore, items, podium }, errors: null }`. `podium` contains the top 3 items. `creator` is `{ id, name, avatarUrl }`. `avatarUrl` is a short-lived presigned GET or null. Internal fields (`objectKey`, `passwordHash`, `moderatedById`) are never leaked.
+- **Response Shape**: Frozen envelope `{ success: true, message: "Leaderboard retrieved successfully", data: { contest, totalEntries, totalParticipants, totalVotes, averageScore, items, podium }, errors: null }`. `totalParticipants` is the count of distinct creators in that ranked set. `podium` contains the top 3 items. `creator` is `{ id, name, avatarUrl }`. `avatarUrl` is a short-lived presigned GET or null. Internal fields (`objectKey`, `passwordHash`, `moderatedById`) are never leaked. The route does not accept `page` or `limit`; it returns every eligible entry. The admin and public screens page that complete list in the browser.
+- **Active contest selector**: the admin and public screens load `GET /api/v1/contests/active` and keep only `ACTIVE` contests. They do not fall back to another contest when none are active. Search filters the loaded rows and does not recompute rank.
+
+### 2.5.1 Video categories
+
+Official video categories reuse `Category` (the contest category catalog). There is no second category model. `isActive` was not previously stored; it was added so an administrator can retire a category without deleting contests or submissions. Default is `true`.
+
+Deletion policy was **NOT SPECIFIED**. `DELETE` is refused with **409** when any submission or contest still references the category. Those rows are kept. Deactivate instead. Unused categories can be deleted. The database also uses `ON DELETE RESTRICT` from `submissions.categoryId`.
+
+Case-insensitive name uniqueness is enforced in the service and by SQL index `categories_name_lower_key`.
+
+- **`GET /api/v1/video-categories`** (authenticated): active categories only, name order. Inactive categories are omitted. `Other` is not a row.
+- **`GET /api/v1/admin/video-categories`** (ADMIN): `{ items, pagination }`. Query `search`, `status` (`active` | `inactive` | `all`), `page`, `limit`. Each item includes `submissionCount` and `contestCount`.
+- **`POST /api/v1/admin/video-categories`** (ADMIN): `{ name, description?, isActive? }`. Duplicate name → **409**.
+- **`PATCH /api/v1/admin/video-categories/:id`** (ADMIN): any subset of `name`, `description`, `isActive`. At least one field.
+- **`DELETE /api/v1/admin/video-categories/:id`** (ADMIN): unused only.
+
+`POST /api/v1/submissions/complete` requires exactly one of `categoryId` (an active category) or `otherCategoryLabel` (trimmed, 1–80). Both or neither → **400**. Other stores `categoryId: null` and `otherCategoryLabel`, and does not create a `Category` row. An inactive or unknown `categoryId` → **400**. A retry of the same `objectKey` returns the original row and does not change the stored category. Submissions created before this field stay null; the UI may still show the contest category or first tag as display-only.
 - **`GET /api/v1/submissions/:id/share-preview`** (public): Link preview metadata for one shared video. The submission must be `APPROVED`, not deleted, and in a viewable contest (`ACTIVE`, `JUDGING`, `COMPLETED`, `ARCHIVED`), otherwise **404**. `data` is `{ id, title, description, thumbnailUrl, creatorName }`. `thumbnailUrl` goes through `resolveThumbnailUrl` with the public audience (stored http(s) URL as-is, captured thumbnail key → stable `MEDIA_CDN_BASE_URL` URL, otherwise a short-lived signed GET or `null`). The frontend root page (`/?v=<id>`) uses it in `generateMetadata` to server-render Open Graph and Twitter tags.
 - **`GET /api/v1/submissions/:id/voters`** (public): Ratings for that submission only, newest first. The submission must be `APPROVED` or the route returns **404**. `data` is `{ items, pagination }` using the shared page/limit helper. Each item is `{ id, name, avatarUrl, rating, createdAt }`. Guests have `name: null`. Email, IP hash, and fingerprint are not returned. `communityScore` on the leaderboard remains the stored 1–10 average.
 

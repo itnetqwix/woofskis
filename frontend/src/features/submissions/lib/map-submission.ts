@@ -1,3 +1,4 @@
+import { displaySubmissionCategory } from '@/features/categories/lib/display-submission-category';
 import type { ApiSubmission } from '@/services/submissions-api';
 import type { CreatorSubmissionItem } from '@/types/creator';
 
@@ -7,7 +8,12 @@ export function mapApiSubmission(row: ApiSubmission): CreatorSubmissionItem {
     title: row.title,
     contestId: row.contestId,
     contestName: row.contest?.title || 'Contest',
-    category: row.contest?.category?.name || row.tags[0] || '',
+    category: displaySubmissionCategory({
+      videoCategory: row.videoCategory,
+      otherCategoryLabel: row.otherCategoryLabel,
+      contestCategoryName: row.contest?.category?.name,
+      tags: row.tags,
+    }),
     videoUrl: row.videoUrl,
     thumbnailUrl: row.thumbnailUrl || '',
     durationSeconds: row.durationSeconds,

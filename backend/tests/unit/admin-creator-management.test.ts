@@ -481,6 +481,7 @@ describe('admin creator management', { concurrency: false }, () => {
         objectKey: `contests/${CONTEST}/creators/${CREATOR}/${VIDEO}.mp4`,
         title: 'Bit',
         durationSeconds: 12,
+        otherCategoryLabel: 'Pet tricks',
       },
     );
     assert.equal(uploaded.created, true);

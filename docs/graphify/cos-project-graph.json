@@ -1779,6 +1779,78 @@
       }
     },
     {
+      "id": "api:GET /video-categories",
+      "type": "APIEndpoint",
+      "label": "GET /api/v1/video-categories",
+      "domain": "Submissions",
+      "description": "Authenticated list of active official video categories for upload and filters. Other is not a stored row.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/controllers/video-category.controller.ts",
+        "symbol": "VideoCategoryController.listActive"
+      }
+    },
+    {
+      "id": "api:admin video-categories",
+      "type": "APIEndpoint",
+      "label": "Admin video category management",
+      "domain": "Submissions",
+      "description": "ADMIN list, create, update, and delete for the shared Category catalog. Delete is refused while a contest or submission still references the category.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "backend",
+        "filePath": "src/services/video-category.service.ts",
+        "symbol": "VideoCategoryService"
+      }
+    },
+    {
+      "id": "ui:admin-leaderboard",
+      "type": "UIComponent",
+      "label": "Admin leaderboard",
+      "domain": "Leaderboard",
+      "description": "Admin leaderboard for ACTIVE contests. Metrics and ranks come from GET /contests/:id/leaderboard.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.5",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/app/(dashboard)/admin/leaderboard/page.tsx",
+        "symbol": "AdminLeaderboardPage"
+      }
+    },
+    {
+      "id": "ui:admin-video-categories",
+      "type": "UIComponent",
+      "label": "Admin video categories",
+      "domain": "Submissions",
+      "description": "Admin screen for official video categories used by the creator upload form.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 11",
+        "section": "11.3",
+        "docPath": "/docs/source/11 Key Features & Capabilities 394ca8c5bdf78082b980efceda5d1744.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/features/admin/components/video-categories-panel.tsx",
+        "symbol": "VideoCategoriesPanel"
+      }
+    },
+    {
       "id": "be_svc:RateLimit",
       "type": "BackendService",
       "label": "Route rate limit",

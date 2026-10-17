@@ -41,6 +41,16 @@ export async function toSubmissionView(submission: SubmissionRecord) {
     moderatedById: submission.moderatedById,
     moderatedAt: iso(submission.moderatedAt),
     tags: submission.tags,
+    categoryId: submission.categoryId ?? null,
+    otherCategoryLabel: submission.otherCategoryLabel ?? null,
+    videoCategory: submission.videoCategory
+      ? {
+          id: submission.videoCategory.id,
+          name: submission.videoCategory.name,
+          slug: submission.videoCategory.slug,
+          isActive: submission.videoCategory.isActive,
+        }
+      : null,
     communityScore: submission.communityScore,
     totalVotes: submission.totalVotes,
     createdAt: iso(submission.createdAt),

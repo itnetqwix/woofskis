@@ -205,7 +205,9 @@ export function useCreatorSubmissions(): UseCreatorSubmissionsReturn {
         if (filterStatus !== 'ALL' && item.status !== filterStatus) {
           return false;
         }
-        if (categoryFilter !== 'ALL' && item.category !== categoryFilter) {
+        if (categoryFilter === '__other__') {
+          if (!item.category.startsWith('Other:')) return false;
+        } else if (categoryFilter !== 'ALL' && item.category !== categoryFilter) {
           return false;
         }
         if (searchQuery.trim()) {

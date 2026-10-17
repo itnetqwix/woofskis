@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Layers, Palette, ShieldCheck, Trophy, Sparkles, Users } from 'lucide-react';
+import { Layers, Palette, ShieldCheck, Trophy, Sparkles, Tags, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AdminTabsNavProps {
@@ -24,6 +24,8 @@ export function AdminTabsNav({
   const isContests = pathname.startsWith('/admin/contests');
   const isCreators = pathname.startsWith('/admin/creators');
   const isModeration = pathname.startsWith('/admin/moderation');
+  const isLeaderboard = pathname.startsWith('/admin/leaderboard');
+  const isCategories = pathname.startsWith('/admin/categories');
 
   return (
     <div
@@ -68,6 +70,32 @@ export function AdminTabsNav({
       >
         <Users className="h-4 w-4" />
         <span>Creators</span>
+      </Link>
+
+      <Link
+        href="/admin/leaderboard"
+        className={cn(
+          'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all',
+          isLeaderboard
+            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
+            : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+        )}
+      >
+        <Trophy className="h-4 w-4" />
+        <span>Leaderboard</span>
+      </Link>
+
+      <Link
+        href="/admin/categories"
+        className={cn(
+          'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all',
+          isCategories
+            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
+            : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+        )}
+      >
+        <Tags className="h-4 w-4" />
+        <span>Video Categories</span>
       </Link>
 
       <Link

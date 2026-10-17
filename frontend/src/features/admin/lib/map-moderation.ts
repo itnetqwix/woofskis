@@ -1,3 +1,4 @@
+import { displaySubmissionCategory } from '@/features/categories/lib/display-submission-category';
 import type { ApiAuditLog, ApiModerationSubmission } from '@/services/moderation-api';
 import type {
   AdminSubmissionItem,
@@ -37,7 +38,12 @@ export function mapQueueSubmission(row: ApiModerationSubmission): AdminSubmissio
     title: row.title,
     contestId: row.contestId,
     contestName: row.contest?.title || 'Contest',
-    category: row.contest?.category?.name || row.tags[0] || '',
+    category: displaySubmissionCategory({
+      videoCategory: row.videoCategory,
+      otherCategoryLabel: row.otherCategoryLabel,
+      contestCategoryName: row.contest?.category?.name,
+      tags: row.tags,
+    }),
     videoUrl: row.videoUrl,
     thumbnailUrl: row.thumbnailUrl || '',
     durationSeconds: row.durationSeconds,
