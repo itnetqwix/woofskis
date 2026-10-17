@@ -1,11 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Film, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ProfileAvatar } from '@/components/common/profile-avatar';
-import { mimeTypeFromMediaUrl } from '@/features/submissions/lib/video-constraints';
+import {
+  DeleteSubmissionDialog,
+  SubmissionThumbnail,
+  SubmissionVideoModal,
+} from '@/features/admin/components/submission-media';
 import {
   deleteAdminSubmission,
   getAdminCreator,
@@ -137,21 +141,22 @@ export function CreatorProfile({ creatorId }: { creatorId: string }) {
   };
 
   const remove = useMutation({
-    mutationFn: async (video: ApiAdminCreatorVideo) => {
-      const envelope = await deleteAdminSubmission(video.id);
+    mutationFn: async ({ video, reason }: { video: ApiAdminCreatorVideo; reason: string }) => {
+      const envelope = await deleteAdminSubmission(video.id, reason);
       if (!envelope.success || !envelope.data) {
         throw new Error(envelope.message || 'Video could not be deleted');
       }
       return envelope.data;
     },
-    onSuccess: (result, video) => {
+    onSuccess: (result, { video }) => {
       setDeleteTarget(null);
       setWatching((current) => (current?.id === video.id ? null : current));
       setNotice(
         result?.mediaObjectRetained
-          ? 'Video removed from Woofskis. The stored media file was not deleted.'
-          : 'Video removed.'
+          ? 'Video removed and the creator was notified. The stored media file was not deleted.'
+          : 'Video removed and the creator was notified.'
       );
+      void queryClient.invalidateQueries({ queryKey: ['admin-contest-participants'] });
 
       let contestRemoved = false;
       queryClient.setQueryData<{ creatorId: string; contests: ApiCreatorContestParticipation[] }>(
@@ -609,75 +614,31 @@ export function CreatorProfile({ creatorId }: { creatorId: string }) {
       </section>
 
       {watching?.videoUrl ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-          <button
-            type="button"
-            aria-label="Close video"
-            className="absolute inset-0 bg-black/70"
-            onClick={() => setWatching(null)}
-          />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl bg-black">
-            <video
-              key={watching?.id}
-              src={mimeTypeFromMediaUrl(watching.videoUrl) ? undefined : watching.videoUrl}
-              controls
-              playsInline
-              preload="metadata"
-              className="max-h-[70dvh] w-full rounded-t-2xl bg-black object-contain"
-              onLoadedMetadata={(event) => {
-                event.currentTarget.muted = false;
-                event.currentTarget.volume = 1;
-              }}
-            >
-              {mimeTypeFromMediaUrl(watching.videoUrl) ? (
-                <source src={watching.videoUrl} type={mimeTypeFromMediaUrl(watching.videoUrl)} />
-              ) : null}
-            </video>
-            <button
-              type="button"
-              onClick={() => setWatching(null)}
-              className="w-full bg-background py-3 text-xs font-bold text-foreground"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <SubmissionVideoModal
+          videoId={watching.id}
+          videoUrl={watching.videoUrl}
+          onClose={() => setWatching(null)}
+        />
       ) : null}
 
       {deleteTarget ? (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
-          <button
-            type="button"
-            aria-label="Close delete confirmation"
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setDeleteTarget(null)}
-          />
-          <div className="relative z-10 w-full max-w-md space-y-3 rounded-2xl border border-border bg-card p-4">
-            <h3 className="text-base font-black">Delete “{deleteTarget.title}”?</h3>
-            <p className="text-sm text-muted-foreground">
+        <DeleteSubmissionDialog
+          title={deleteTarget.title}
+          description={
+            <>
               This removes {deleteTarget.title} from {deleteTarget?.contestTitle ?? 'the contest'}.
               Ratings and comments on this video are removed. {creator?.name ?? 'Creator'}&apos;s
               account and the contest stay. The stored media file is not deleted.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setDeleteTarget(null)}
-                className="h-10 rounded-xl border border-border px-3 text-xs font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={remove.isPending}
-                onClick={() => remove.mutate(deleteTarget)}
-                className="h-10 rounded-xl bg-destructive px-3 text-xs font-bold text-white"
-              >
-                Confirm delete
-              </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+          isPending={remove.isPending}
+          error={remove.isError && remove.error instanceof Error ? remove.error.message : null}
+          onCancel={() => {
+            remove.reset();
+            setDeleteTarget(null);
+          }}
+          onConfirm={(reason) => remove.mutate({ video: deleteTarget, reason })}
+        />
       ) : null}
 
       {warnOpen ? (
@@ -762,73 +723,6 @@ export function CreatorProfile({ creatorId }: { creatorId: string }) {
           </div>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function SubmissionThumbnail({
-  title,
-  thumbnailUrl,
-  videoUrl,
-}: {
-  title?: string | null;
-  thumbnailUrl?: string | null;
-  videoUrl?: string | null;
-}) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const [frameFailed, setFrameFailed] = useState(false);
-  const label = title?.trim() || 'Creator video';
-  const imageSrc = thumbnailUrl?.trim() || '';
-
-  useEffect(() => {
-    setImageFailed(false);
-    setFrameFailed(false);
-  }, [imageSrc, videoUrl]);
-
-  const showImage = Boolean(imageSrc) && !imageFailed;
-  const showFrame = !showImage && Boolean(videoUrl) && !frameFailed;
-
-  return (
-    <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-muted sm:h-32 sm:w-24">
-      {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={imageSrc}
-          alt={label}
-          width={96}
-          height={128}
-          className="h-full w-full object-cover"
-          onError={() => setImageFailed(true)}
-        />
-      ) : showFrame ? (
-        <video
-          src={videoUrl ?? undefined}
-          width={96}
-          height={128}
-          muted
-          playsInline
-          preload="metadata"
-          className="pointer-events-none h-full w-full object-cover"
-          onLoadedData={(event) => {
-            const element = event.currentTarget;
-            if (element.currentTime < 0.1) {
-              try {
-                element.currentTime = 0.1;
-              } catch {
-                setFrameFailed(true);
-              }
-            }
-          }}
-          onError={() => setFrameFailed(true)}
-        />
-      ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-b from-primary/25 to-muted px-1 text-center">
-          <Film className="h-4 w-4 text-primary" aria-hidden="true" />
-          <span className="line-clamp-3 text-[9px] font-bold uppercase leading-tight tracking-wide text-muted-foreground">
-            {label}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

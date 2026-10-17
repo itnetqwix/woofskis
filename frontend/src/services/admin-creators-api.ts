@@ -178,6 +178,8 @@ export interface ApiContestParticipant {
     updatedAt: string | null;
     communityScore: number;
     totalVotes: number;
+    videoUrl?: string | null;
+    thumbnailUrl?: string | null;
     deletedAt?: string | null;
     deletedBy?: ApiDeletedBy | null;
   }>;
@@ -254,9 +256,11 @@ export function listContestParticipants(
 }
 
 export function deleteAdminSubmission(
-  submissionId: string
+  submissionId: string,
+  reason: string
 ): Promise<ApiResponse<ApiDeletedSubmission>> {
   return http.delete<ApiDeletedSubmission>(
-    `/admin/submissions/${encodeURIComponent(submissionId)}`
+    `/admin/submissions/${encodeURIComponent(submissionId)}`,
+    { data: { reason } }
   );
 }

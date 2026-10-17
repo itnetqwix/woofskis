@@ -10,6 +10,8 @@ import {
 import { ContestVideoItem } from '@/types/contest';
 import { cn } from '@/lib/utils';
 
+const AUTO_HIDE_MS = 5000;
+
 export interface PreviousRatedCardProps {
   result: LastRatedVideo;
   previousVideo?: ContestVideoItem | null;
@@ -34,6 +36,25 @@ export function PreviousRatedCard({
   const [isUnmounted, setIsUnmounted] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const autoHideRef = useRef({ onDismiss, onHeightChange, isDismissed });
+  autoHideRef.current = { onDismiss, onHeightChange, isDismissed };
+
+  useEffect(() => {
+    let unmountTimer: ReturnType<typeof setTimeout> | undefined;
+    const hideTimer = setTimeout(() => {
+      const { onDismiss: dismiss, onHeightChange: reportHeight, isDismissed: dismissed } =
+        autoHideRef.current;
+      if (dismissed) return;
+      setIsExiting(true);
+      reportHeight?.(0);
+      dismiss?.();
+      unmountTimer = setTimeout(() => setIsUnmounted(true), 280);
+    }, AUTO_HIDE_MS);
+    return () => {
+      clearTimeout(hideTimer);
+      if (unmountTimer) clearTimeout(unmountTimer);
+    };
+  }, []);
 
   useEffect(() => {
     if (isDismissed && !isExiting && !isUnmounted) {

@@ -28,7 +28,7 @@ export function AdminTabsNav({
   return (
     <div
       className={cn(
-        'no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-border/60 pb-3',
+        'flex flex-wrap items-center gap-1.5 border-b border-border/60 pb-3',
         className
       )}
     >
@@ -42,7 +42,7 @@ export function AdminTabsNav({
         )}
       >
         <Layers className="h-4 w-4" />
-        <span>Contest Lifecycles</span>
+        <span>Contests</span>
         {contestsCount !== undefined && (
           <span
             className={cn(
@@ -80,7 +80,7 @@ export function AdminTabsNav({
         )}
       >
         <ShieldCheck className="h-4 w-4" />
-        <span>Video Moderation Queue</span>
+        <span>Moderation</span>
         {pendingModerationCount !== undefined && pendingModerationCount > 0 && (
           <span className="py-0.2 animate-pulse rounded-full border border-amber-500/30 bg-amber-500/20 px-1.5 font-mono text-[10px] font-bold text-amber-500">
             {pendingModerationCount}

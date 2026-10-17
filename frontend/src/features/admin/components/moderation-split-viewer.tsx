@@ -149,7 +149,7 @@ export function ModerationSplitViewer({
 
   if (!submission) {
     return (
-      <div className="flex min-h-[450px] flex-col items-center justify-center rounded-3xl border border-dashed border-border/80 bg-card/40 p-12 text-center">
+      <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/40 p-8 text-center">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
           <ShieldCheck className="h-6 w-6" />
         </div>
@@ -180,12 +180,12 @@ export function ModerationSplitViewer({
   return (
     <div className="space-y-4">
       {/* MAIN SPLIT DECK */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12">
         {/* ============================================================ */}
         {/* LEFT COLUMN: 9:16 VERTICAL VIDEO PLAYER & METADATA OVERLAY */}
         {/* ============================================================ */}
         <div className="flex flex-col items-center justify-center lg:col-span-5">
-          <div className="group relative aspect-[9/16] w-full max-w-[360px] select-none overflow-hidden rounded-3xl border border-border/80 bg-black shadow-2xl">
+          <div className="group relative aspect-[9/16] w-full max-w-[300px] select-none overflow-hidden rounded-2xl border border-border/80 bg-black shadow-2xl">
             {/* Native Video Element */}
             <video
               ref={videoRef}
@@ -354,9 +354,9 @@ export function ModerationSplitViewer({
         {/* ============================================================ */}
         {/* RIGHT COLUMN: VALIDATION CHECKLIST & DECISION CONTROL HUB */}
         {/* ============================================================ */}
-        <div className="flex flex-col space-y-4 lg:col-span-7">
+        <div className="flex flex-col space-y-3 lg:col-span-7">
           {/* 1. SUBMISSION HEADLINE & CREATOR METADATA */}
-          <div className="shadow-xs space-y-3 rounded-2xl border border-border/70 bg-card p-4">
+          <div className="space-y-2 rounded-xl border border-border/80 bg-card p-3">
             <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -468,7 +468,7 @@ export function ModerationSplitViewer({
           </div>
 
           {/* 2. AUTOMATED & MANUAL VALIDATION CHECKLIST */}
-          <div className="shadow-xs space-y-3 rounded-2xl border border-border/70 bg-card p-4">
+          <div className="space-y-2 rounded-xl border border-border/80 bg-card p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FileCheck2 className="h-4 w-4 text-primary" />
@@ -592,7 +592,7 @@ export function ModerationSplitViewer({
           </div>
 
           {/* 3. ONE-CLICK SPEED MODERATION ACTION DECK */}
-          <div className="space-y-3 rounded-2xl border border-border/80 bg-card p-4 shadow-md">
+          <div className="space-y-2 rounded-xl border border-border/80 bg-card p-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Moderator Decision Controls
@@ -609,12 +609,12 @@ export function ModerationSplitViewer({
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {/* APPROVE BUTTON (GREEN) */}
               <Button
                 type="button"
                 onClick={() => onApprove(submission.id)}
-                className="h-11 gap-2 bg-emerald-600 text-xs font-bold text-white shadow-lg shadow-emerald-600/25 transition-all hover:scale-[1.02] hover:bg-emerald-500 hover:shadow-emerald-600/40 active:scale-[0.98]"
+                className="h-9 gap-2 bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-500"
               >
                 <ShieldCheck className="h-4 w-4" />
                 <span>Approve & Publish</span>
@@ -626,7 +626,7 @@ export function ModerationSplitViewer({
                 type="button"
                 variant="destructive"
                 onClick={() => onRequestReject(submission)}
-                className="h-11 gap-2 text-xs font-bold shadow-lg shadow-destructive/25 transition-all hover:scale-[1.02] hover:shadow-destructive/40 active:scale-[0.98]"
+                className="h-9 gap-2 text-xs font-bold"
               >
                 <X className="h-4 w-4" />
                 <span>Reject with Reason</span>
@@ -639,7 +639,7 @@ export function ModerationSplitViewer({
                 variant="outline"
                 onClick={() => onToggleFlag(submission.id)}
                 className={cn(
-                  'h-11 gap-2 border text-xs font-bold transition-all hover:scale-[1.02] active:scale-[0.98]',
+                  'h-9 gap-2 border text-xs font-bold',
                   submission.isFlagged || submission.status === 'FLAGGED'
                     ? 'border-warning bg-warning/15 text-warning hover:bg-warning/25'
                     : 'border-border text-foreground hover:border-warning/50 hover:bg-muted'
@@ -653,7 +653,7 @@ export function ModerationSplitViewer({
           </div>
 
           {/* 4. QUEUE QUICK-SCROLLER STRIP */}
-          <div className="space-y-2 rounded-2xl border border-border/70 bg-card p-3">
+          <div className="space-y-2 rounded-xl border border-border/80 bg-card p-3">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="text-[10px] font-bold uppercase tracking-wider">
                 Queue Timeline ({allSubmissions.length} Items)

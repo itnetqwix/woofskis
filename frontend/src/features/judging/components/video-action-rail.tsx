@@ -8,6 +8,9 @@ import { ShareSheet } from '@/features/judging/components/share-sheet';
 import { buildScoreboardPath, buildVideoShareUrl } from '@/features/judging/lib/share-url';
 import { cn } from '@/lib/utils';
 
+// Temporarily hidden. Set to true to restore the community score & vote count card.
+const SHOW_SCORE_CARD = false;
+
 export interface VideoActionRailProps {
   video: ContestVideoItem;
   currentIndex: number;
@@ -69,19 +72,21 @@ export function VideoActionRail({
       onClick={(e) => e.stopPropagation()}
     >
       {/* 1. Score Card: Compact information card displaying community score & vote count (NOT an action button) */}
-      <div
-        className="flex min-w-12 flex-col items-center justify-center rounded-xl border border-white/15 bg-black/45 px-1.5 py-1.5 text-center text-white shadow-sm backdrop-blur-md"
-        title={`Community rating: ${scoreDisplay} / 10 across ${votesDisplay}`}
-      >
-        <div className="flex items-center gap-0.5 text-[#fa4616]">
-          <span className="text-[13px] font-black leading-none tracking-tight text-white">
-            {scoreDisplay}
+      {SHOW_SCORE_CARD && (
+        <div
+          className="flex min-w-12 flex-col items-center justify-center rounded-xl border border-white/15 bg-black/45 px-1.5 py-1.5 text-center text-white shadow-sm backdrop-blur-md"
+          title={`Community rating: ${scoreDisplay} / 10 across ${votesDisplay}`}
+        >
+          <div className="flex items-center gap-0.5 text-[#fa4616]">
+            <span className="text-[13px] font-black leading-none tracking-tight text-white">
+              {scoreDisplay}
+            </span>
+          </div>
+          <span className="mt-1 whitespace-nowrap text-[10px] font-semibold leading-none text-white/80">
+            {votesDisplay}
           </span>
         </div>
-        <span className="mt-1 whitespace-nowrap text-[10px] font-semibold leading-none text-white/80">
-          {votesDisplay}
-        </span>
-      </div>
+      )}
 
       {/* Comments Action Button: Compact 48px circle, consistent design language */}
       <button
