@@ -389,7 +389,7 @@ Implemented in section 1.5 (M05). Judging queue and rating routes are implemente
 - **Thumbnails:** presign also returns `thumbnail` (a presigned `image/jpeg` PUT for `contests/{contestId}/creators/{creatorId}/{uuid}.jpg`, same uuid as the video; `null` for legacy keys). The browser captures a frame about 25% into the clip, PUTs it, and sends that key as `thumbnailUrl` on complete. A thumbnail key that is not the one paired with `objectKey` is **400**. Capture or PUT failure sends `thumbnailUrl: null` and does not block the upload. Responses resolve stored keys with `resolveThumbnailUrl`: public audiences (queue, leaderboard, share preview) get `${MEDIA_CDN_BASE_URL}/v1/<key>` when configured, others get a short-lived signed GET. Videos without a thumbnail return `null`.
 - **`GET /api/v1/submissions/me`** (Auth: `CREATOR`): The authenticated creator's active submissions only. Soft-deleted rows are omitted.
 - **`GET /api/v1/submissions/:id`** (Auth: `CREATOR`): Own active submission only. Other creators and soft-deleted rows → 404. Admin reads are the creator-management APIs.
-- **`DELETE /api/v1/submissions/:id`** (Auth: `CREATOR`): Soft-deletes one submission owned by the JWT user. Sets `deletedAt` and `deletedById`. Repeating the delete returns 200 and keeps the original `deletedAt`. Another creator's id is 404. `ADMIN` on this route is 403. Missing token is 401. The submission row, ratings, and S3 object are kept. Admin hard delete remains `DELETE /admin/submissions/:id`.
+- **`DELETE /api/v1/submissions/:id`** (Auth: `CREATOR`): Soft-deletes one submission owned by the JWT user. Sets `deletedAt` and `deletedById`. Repeating the delete returns 200 and keeps the original `deletedAt`. Another creator's id is 404. `ADMIN` on this route is 403. Missing token is 401. The submission row, ratings, and S3 object are kept. Admin hard delete remains `DELETE /admin/submissions/:id`, which requires a JSON body `{ "reason": string }` (1–1000 chars) and notifies the creator.
 
 BRAND_ADMIN, VIEWER, and SUPER_ADMIN are 403 on these routes. The creator JWT `organizationId` is the deployment organization. Presign and complete require that id to equal the contest `organizationId`. A mismatch is 403, returns no upload URL, and creates no submission. Max submissions per creator per contest: **NOT SPECIFIED**. Extra date-window checks beyond status `ACTIVE`: **NOT SPECIFIED**. Public discovery of this deployment's active contests is `GET /contests/active`.
 
@@ -463,3 +463,13 @@ Attachment uploads are presigned PUTs to the existing private bucket. The API re
 - **`POST /api/v1/chat/conversations/:id/read`**: Sets `lastReadAt` to now. **200** `{ lastReadAt }`.
 - **`POST /api/v1/chat/attachments/presign`**: `{ friendshipId, contentType, fileSizeBytes }`. Images: JPEG, PNG, WebP, GIF. Videos: MP4, WebM, MOV. Size must be 1 through 104857600 bytes. The signed PUT includes that content length.
 - **`GET /api/v1/chat/stream`**: `text/event-stream` for the authenticated creator.
+
+### 2.9 Notifications (`/api/v1/notifications`)
+
+Any authenticated user (`ADMIN` or `CREATOR`). Missing token → **401**. Each caller sees only their own rows.
+
+Rows are created by the backend, not through this API. A newly completed upload (`POST /submissions/complete` with `created: true`) notifies every `ADMIN` (`SUBMISSION_PENDING_REVIEW`). Approval notifies the submission's creator (`SUBMISSION_APPROVED`). Admin deletion (`DELETE /admin/submissions/:id`) notifies the creator (`SUBMISSION_DELETED`) with the admin's reason in `body`. The unique key `(userId, type, submissionId)` skips repeats. A failed notification write is logged and does not undo the upload or decision. Reject or flag notifications, email delivery, and retention are **NOT SPECIFIED**.
+
+- **`GET /api/v1/notifications`**: `{ items, unreadCount }`. Newest first, at most 30 items. Each item has `id`, `type`, `title`, `body`, `submissionId`, `readAt`, `createdAt`.
+- **`POST /api/v1/notifications/:id/read`**: Marks one notification read. Already read is a no-op. Another user's id → **404**.
+- **`POST /api/v1/notifications/read-all`**: Marks all of the caller's notifications read.

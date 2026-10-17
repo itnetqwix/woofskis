@@ -18,6 +18,7 @@ import {
 } from '../utils/response.js';
 import { assertCreatorAccountActive } from './creator-account.service.js';
 import { CreatorActivityService } from './creator-activity.service.js';
+import { NotificationService } from './notification.service.js';
 import {
   buildSubmissionObjectKey,
   getStorageService,
@@ -209,6 +210,7 @@ export class SubmissionService {
           contestTitle: submission.contest.title,
         },
       });
+      await NotificationService.notifySubmissionPendingReview(submission);
       return { submission, created: true };
     } catch (error) {
       if (

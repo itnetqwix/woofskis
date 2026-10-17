@@ -95,6 +95,12 @@ import {
   presignChatAttachmentSwaggerSchema,
   sendChatMessageSwaggerSchema,
 } from '../schemas/chat.schema.js';
+import { NotificationController } from '../controllers/notification.controller.js';
+import {
+  listNotificationsSwaggerSchema,
+  markAllNotificationsReadSwaggerSchema,
+  markNotificationReadSwaggerSchema,
+} from '../schemas/notification.schema.js';
 
 import { sendSuccess } from '../utils/response.js';
 import { SYSTEM_CONSTANTS, HTTP_STATUS } from '../config/constants.js';
@@ -308,6 +314,26 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     '/chat/conversations/:id/read',
     { schema: markChatReadSwaggerSchema, onRequest: creatorGuards },
     ChatController.read,
+  );
+
+  // In-app notifications. Any authenticated user reads only their own rows.
+  // Register /notifications/read-all before /notifications/:id/read.
+  fastify.get(
+    '/notifications',
+    { schema: listNotificationsSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.list,
+  );
+
+  fastify.post(
+    '/notifications/read-all',
+    { schema: markAllNotificationsReadSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.markAllRead,
+  );
+
+  fastify.post(
+    '/notifications/:id/read',
+    { schema: markNotificationReadSwaggerSchema, onRequest: [fastify.authenticate] },
+    NotificationController.markRead,
   );
 
   // -------------------------------------------------------------

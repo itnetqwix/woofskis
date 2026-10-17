@@ -260,6 +260,7 @@ D:/woofskis/
   10. `Friendship` (id, userLowId, userHighId, requesterId, status)
   11. `ChatMessage` (id, friendshipId, senderId, body, attachmentKey, attachmentKind, attachmentMime, attachmentBytes)
   12. `ChatRead` (friendshipId, userId, lastReadAt)
+  13. `Notification` (id, userId, type, title, body, submissionId, readAt) — unique on (userId, type, submissionId)
 - **Migrations History**: 15 migrations in `backend/prisma/migrations/`.
 
 ---
