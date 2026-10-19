@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Film } from 'lucide-react';
+import { X, Film, Play, Star, Users, ChevronRight } from 'lucide-react';
+import { ProfileAvatar } from '@/components/common/profile-avatar';
+import { StarRating } from '@/features/judging/components/star-rating';
+import { RATING_MAX } from '@/constants/rating-scale';
 import {
   LastRatedVideo,
   formatAverageScore,
@@ -19,6 +22,8 @@ export interface PreviousRatedCardProps {
   onDismiss?: () => void;
   onSelect?: () => void;
   onHeightChange?: (height: number) => void;
+  /** `panel` is the persistent tablet/desktop sidebar card: no auto-hide, no dismiss. */
+  variant?: 'overlay' | 'panel';
   className?: string;
 }
 
@@ -29,8 +34,10 @@ export function PreviousRatedCard({
   onDismiss,
   onSelect,
   onHeightChange,
+  variant = 'overlay',
   className,
 }: PreviousRatedCardProps) {
+  const isPanel = variant === 'panel';
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [isExiting, setIsExiting] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
@@ -40,6 +47,7 @@ export function PreviousRatedCard({
   autoHideRef.current = { onDismiss, onHeightChange, isDismissed };
 
   useEffect(() => {
+    if (isPanel) return;
     let unmountTimer: ReturnType<typeof setTimeout> | undefined;
     const hideTimer = setTimeout(() => {
       const { onDismiss: dismiss, onHeightChange: reportHeight, isDismissed: dismissed } =
@@ -54,6 +62,7 @@ export function PreviousRatedCard({
       clearTimeout(hideTimer);
       if (unmountTimer) clearTimeout(unmountTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -66,6 +75,7 @@ export function PreviousRatedCard({
   }, [isDismissed, isExiting, isUnmounted, onHeightChange]);
 
   useEffect(() => {
+    if (isPanel) return;
     const el = cardRef.current;
     if (!el || isExiting || isUnmounted) {
       onHeightChange?.(0);
@@ -95,7 +105,7 @@ export function PreviousRatedCard({
         onHeightChange?.(0);
       };
     }
-  }, [isExiting, isUnmounted, onHeightChange]);
+  }, [isExiting, isUnmounted, isPanel, onHeightChange]);
 
   if (isUnmounted) return null;
 
@@ -129,6 +139,139 @@ export function PreviousRatedCard({
     onDismiss?.();
     setTimeout(() => setIsUnmounted(true), 280);
   };
+
+  if (isPanel) {
+    const creatorName = previousVideo?.creatorName || result.creatorName || null;
+    const creatorAvatar = previousVideo?.creatorAvatarUrl || result.creatorAvatarUrl || null;
+    const tags = Array.from(
+      new Set(
+        [previousVideo?.category, ...(previousVideo?.tags ?? [])]
+          .map((tag) => tag?.trim())
+          .filter((tag): tag is string => Boolean(tag))
+      )
+    );
+
+    return (
+      <div
+        className={cn(
+          'flex w-full flex-col motion-safe:duration-300 motion-safe:animate-in motion-safe:fade-in',
+          className
+        )}
+      >
+        <button
+          type="button"
+          onClick={onSelect}
+          aria-label={`Return to ${title}`}
+          className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {showThumb ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={thumbnail!}
+              alt=""
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              onError={() => setThumbFailed(true)}
+            />
+          ) : showVideoPreview ? (
+            <video
+              src={videoUrl!}
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="metadata"
+              className="pointer-events-none h-full w-full object-cover"
+              onError={() => setVideoFailed(true)}
+              aria-hidden="true"
+              tabIndex={-1}
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center bg-gradient-to-br from-white/10 via-black/40 to-black/80"
+              data-thumbnail-fallback="poster"
+              aria-hidden="true"
+            >
+              <Film className="h-7 w-7 text-white/40" />
+            </div>
+          )}
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/65 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
+            <Star className="h-3.5 w-3.5 fill-primary text-primary" aria-hidden="true" />
+            {overallScoreValue}/10
+          </span>
+          <span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/55 text-white backdrop-blur-md transition-transform duration-150 group-hover:scale-110">
+            <Play className="ml-0.5 h-5 w-5 fill-white" aria-hidden="true" />
+          </span>
+        </button>
+
+        {creatorName && (
+          <div className="mt-3 flex min-w-0 items-center gap-2">
+            <ProfileAvatar
+              name={creatorName}
+              url={creatorAvatar ?? undefined}
+              alt={creatorName}
+              className="h-7 w-7 shrink-0 rounded-full border border-border object-cover text-[10px] font-bold"
+            />
+            <span className="truncate text-xs font-semibold text-foreground">{creatorName}</span>
+          </div>
+        )}
+
+        <p
+          className="mt-2 line-clamp-2 text-base font-bold leading-snug text-foreground"
+          title={title}
+        >
+          {title}
+        </p>
+
+        {tags.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {typeof votes === 'number' && (
+          <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Users className="h-3.5 w-3.5" aria-hidden="true" />
+            {formatVoteCount(votes)} {votes === 1 ? 'vote' : 'votes'}
+          </p>
+        )}
+
+        <div className="mt-3 border-t border-border pt-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Your rating</span>
+            <span className="text-sm font-bold text-foreground">
+              {formattedUserRating !== null ? formattedUserRating : '—'}
+            </span>
+          </div>
+          <div className="mt-1.5">
+            <StarRating
+              value={typeof userRating === 'number' ? Math.round(userRating) : null}
+              readOnly
+              tone="theme"
+              size="card"
+              scale={RATING_MAX}
+              groupLabel="Your rating"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onSelect}
+          className="mt-3 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-border bg-muted/50 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          View details
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -93,7 +93,9 @@ export function VerticalVideoFeed({
     }
     isProgrammaticScrollRef.current = true;
     container.style.scrollBehavior = 'auto';
-    targetSlide.scrollIntoView({ behavior: 'auto', block: 'start' });
+    // Scroll only the feed. scrollIntoView would also scroll the page's
+    // overflow-hidden ancestors and shift the whole layout.
+    container.scrollTop = slideOffset(container, targetSlide, currentIndex);
     const timer = window.setTimeout(() => {
       isProgrammaticScrollRef.current = false;
     }, 80);

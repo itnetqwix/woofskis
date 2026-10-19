@@ -283,7 +283,7 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
         className={cn(
           'z-40 flex h-[4.5rem] w-full shrink-0 items-center justify-between px-3.5 sm:h-24 sm:px-5 lg:px-7',
           overlay
-            ? 'relative border-0 bg-background/80 backdrop-blur-xl'
+            ? 'relative border-0 bg-background/80 backdrop-blur-xl md:h-16 md:border-b md:border-border md:bg-background/95 md:px-5 md:shadow-sm lg:px-8'
             : 'sticky top-0 border-b border-border/80 bg-background/95 backdrop-blur-md'
         )}
       >
@@ -375,7 +375,10 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
                 <img
                   src={activeBrand?.logoUrl || '/logo/woofskis_logo_with_dog_transparent.png'}
                   alt="Woofskis Logo"
-                  className="h-auto w-[88px] max-h-12 object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:w-[115px] sm:max-h-16 md:w-[135px] md:max-h-20 lg:w-[155px]"
+                  className={cn(
+                    'h-auto w-[88px] max-h-12 object-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105 sm:w-[115px] sm:max-h-16 md:w-[135px] md:max-h-20 lg:w-[155px]',
+                    overlay && 'md:max-h-14 md:w-[100px] lg:w-[104px]'
+                  )}
                   width={160}
                   height={88}
                 />
@@ -392,7 +395,10 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
                   'flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
                   pathname === '/'
                     ? 'shadow-xs bg-muted font-semibold text-foreground'
-                    : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                  overlay &&
+                    pathname === '/' &&
+                    'border border-primary/30 bg-primary/10 px-3 py-2 text-foreground'
                 )}
               >
                 <Radio
@@ -428,7 +434,10 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
               <div className="flex items-center gap-2 sm:gap-2.5">
                 <Link
                   href="/login"
-                  className="inline-flex h-10 items-center gap-1.5 rounded-xl border-2 border-primary/80 bg-background px-3 text-xs font-medium text-foreground transition-colors hover:border-primary hover:bg-muted sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
+                  className={cn(
+                    'inline-flex h-10 items-center gap-1.5 rounded-xl border-2 border-primary/80 bg-background px-3 text-xs font-medium text-foreground transition-colors hover:border-primary hover:bg-muted sm:h-11 sm:gap-2 sm:px-4 sm:text-sm',
+                    overlay && 'md:h-10 md:border md:text-[13px]'
+                  )}
                 >
                   <LogIn className="h-4 w-4 text-primary" />
                   <span>Sign In</span>
@@ -436,13 +445,21 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
 
                 <Link
                   href="/register"
-                  className="shadow-xs sm:px-4.5 hidden h-10 items-center gap-2 rounded-xl bg-primary px-4 text-xs font-bold text-white transition-colors hover:bg-primary-hover sm:inline-flex sm:h-11 sm:text-sm"
+                  className={cn(
+                    'shadow-xs sm:px-4.5 hidden h-10 items-center gap-2 rounded-xl bg-primary px-4 text-xs font-bold text-white transition-colors hover:bg-primary-hover sm:inline-flex sm:h-11 sm:text-sm',
+                    overlay && 'md:h-10 md:text-[13px]'
+                  )}
                 >
                   <Sparkles className="h-4 w-4" />
                   <span>Get Started</span>
                 </Link>
               </div>
-              <ThemeToggle className="hidden border border-border/80 bg-background/80 md:flex" />
+              <ThemeToggle
+                className={cn(
+                  'hidden border border-border/80 bg-background/80 md:flex',
+                  overlay && 'md:order-first'
+                )}
+              />
             </>
           )}
 

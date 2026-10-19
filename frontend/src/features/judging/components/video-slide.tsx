@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo, useRef, useState, useEffect, useCallback } from 'react';
-import { Pause, AlertCircle, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Pause, Play, Maximize, AlertCircle, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { ContestVideoItem, AggregatedScoreResult } from '@/types/contest';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,13 @@ export interface VideoSlideProps {
 
 const MAX_MEDIA_RETRIES = 2;
 
+function formatClock(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
 function VideoSlideComponent({
   video,
   index,
@@ -60,12 +67,15 @@ function VideoSlideComponent({
   preloadMode,
   isPlaying,
   isMuted,
+  currentTime,
+  duration,
   isBuffering,
   isRevealingScore,
   aggregatedResult,
   revealCountdownProgress,
   previousCardHeight,
   onPlaybackEnded,
+  onTogglePlayPause,
   onSetMuted,
   onTimeUpdate,
   onDurationChange,
@@ -120,6 +130,26 @@ function VideoSlideComponent({
     }
     return list;
   }, [video.category, video.tags]);
+
+  // Tablet/desktop only: a tiny blurred copy of the current frame fills the space
+  // around portrait or landscape video. The canvas is display:none on phones, so
+  // painting is skipped there.
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const fillCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const lastFillPaintRef = useRef(0);
+  const paintFill = useCallback((el: HTMLVideoElement, force = false) => {
+    const canvas = fillCanvasRef.current;
+    if (!canvas || canvas.offsetParent === null || el.readyState < 2) return;
+    const now = performance.now();
+    if (!force && now - lastFillPaintRef.current < 400) return;
+    lastFillPaintRef.current = now;
+    try {
+      canvas.getContext('2d')?.drawImage(el, 0, 0, canvas.width, canvas.height);
+    } catch {
+      // Frame not decodable yet.
+    }
+  }, []);
+  const progressTrackRef = useRef<HTMLDivElement | null>(null);
 
   const [hasError, setHasError] = useState<boolean>(false);
   const [isMediaLoading, setIsMediaLoading] = useState<boolean>(false);
@@ -432,12 +462,30 @@ function VideoSlideComponent({
       />
 
       <div
+        ref={frameRef}
         className={cn('relative h-full w-full overflow-hidden bg-black', 'touch-pan-y')}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
       >
+        {video.thumbnailUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={video.thumbnailUrl}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 hidden h-full w-full scale-125 object-cover opacity-50 blur-2xl md:block"
+          />
+        )}
+        <canvas
+          ref={fillCanvasRef}
+          width={32}
+          height={32}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 hidden h-full w-full scale-125 opacity-60 blur-2xl md:block"
+        />
+
         {/* POLISHED REELS-STYLE LOADING / PROGRESS BAR (TOP EDGE OF CURRENT VIDEO) */}
         {isBuffering && !hasError && isActive && (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-1 overflow-hidden bg-black/40">
@@ -452,7 +500,7 @@ function VideoSlideComponent({
             src={video.thumbnailUrl}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover md:object-contain"
           />
         )}
 
@@ -467,12 +515,14 @@ function VideoSlideComponent({
             muted={!isActive || isMuted || soundBlocked}
             loop={loopVideo}
             preload={preloadMode === 'none' ? 'metadata' : preloadMode}
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover md:object-contain"
+            onSeeked={(e) => paintFill(e.currentTarget, true)}
             onLoadStart={() => {
               notePlayback(video.id, 'loadstart');
               setIsMediaLoading(true);
             }}
             onTimeUpdate={(e) => {
+              paintFill(e.currentTarget);
               if (!isCurrentMedia() || e.currentTarget !== videoRef.current) return;
               onTimeUpdate(e.currentTarget.currentTime);
             }}
@@ -486,6 +536,7 @@ function VideoSlideComponent({
                 return;
               notePlayback(video.id, 'loadeddata');
               setIsMediaLoading(false);
+              paintFill(e.currentTarget, true);
             }}
             onCanPlay={(e) => {
               if (e.currentTarget !== videoRef.current || mediaEpoch !== mediaEpochRef.current)
@@ -527,7 +578,7 @@ function VideoSlideComponent({
           />
         ) : null}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-64 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-64 bg-gradient-to-t from-black/85 via-black/40 to-transparent md:h-[45%]" />
 
         {/* PRESS-AND-HOLD PAUSED VISUAL FEEDBACK BADGE */}
         {isHoldingToPause && (
@@ -601,6 +652,7 @@ function VideoSlideComponent({
         <div
           className={cn(
             'pointer-events-none absolute left-3 z-20 flex max-w-[calc(100%-4.75rem)] flex-col items-start gap-1.5 sm:left-4 sm:max-w-[calc(100%-5.25rem)]',
+            'md:!bottom-[4.25rem] md:left-5 md:max-w-[calc(100%-6rem)]',
             'transition-[bottom,transform] duration-300 ease-out'
           )}
           style={{
@@ -660,7 +712,7 @@ function VideoSlideComponent({
               {displayTags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 text-[10px] font-semibold text-white/90 shadow-sm backdrop-blur-md sm:text-[11px]"
+                  className="rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 text-[10px] font-semibold text-white/90 shadow-sm backdrop-blur-md sm:text-[11px] md:rounded-md md:border-white/10 md:bg-black/55 md:px-2 md:font-medium"
                 >
                   {tag}
                 </span>
@@ -679,6 +731,84 @@ function VideoSlideComponent({
           onOpenComments={onOpenComments}
           onOpenShortcuts={onOpenShortcuts}
         />
+
+        {/* Tablet/Desktop playback control bar */}
+        {isActive && mountMedia && (
+          <div
+            data-interactive="true"
+            className="absolute inset-x-0 bottom-0 z-20 hidden items-center gap-3 px-4 pb-3 pt-2 text-white md:flex"
+          >
+            <button
+              type="button"
+              onClick={onTogglePlayPause}
+              aria-label={isPlaying ? 'Pause video' : 'Play video'}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {isPlaying ? (
+                <Pause className="h-4 w-4 fill-white" />
+              ) : (
+                <Play className="ml-0.5 h-4 w-4 fill-white" />
+              )}
+            </button>
+            <span className="shrink-0 font-mono text-[11px] tabular-nums text-white/80">
+              {formatClock(currentTime)} / {formatClock(duration)}
+            </span>
+            <div
+              ref={progressTrackRef}
+              role="slider"
+              aria-label="Seek"
+              aria-valuemin={0}
+              aria-valuemax={Math.round(duration) || 0}
+              aria-valuenow={Math.round(currentTime)}
+              tabIndex={-1}
+              onClick={(e) => {
+                const track = progressTrackRef.current;
+                const el = videoRef.current;
+                if (!track || !el || !(duration > 0)) return;
+                const rect = track.getBoundingClientRect();
+                const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+                el.currentTime = ratio * duration;
+                onTimeUpdate(el.currentTime);
+              }}
+              className="group/seek relative flex h-4 min-w-0 flex-1 cursor-pointer items-center"
+            >
+              <div className="h-1 w-full overflow-hidden rounded-full bg-white/25">
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-75"
+                  style={{ width: `${duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0}%` }}
+                />
+              </div>
+              <span
+                className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 rounded-full bg-white shadow transition-transform group-hover/seek:scale-110"
+                style={{ left: `${duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0}%` }}
+                aria-hidden="true"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleAudioControl}
+              aria-label={isMuted || soundBlocked ? 'Unmute video' : 'Mute video'}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {isMuted || soundBlocked ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (document.fullscreenElement) void document.exitFullscreen?.();
+                else void frameRef.current?.requestFullscreen?.();
+              }}
+              aria-label="Toggle fullscreen"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Maximize className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
         {/* Score Reveal Overlay Layer */}
         {isRevealingScore && isActive && (

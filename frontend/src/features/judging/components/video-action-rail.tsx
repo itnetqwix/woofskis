@@ -50,7 +50,7 @@ export function VideoActionRail({
 
   // Base style for icon action controls: consistent 48px touch target, thin low-contrast border, subtle translucent dark bg
   const baseActionButtonClass =
-    'group flex h-12 w-12 shrink-0 touch-manipulation items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616] hover:bg-black/70 active:scale-95 disabled:pointer-events-none disabled:opacity-50';
+    'group flex h-12 w-12 shrink-0 touch-manipulation items-center justify-center rounded-full border shadow-sm backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616] hover:bg-black/70 active:scale-95 disabled:pointer-events-none disabled:opacity-50 md:h-10 md:w-10 md:[&>svg]:h-5 md:[&>svg]:w-5';
 
   const bottomStyle =
     typeof previousCardHeight === 'number' && previousCardHeight > 0
@@ -64,6 +64,7 @@ export function VideoActionRail({
       aria-label="Video action rail"
       className={cn(
         'pointer-events-auto absolute right-2.5 z-20 flex flex-col items-center gap-3.5 sm:right-3',
+        'md:!bottom-[4.25rem] md:right-4 md:gap-2.5',
         'transition-[bottom,transform] duration-300 ease-out'
       )}
       style={{
@@ -174,7 +175,7 @@ export function VideoActionRail({
           onClick={onOpenShortcuts}
           aria-label="Viewer keyboard shortcuts"
           title="Keyboard shortcuts"
-          className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white/70 shadow-md backdrop-blur-xl transition-all duration-150 hover:bg-black/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-90 md:flex"
+          className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white/70 shadow-md backdrop-blur-xl transition-all duration-150 hover:bg-black/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-90 md:flex md:h-10 md:w-10"
         >
           <Keyboard className="h-4 w-4" />
         </button>

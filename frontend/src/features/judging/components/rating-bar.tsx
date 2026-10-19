@@ -14,6 +14,8 @@ export interface RatingBarProps {
   error?: string | null;
   attention?: boolean;
   progress?: number;
+  /** Star outline tone. Phones sit on video (`onDark`); tablet/desktop use the theme card. */
+  tone?: 'theme' | 'onDark';
   className?: string;
 }
 
@@ -27,6 +29,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
     error = null,
     attention = false,
     progress = 0,
+    tone = 'onDark',
     className,
   },
   ref
@@ -47,11 +50,11 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
       )}
     >
       <div
-        className="pointer-events-auto mx-2 rounded-2xl border-2 border-[#fa4616]/80 bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(250,70,22,0.25)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border-[#fa4616] md:bg-black/60 md:px-3 md:py-2 md:shadow-[0_8px_32px_rgba(250,70,22,0.35)]"
+        className="pointer-events-auto mx-2 rounded-2xl border-2 border-[#fa4616]/80 bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(250,70,22,0.25)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border md:border-border md:bg-card md:px-4 md:pb-2.5 md:pt-3 md:shadow-sm md:backdrop-blur-none"
         data-interactive="true"
       >
         <div
-          className="mb-1.5 h-0.5 w-full overflow-hidden rounded-full bg-white/20 md:mb-2 md:h-1"
+          className="mb-1.5 h-0.5 w-full overflow-hidden rounded-full bg-white/20 md:hidden"
           aria-hidden="true"
         >
           <div
@@ -60,7 +63,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           />
         </div>
 
-        <p className="mt-1 text-center text-[11px] font-medium leading-none tracking-wide text-white/70 sm:text-xs md:mt-0.5 md:text-xs md:font-semibold md:text-white/80">
+        <p className="mt-1 text-center text-[11px] font-medium leading-none tracking-wide text-white/70 sm:text-xs md:mt-0 md:text-xs md:font-semibold md:text-foreground">
           Select a rating to see the next video
         </p>
         {/* {onSkip && (
@@ -73,22 +76,28 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           </button>
         )} */}
         {error && (
-          <p className="mt-1 text-center text-[11px] font-semibold text-rose-300">{error}</p>
+          <p className="mt-1 text-center text-[11px] font-semibold text-rose-300 md:text-destructive">
+            {error}
+          </p>
         )}
         {closed ? (
-          <p className="px-2 py-2 text-center text-xs leading-relaxed text-white/80">
+          <p className="px-2 py-2 text-center text-xs leading-relaxed text-white/80 md:text-muted-foreground">
             This contest has ended. You can still watch. Rating is closed.
           </p>
         ) : (
-          <div data-rating-scale="10" className="min-w-0 overflow-hidden">
+          <div
+            data-rating-scale="10"
+            className="min-w-0 overflow-hidden md:mx-auto md:mt-1.5 md:max-w-[520px]"
+          >
             <StarRating
               value={userRating}
               onChange={onRate}
               disabled={disabled}
-              tone="onDark"
+              tone={tone}
               size="overlay"
               scale={RATING_MAX}
               groupLabel="Your rating from 1 to 10"
+              numbered
             />
           </div>
         )}

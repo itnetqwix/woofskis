@@ -23,6 +23,7 @@ export function StarRating({
   scale = RATING_MAX,
   layout = 'spread',
   groupLabel,
+  numbered = false,
 }: {
   value: number | null;
   onChange?: (rating: number) => void;
@@ -33,6 +34,8 @@ export function StarRating({
   scale?: number;
   layout?: 'spread' | 'inline';
   groupLabel?: string;
+  /** Tablet/desktop only: show the value under each star. */
+  numbered?: boolean;
 }) {
   const starCount = scale;
   const iconClass = layout === 'inline' ? 'h-8 w-8' : STAR_ICON[size];
@@ -43,7 +46,11 @@ export function StarRating({
         'min-w-0',
         layout === 'inline'
           ? 'inline-flex w-auto items-center justify-center gap-1 sm:gap-2'
-          : cn('flex w-full', size === 'card' ? 'h-8' : size === 'overlay' ? 'h-9' : 'h-12')
+          : cn(
+              'flex w-full',
+              size === 'card' ? 'h-8' : size === 'overlay' ? 'h-9' : 'h-12',
+              numbered && 'md:h-14'
+            )
       )}
       style={layout === 'spread' ? { containerType: 'inline-size' } : undefined}
       role={readOnly ? 'img' : 'radiogroup'}
@@ -98,10 +105,19 @@ export function StarRating({
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fa4616]',
               'transition-all duration-100 hover:scale-110 hover:bg-white/10 active:scale-95 disabled:opacity-50',
               layout === 'inline' ? 'flex h-12 w-12 shrink-0' : 'flex h-full min-w-0 flex-1',
-              value === star && 'bg-[#fa4616]/15'
+              value === star && 'bg-[#fa4616]/15',
+              numbered && 'md:flex-col md:gap-1'
             )}
           >
             {glyph}
+            {numbered && (
+              <span
+                aria-hidden="true"
+                className="hidden text-[11px] font-medium leading-none text-muted-foreground md:block"
+              >
+                {star}
+              </span>
+            )}
           </button>
         );
       })}
