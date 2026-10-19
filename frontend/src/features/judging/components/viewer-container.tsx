@@ -73,6 +73,7 @@ export function ViewerContainer() {
     setIsBuffering,
     setIsPlaying,
   } = useContestQueue();
+  const pauseMainPlayer = useCallback(() => setIsPlaying(false), [setIsPlaying]);
 
   const isSuspended = activeBrand?.status === 'SUSPENDED';
   const ratingRef = useRef<HTMLElement>(null);
@@ -164,6 +165,8 @@ export function ViewerContainer() {
                 result={previousResult}
                 previousVideo={previousVideo}
                 onSelect={returnToLastRated}
+                onReplay={pauseMainPlayer}
+                mainPlaying={isPlaying}
               />
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border px-4 py-8 text-center">

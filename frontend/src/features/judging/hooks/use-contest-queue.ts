@@ -79,7 +79,14 @@ export interface UseContestQueueReturn {
   toggleLoopMode: () => void;
 }
 
-export function useContestQueue(): UseContestQueueReturn {
+export interface UseContestQueueOptions {
+  /** When false, navigation leaves the next video paused until the user presses play. */
+  autoplay?: boolean;
+}
+
+export function useContestQueue({
+  autoplay = true,
+}: UseContestQueueOptions = {}): UseContestQueueReturn {
   const { activeBrand } = useTenantTheme();
   const activeTenantId = activeBrand?.id || 'woofskis';
 
@@ -100,7 +107,13 @@ export function useContestQueue(): UseContestQueueReturn {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [loopMode, setLoopMode] = useState<boolean>(false);
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(autoplay);
+  const autoplayRef = useRef(autoplay);
+  autoplayRef.current = autoplay;
+
+  useEffect(() => {
+    if (!autoplay) setIsPlaying(false);
+  }, [autoplay]);
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [volume, setVolumeState] = useState<number>(1);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -388,7 +401,7 @@ export function useContestQueue(): UseContestQueueReturn {
       currentVideoIdRef.current = next?.id ?? null;
       indexRef.current = index + 1;
       setCurrentIndex(index + 1);
-      setIsPlaying(true);
+      setIsPlaying(autoplayRef.current);
       setIsCompleted(false);
       return;
     }
@@ -404,7 +417,7 @@ export function useContestQueue(): UseContestQueueReturn {
       indexRef.current = 0;
       setReplayGeneration((generation) => generation + 1);
       setCurrentIndex(0);
-      setIsPlaying(true);
+      setIsPlaying(autoplayRef.current);
       setIsCompleted(false);
       window.setTimeout(() => {
         if (advanceLockVideoRef.current === fromId) advanceLockRef.current = false;
@@ -423,7 +436,7 @@ export function useContestQueue(): UseContestQueueReturn {
     setVideos(nextVideos);
     setFeedCycle((cycle) => cycle + 1);
     setCurrentIndex(0);
-    setIsPlaying(true);
+    setIsPlaying(autoplayRef.current);
     setIsCompleted(false);
   }, [clearAdvanceTimers]);
 
@@ -438,7 +451,7 @@ export function useContestQueue(): UseContestQueueReturn {
       setRevealCountdownProgress(100);
       setCurrentTime(0);
       setCurrentIndex((prev) => prev - 1);
-      setIsPlaying(true);
+      setIsPlaying(autoplayRef.current);
       setIsCompleted(false);
     }
   }, [clearAdvanceTimers, currentIndex]);
@@ -456,7 +469,7 @@ export function useContestQueue(): UseContestQueueReturn {
       setRevealCountdownProgress(100);
       setCurrentTime(0);
       setCurrentIndex(index);
-      setIsPlaying(true);
+      setIsPlaying(autoplayRef.current);
       setIsCompleted(false);
     },
     [clearAdvanceTimers]
@@ -491,7 +504,7 @@ export function useContestQueue(): UseContestQueueReturn {
     setAggregatedResult(null);
     setRevealCountdownProgress(100);
     setCurrentTime(0);
-    setIsPlaying(true);
+    setIsPlaying(autoplayRef.current);
   }, [clearAdvanceTimers]);
 
   const retryQueue = useCallback(() => {

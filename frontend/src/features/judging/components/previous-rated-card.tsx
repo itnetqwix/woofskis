@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Film, Play, Star, Users, ChevronRight } from 'lucide-react';
+import { X, Film, Play, Star, Users, RotateCcw } from 'lucide-react';
 import { ProfileAvatar } from '@/components/common/profile-avatar';
-import { StarRating } from '@/features/judging/components/star-rating';
-import { RATING_MAX } from '@/constants/rating-scale';
 import {
   LastRatedVideo,
   formatAverageScore,
@@ -22,6 +20,10 @@ export interface PreviousRatedCardProps {
   onDismiss?: () => void;
   onSelect?: () => void;
   onHeightChange?: (height: number) => void;
+  /** Panel only: called when inline replay starts so the main player can pause. */
+  onReplay?: () => void;
+  /** Panel only: while true the inline replay is paused, so two videos never play at once. */
+  mainPlaying?: boolean;
   /** `panel` is the persistent tablet/desktop sidebar card: no auto-hide, no dismiss. */
   variant?: 'overlay' | 'panel';
   className?: string;
@@ -34,11 +36,16 @@ export function PreviousRatedCard({
   onDismiss,
   onSelect,
   onHeightChange,
+  onReplay,
+  mainPlaying = false,
   variant = 'overlay',
   className,
 }: PreviousRatedCardProps) {
   const isPanel = variant === 'panel';
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const replayRef = useRef<HTMLVideoElement | null>(null);
+  const [replayStarted, setReplayStarted] = useState(false);
+  const [replayPlaying, setReplayPlaying] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -107,6 +114,10 @@ export function PreviousRatedCard({
     }
   }, [isExiting, isUnmounted, isPanel, onHeightChange]);
 
+  useEffect(() => {
+    if (mainPlaying) replayRef.current?.pause();
+  }, [mainPlaying]);
+
   if (isUnmounted) return null;
 
   const thumbnail = previousVideo?.thumbnailUrl || result.thumbnailUrl || null;
@@ -151,6 +162,20 @@ export function PreviousRatedCard({
       )
     );
 
+    const canReplay = Boolean(videoUrl) && !videoFailed;
+
+    const handleReplay = () => {
+      const el = replayRef.current;
+      if (!canReplay || !el) {
+        onSelect?.();
+        return;
+      }
+      onReplay?.();
+      el.currentTime = 0;
+      setReplayStarted(true);
+      void el.play().catch(() => setReplayPlaying(false));
+    };
+
     return (
       <div
         className={cn(
@@ -158,50 +183,81 @@ export function PreviousRatedCard({
           className
         )}
       >
-        <button
-          type="button"
-          onClick={onSelect}
-          aria-label={`Return to ${title}`}
-          className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {showThumb ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={thumbnail!}
-              alt=""
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              onError={() => setThumbFailed(true)}
-            />
-          ) : showVideoPreview ? (
+        <div className="mb-3">
+          <span className="text-md font-medium  text-muted-foreground">Official Rating</span>
+          <p className="mt-1 flex items-baseline gap-1 leading-none">
+            <span className="text-4xl font-black tracking-tight text-primary">
+              {overallScoreValue}
+            </span>
+            {/* <span className="text-lg font-bold text-[#251305] dark:text-white/80">/10</span> */}
+          </p>
+        </div>
+
+        <div className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-black">
+          {canReplay && (
             <video
+              ref={replayRef}
               src={videoUrl!}
-              muted
-              autoPlay
-              loop
+              poster={showThumb ? thumbnail! : undefined}
               playsInline
               preload="metadata"
-              className="pointer-events-none h-full w-full object-cover"
+              className="h-full w-full object-cover"
+              onClick={() => {
+                if (replayPlaying) replayRef.current?.pause();
+              }}
+              onPlay={() => setReplayPlaying(true)}
+              onPause={() => setReplayPlaying(false)}
+              onEnded={() => setReplayPlaying(false)}
               onError={() => setVideoFailed(true)}
-              aria-hidden="true"
-              tabIndex={-1}
             />
-          ) : (
+          )}
+          {!canReplay &&
+            (showThumb ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={thumbnail!}
+                alt=""
+                className="h-full w-full object-cover"
+                onError={() => setThumbFailed(true)}
+              />
+            ) : (
+              <div
+                className="flex h-full w-full items-center justify-center bg-gradient-to-br from-white/10 via-black/40 to-black/80"
+                data-thumbnail-fallback="poster"
+                aria-hidden="true"
+              >
+                <Film className="h-7 w-7 text-white/40" />
+              </div>
+            ))}
+          {canReplay && !replayStarted && !showThumb && (
             <div
-              className="flex h-full w-full items-center justify-center bg-gradient-to-br from-white/10 via-black/40 to-black/80"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-black/40 to-black/80"
               data-thumbnail-fallback="poster"
               aria-hidden="true"
             >
               <Film className="h-7 w-7 text-white/40" />
             </div>
           )}
-          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/65 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
+          <span className="pointer-events-none absolute right-2 top-2 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/65 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
             <Star className="h-3.5 w-3.5 fill-primary text-primary" aria-hidden="true" />
             {overallScoreValue}/10
           </span>
-          <span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/55 text-white backdrop-blur-md transition-transform duration-150 group-hover:scale-110">
-            <Play className="ml-0.5 h-5 w-5 fill-white" aria-hidden="true" />
-          </span>
-        </button>
+          {!replayPlaying && (
+            <button
+              type="button"
+              onClick={handleReplay}
+              aria-label={`Replay ${title}`}
+              className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-4 py-2 text-sm font-bold text-white backdrop-blur-md transition-transform duration-150 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {replayStarted ? (
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Play className="ml-0.5 h-4 w-4 fill-white" aria-hidden="true" />
+              )}
+              Replay
+            </button>
+          )}
+        </div>
 
         {creatorName && (
           <div className="mt-3 flex min-w-0 items-center gap-2">
@@ -241,34 +297,6 @@ export function PreviousRatedCard({
             {formatVoteCount(votes)} {votes === 1 ? 'vote' : 'votes'}
           </p>
         )}
-
-        <div className="mt-3 border-t border-border pt-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Your rating</span>
-            <span className="text-sm font-bold text-foreground">
-              {formattedUserRating !== null ? formattedUserRating : '—'}
-            </span>
-          </div>
-          <div className="mt-1.5">
-            <StarRating
-              value={typeof userRating === 'number' ? Math.round(userRating) : null}
-              readOnly
-              tone="theme"
-              size="card"
-              scale={RATING_MAX}
-              groupLabel="Your rating"
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onSelect}
-          className="mt-3 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-border bg-muted/50 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          View details
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
-        </button>
       </div>
     );
   }
@@ -348,7 +376,7 @@ export function PreviousRatedCard({
           {/* Highlighted Overall Rating Element */}
           <div className="flex items-center justify-between gap-2 rounded-xl border border-white/15 bg-white/10 px-2.5 py-1.5 shadow-sm backdrop-blur-sm sm:px-3 sm:py-2">
             <div className="flex min-w-0 flex-col">
-              <span className="text-xs font-bold text-white sm:text-sm">Overall Rating</span>
+              <span className="text-xs font-bold text-white sm:text-sm">Official Rating</span>
               {typeof votes === 'number' && (
                 <span className="text-[10px] font-medium text-white/60 sm:text-[11px]">
                   {formatVoteCount(votes)} {votes === 1 ? 'vote' : 'votes'}
@@ -357,7 +385,7 @@ export function PreviousRatedCard({
             </div>
             <div className="flex shrink-0 items-baseline text-lg font-black tracking-tight text-white sm:text-xl">
               <span>{overallScoreValue}</span>
-              <span className="text-white/80">/10</span>
+              {/* <span className="text-white/80">/10</span> */}
             </div>
           </div>
         </div>

@@ -93,6 +93,8 @@ function VideoSlideComponent({
   const mediaEpochRef = useRef(0);
   const mediaTokenRef = useRef('');
   const replaySeenRef = useRef(replayGeneration);
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
 
   // Audio & Pause Pulse Indicators
   const [audioPulse, setAudioPulse] = useState<{ visible: boolean; isMuted: boolean }>({
@@ -228,6 +230,7 @@ function VideoSlideComponent({
     } catch {
       // Metadata is not available yet.
     }
+    if (!isPlayingRef.current) return;
     void el.play().catch((error: unknown) => {
       if (epoch !== mediaEpochRef.current || !activeRef.current) return;
       if (errorName(error) === 'AbortError') return;
@@ -290,8 +293,8 @@ function VideoSlideComponent({
 
     soundBlockedRef.current = false;
     setSoundBlocked(false);
-    if (el) {
-      applyMediaMuted(el, false);
+    if (el) applyMediaMuted(el, false);
+    if (el && isPlayingRef.current) {
       const pending = el.play();
       pending
         ?.then(() => onPlayStateChange(true))
@@ -511,7 +514,7 @@ function VideoSlideComponent({
             src={playbackSrc}
             poster={video.thumbnailUrl || undefined}
             playsInline
-            autoPlay={isActive && (isMuted || soundBlocked)}
+            autoPlay={isActive && isPlaying && (isMuted || soundBlocked)}
             muted={!isActive || isMuted || soundBlocked}
             loop={loopVideo}
             preload={preloadMode === 'none' ? 'metadata' : preloadMode}
@@ -731,6 +734,35 @@ function VideoSlideComponent({
           onOpenComments={onOpenComments}
           onOpenShortcuts={onOpenShortcuts}
         />
+
+        {/* Tablet/Desktop: explicit play / replay button while paused */}
+        {isActive &&
+          mountMedia &&
+          !isPlaying &&
+          !hasError &&
+          !isRevealingScore &&
+          !isHoldingToPause && (
+            <div className="pointer-events-none absolute inset-0 z-20 hidden items-center justify-center md:flex">
+              <button
+                type="button"
+                data-interactive="true"
+                onClick={onTogglePlayPause}
+                className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/65 px-5 py-3 text-sm font-bold text-white shadow-2xl backdrop-blur-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
+              >
+                {duration > 0 && currentTime >= duration - 0.05 ? (
+                  <>
+                    <RotateCcw className="h-5 w-5" aria-hidden="true" />
+                    Replay
+                  </>
+                ) : (
+                  <>
+                    <Play className="ml-0.5 h-5 w-5 fill-white" aria-hidden="true" />
+                    Play
+                  </>
+                )}
+              </button>
+            </div>
+          )}
 
         {/* Tablet/Desktop playback control bar */}
         {isActive && mountMedia && (

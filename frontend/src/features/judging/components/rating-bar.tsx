@@ -63,7 +63,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           />
         </div>
 
-        <p className="mt-1 text-center text-[11px] font-medium leading-none tracking-wide text-white/70 sm:text-xs md:mt-0 md:text-xs md:font-semibold md:text-foreground">
+        <p className="mt-1 text-center text-[11px] font-medium leading-none tracking-wide text-white/70 sm:text-xs md:mt-0 md:text-base md:font-bold md:text-foreground">
           Select a rating to see the next video
         </p>
         {/* {onSkip && (
