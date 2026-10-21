@@ -17,12 +17,12 @@ describe('guest vote identifier', () => {
 });
 
 describe('contest deletion policy', () => {
-  it('blocks ACTIVE and JUDGING and allows the other documented statuses', () => {
-    assert.equal(contestDeletionBlockReason(ContestStatus.ACTIVE), 'Active contests cannot be deleted');
-    assert.match(contestDeletionBlockReason(ContestStatus.JUDGING) ?? '', /judging/i);
+  it('allows only DRAFT contests to be deleted and blocks ACTIVE, JUDGING, COMPLETED, SCHEDULED, and ARCHIVED', () => {
     assert.equal(contestDeletionBlockReason(ContestStatus.DRAFT), null);
-    assert.equal(contestDeletionBlockReason(ContestStatus.SCHEDULED), null);
-    assert.equal(contestDeletionBlockReason(ContestStatus.COMPLETED), null);
-    assert.equal(contestDeletionBlockReason(ContestStatus.ARCHIVED), null);
+    assert.equal(contestDeletionBlockReason(ContestStatus.ACTIVE), 'Active contests cannot be deleted');
+    assert.equal(contestDeletionBlockReason(ContestStatus.JUDGING), 'Contests in judging cannot be deleted');
+    assert.equal(contestDeletionBlockReason(ContestStatus.COMPLETED), 'Completed contests cannot be deleted');
+    assert.equal(contestDeletionBlockReason(ContestStatus.SCHEDULED), 'Only DRAFT contests can be deleted');
+    assert.equal(contestDeletionBlockReason(ContestStatus.ARCHIVED), 'Only DRAFT contests can be deleted');
   });
 });

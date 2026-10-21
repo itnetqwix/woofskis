@@ -25,6 +25,7 @@
 | `/admin/brands` | `src/app/(dashboard)/admin/brands/page.tsx` | Brand theme customizer (colors, logos, typography, headers). | `IMPLEMENTED` |
 | `/super-admin` | `src/app/(dashboard)/super-admin/page.tsx` | Multi-tenant overview. Tenant fleet and status from `GET /super-admin/organizations` (`useSuperAdminOrganizations`); Suspend opens `SuspendOrganizationDialog` (required reason); Reactivate calls reinstate. Compliance notices are still a local prototype. | `IMPLEMENTED` |
 | `/leaderboard` | `src/app/(viewer)/leaderboard/page.tsx` | Public scoreboard for ACTIVE contests only. Ranks come from the leaderboard API. Search does not re-rank. | `IMPLEMENTED` |
+| `/about` | `src/app/about/page.tsx` | Public "What is Woofskis?" information page explaining the platform, 1–10 rating system, community consensus, creator submission, and mission. | `IMPLEMENTED` |
 
 ---
 
@@ -79,8 +80,12 @@
 - **`components/brand-register-form.tsx`**: Not mounted. Brand registration is removed from the product flow (2026-09-29). See [deployment-model.md](deployment-model.md).
 - **`hooks/use-auth-session.ts`**: Production auth path uses `src/services/auth-api.ts`. Hydrates from `GET /auth/me` when `STORAGE_KEYS.AUTH_TOKEN` is present (M02-P02-T05). `DEMO_PERSONAS` / `MOCK_AUTH_USERS` are gated out of login/register (M02-P02-T06). `loginAsDemoPersona` throws. Backend 401/409 map to form error dictionaries (M02-P02-T07). M02-P03 live verification: creator/brand register, login, `/auth/me` hydration, logout clears `cos_auth_token`, invalid JWT → 401 + token clear. Axios 401 interceptor still does **not** redirect (frozen M01-P02-T04). RoleGuard unauthenticated redirects are a separate client-route concern (M03-P02-T03).
 - **`lib/map-auth-user.ts`**: Maps API `name` → `displayName`. Compatibility role aliases **kept in M03-P02**: `BRAND_ADMIN` → `ORGANIZATION_ADMIN`, `SUPER_ADMIN` → `PLATFORM_ADMIN`. RoleGuard matches these session aliases (not Prisma JWT names). `passwordHash` is stripped. `username` is a client-only email local-part fallback (never POSTed).
+ 
+### 2.6 `features/about` (Platform Overview & Mission)
+- **`components/about-page-view.tsx`**: Public 7-section informational overview of Woofskis covering Hero, Platform Overview (Viewer and Creator personas), How It Works (1–10 rating scale and hotkeys), Why Your Rating Matters (running average consensus math & HMAC anti-fraud protection), Creator Opportunities (Creator Studio, submission metrics, and friend connections), Mission for Dog Lovers, and final CTAs.
+- **`src/components/layout/app-footer.tsx`**: Public responsive footer featuring Woofskis branding, Explore links, Creator tools, and Fair Play integrity points.
 
-### 2.6 Route guards (`components/auth`) — frozen M03-P02
+### 2.7 Route guards (`components/auth`) — frozen M03-P02
 
 There is **no** dashboard `layout.tsx` RoleGuard. Each protected page wraps itself:
 

@@ -77,29 +77,26 @@ export function assertContestConfigurationMutable(status: ContestStatus): void {
 }
 
 /**
- * Deletion is not named in the source chapters.
- * ACTIVE is rejected by this product chunk.
- * JUDGING stays locked because voting is still open and BR-CONT-04 already
- * freezes configuration from ACTIVE onward.
- * DRAFT, SCHEDULED, COMPLETED, and ARCHIVED may be deleted.
- * Related submissions and ratings follow the existing Prisma cascade.
+ * Deletion is only permitted for DRAFT contests.
+ * Once a contest becomes ACTIVE, it must never be deletable, including in
+ * JUDGING, COMPLETED, or ARCHIVED states.
  */
 export const DELETABLE_CONTEST_STATUSES: ReadonlySet<ContestStatus> = new Set([
   ContestStatus.DRAFT,
-  ContestStatus.SCHEDULED,
-  ContestStatus.COMPLETED,
-  ContestStatus.ARCHIVED,
 ]);
 
 export function contestDeletionBlockReason(status: ContestStatus): string | null {
+  if (status === ContestStatus.DRAFT) {
+    return null;
+  }
   if (status === ContestStatus.ACTIVE) {
     return 'Active contests cannot be deleted';
   }
   if (status === ContestStatus.JUDGING) {
-    return 'Contests in judging cannot be deleted while voting is open';
+    return 'Contests in judging cannot be deleted';
   }
-  if (!DELETABLE_CONTEST_STATUSES.has(status)) {
-    return 'This contest cannot be deleted';
+  if (status === ContestStatus.COMPLETED) {
+    return 'Completed contests cannot be deleted';
   }
-  return null;
+  return 'Only DRAFT contests can be deleted';
 }

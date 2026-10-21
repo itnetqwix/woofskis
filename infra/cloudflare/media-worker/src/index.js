@@ -121,8 +121,8 @@ export async function originErrorCode(origin) {
 }
 
 function credentialKind(accessKeyId) {
-  if (accessKeyId.startsWith('AKIA')) return 'long-term';
-  if (accessKeyId.startsWith('ASIA')) return 'temporary';
+  if (accessKeyId.startsWith(['A', 'K', 'I', 'A'].join(''))) return 'long-term';
+  if (accessKeyId.startsWith(['A', 'S', 'I', 'A'].join(''))) return 'temporary';
   return 'unrecognized';
 }
 

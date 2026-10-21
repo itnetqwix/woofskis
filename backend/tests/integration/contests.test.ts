@@ -16,6 +16,7 @@ import {
   CreateContestData,
   UpdateContestData,
 } from '../../src/repositories/contest.repository.js';
+import { UserRepository } from '../../src/repositories/user.repository.js';
 
 /**
  * M05-P03 and M05-P05.
@@ -74,6 +75,9 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     listViewable: ContestRepository.listViewable,
     update: ContestRepository.update,
     deleteById: ContestRepository.deleteById,
+  };
+  const originalUser = {
+    findAccountGate: UserRepository.findAccountGate,
   };
 
   before(async () => {
@@ -174,6 +178,12 @@ describe('M05 contest APIs', { concurrency: false }, () => {
         .map((row) => attach(memory, row))
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }) as typeof ContestRepository.listViewable;
+
+    UserRepository.findAccountGate = (async () => ({
+      id: 'dddddddd-dddd-4ddd-8ddd-0000000000dd',
+      role: Role.CREATOR,
+      accountStatus: 'ACTIVE',
+    })) as typeof UserRepository.findAccountGate;
   });
 
   after(async () => {
@@ -186,6 +196,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     ContestRepository.listViewable = originalContest.listViewable;
     ContestRepository.update = originalContest.update;
     ContestRepository.deleteById = originalContest.deleteById;
+    UserRepository.findAccountGate = originalUser.findAccountGate;
     await app.close();
   });
 
@@ -749,4 +760,84 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     assert.equal(contest.votingClosesAt, null);
     assert.equal(contest.timezone, 'Asia/Kolkata');
   });
+
+  it('enforces deletion rules: only DRAFT contests can be deleted; ACTIVE, JUDGING, COMPLETED, SCHEDULED, and ARCHIVED fail with 409', async () => {
+    memory = createMemory();
+    const headers = { authorization: `Bearer ${token(Role.ADMIN)}` };
+    const now = new Date('2026-10-02T00:00:00.000Z');
+
+    const statusMap = [
+      { status: ContestStatus.ACTIVE, hex: '1' },
+      { status: ContestStatus.JUDGING, hex: '2' },
+      { status: ContestStatus.COMPLETED, hex: '3' },
+      { status: ContestStatus.SCHEDULED, hex: '4' },
+      { status: ContestStatus.ARCHIVED, hex: '5' },
+    ];
+
+    for (const { status, hex } of statusMap) {
+      const id = `00000000-0000-4000-8000-00000000000${hex}`;
+      memory.contests.set(id, {
+        id,
+        categoryId: null,
+        category: null,
+        title: `${status} Contest`,
+        description: `Contest with status ${status}`,
+        tagline: null,
+        bannerUrl: null,
+        bannerObjectKey: null,
+        thumbnailUrl: null,
+        status,
+        timezone: 'Asia/Kolkata',
+        startDate: new Date('2026-10-01T00:00:00.000Z'),
+        endDate: new Date('2026-10-31T00:00:00.000Z'),
+        votingClosesAt: null,
+        prizeSummary: null,
+        rules: null,
+        autoAdvanceDelayMs: 1800,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const delRes = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/contests/${id}`,
+        headers,
+      });
+      assert.equal(delRes.statusCode, 409, `Expected 409 when deleting contest in status ${status}`);
+    }
+
+    // DRAFT contest deletion succeeds
+    const draftId = '00000000-0000-4000-8000-00000000000d';
+    memory.contests.set(draftId, {
+      id: draftId,
+      categoryId: null,
+      category: null,
+      title: 'Draft Contest',
+      description: 'Draft contest can be deleted',
+      tagline: null,
+      bannerUrl: null,
+      bannerObjectKey: null,
+      thumbnailUrl: null,
+      status: ContestStatus.DRAFT,
+      timezone: 'Asia/Kolkata',
+      startDate: new Date('2026-10-01T00:00:00.000Z'),
+      endDate: new Date('2026-10-31T00:00:00.000Z'),
+      votingClosesAt: null,
+      prizeSummary: null,
+      rules: null,
+      autoAdvanceDelayMs: 1800,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const draftDelRes = await app.inject({
+      method: 'DELETE',
+      url: `/api/v1/contests/${draftId}`,
+      headers,
+    });
+    assert.equal(draftDelRes.statusCode, 200);
+    assert.equal(JSON.parse(draftDelRes.payload).data.id, draftId);
+    assert.ok(memory.contests.get(draftId)?.deletedAt);
+  });
 });
+
