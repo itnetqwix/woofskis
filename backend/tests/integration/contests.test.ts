@@ -71,6 +71,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     create: ContestRepository.create,
     findById: ContestRepository.findById,
     list: ContestRepository.list,
+    listViewable: ContestRepository.listViewable,
     update: ContestRepository.update,
     deleteById: ContestRepository.deleteById,
   };
@@ -140,6 +141,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       return [...memory.contests.values()]
         .map((row) => attach(memory, row))
         .filter((row) => {
+          if (!filters.includeDeleted && row.deletedAt) return false;
           if (filters.status && row.status !== filters.status) return false;
           if (filters.categorySlug && row.category?.slug !== filters.categorySlug) return false;
           return true;
@@ -161,8 +163,17 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     }) as typeof ContestRepository.update;
 
     ContestRepository.deleteById = (async (id: string) => {
-      memory.contests.delete(id);
+      const row = memory.contests.get(id);
+      if (row) {
+        row.deletedAt = new Date();
+      }
     }) as typeof ContestRepository.deleteById;
+
+    ContestRepository.listViewable = (async () => {
+      return [...memory.contests.values()]
+        .map((row) => attach(memory, row))
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    }) as typeof ContestRepository.listViewable;
   });
 
   after(async () => {
@@ -172,6 +183,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     ContestRepository.create = originalContest.create;
     ContestRepository.findById = originalContest.findById;
     ContestRepository.list = originalContest.list;
+    ContestRepository.listViewable = originalContest.listViewable;
     ContestRepository.update = originalContest.update;
     ContestRepository.deleteById = originalContest.deleteById;
     await app.close();
@@ -491,7 +503,15 @@ describe('M05 contest APIs', { concurrency: false }, () => {
     });
     assert.equal(removed.statusCode, 200);
     assert.equal(JSON.parse(removed.payload).data.id, created.id);
-    assert.equal(memory.contests.has(created.id), false);
+    assert.equal(Boolean(memory.contests.get(created.id)?.deletedAt), true);
+    assert.equal(memory.contests.has(created.id), true);
+
+    const getDeleted = await app.inject({
+      method: 'GET',
+      url: `/api/v1/contests/${created.id}`,
+      headers: admin,
+    });
+    assert.equal(getDeleted.statusCode, 404);
 
     const active = await createDraft();
     memory.contests.get(active.id)!.status = ContestStatus.ACTIVE;

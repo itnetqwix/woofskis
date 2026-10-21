@@ -208,7 +208,8 @@ export function useContestQueue({
           })
         )
       );
-      const openQueue = queues.find((queue) => queue.ratingOpen) ?? queues[0];
+      const openQueue =
+        queues.find((queue) => queue.ratingOpen && queue.status === 'ACTIVE') ?? queues[0];
       if (openQueue) {
         setContestId(openQueue.contestId);
         setAutoAdvanceDelayMs(resolveAutoAdvanceDelayMs(openQueue.autoAdvanceDelayMs));
@@ -515,8 +516,8 @@ export function useContestQueue({
     (rating: number) => {
       const videoContestId = currentVideo?.contestId || contestId;
       if (!currentVideo || isRevealingScore || isEmptyFallback || !videoContestId) return;
-      if (currentVideo.ratingOpen === false) {
-        setRatingError('This contest has ended. Rating is closed.');
+      if (currentVideo.ratingOpen === false || currentVideo.contestStatus !== 'ACTIVE') {
+        setRatingError('Rating is only available for active contests.');
         return;
       }
       if (!isAllowedRating(rating)) return;

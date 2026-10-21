@@ -243,7 +243,7 @@ export class ContestService {
   static async getById(actor: ContestActor, id: string) {
     assertContestManager(actor);
     const contest = await ContestRepository.findById(id);
-    if (!contest) {
+    if (!contest || contest.deletedAt) {
       throw new NotFoundError('Contest not found');
     }
     return contest;
@@ -394,15 +394,15 @@ export class ContestService {
       );
     }
     const contest = await ContestRepository.findById(id);
-    if (!contest) {
+    if (!contest || contest.deletedAt) {
       throw new NotFoundError('Contest not found');
     }
     return contest;
   }
 
-  /** Public contests a guest can watch. Rating stays closed after COMPLETED. */
+  /** Public contests a guest can watch. Returns contests with uploaded video entries. */
   static async listViewable() {
-    return ContestRepository.list({ statuses: VIEWABLE_CONTEST_STATUSES });
+    return ContestRepository.listViewable();
   }
 
   static async remove(actor: ContestActor, id: string) {

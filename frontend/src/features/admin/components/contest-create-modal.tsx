@@ -689,7 +689,7 @@ export function ContestCreateModal({
               <div className="space-y-2 pt-1">
                 <div className="flex items-center justify-between">
                   <label className="block font-bold text-foreground">Contest Banner *</label>
-                  <span className="text-[11px] font-semibold text-amber-500">Custom Upload Required</span>
+                  {/* <span className="text-[11px] font-semibold text-amber-500">Custom Upload Required</span> */}
                 </div>
                 <div
                   className={cn(
@@ -698,6 +698,7 @@ export function ContestCreateModal({
                       ? 'border-border bg-muted/30'
                       : 'border-dashed border-amber-500/50 bg-amber-500/5 p-4 text-center'
                   )}
+                  onClick={() => bannerInputRef.current?.click()}
                 >
                   {displayedBanner ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -744,7 +745,7 @@ export function ContestCreateModal({
                     ) : (
                       <Upload className="h-3.5 w-3.5" />
                     )}
-                    <span>{displayedBanner ? 'Replace banner' : 'Upload banner (Mandatory)'}</span>
+                    <span>{displayedBanner ? 'Replace banner' : 'Upload banner'}</span>
                   </Button>
                   {displayedBanner ? (
                     <Button
@@ -760,7 +761,7 @@ export function ContestCreateModal({
                     </Button>
                   ) : (
                     <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
-                      A custom banner upload is mandatory before proceeding.
+                      {/* A custom banner upload is mandatory before proceeding. */}
                     </span>
                   )}
                 </div>
@@ -899,12 +900,12 @@ export function ContestCreateModal({
                   <span className="text-sm font-bold text-foreground">
                     {submissionOpenAt && submissionDeadlineAt
                       ? `${Math.max(
-                          0,
-                          Math.round(
-                            (submissionDeadlineAt.getTime() - submissionOpenAt.getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          )
-                        )} Days Intake`
+                        0,
+                        Math.round(
+                          (submissionDeadlineAt.getTime() - submissionOpenAt.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                        )
+                      )} Days Intake`
                       : '—'}
                   </span>
                 </div>
@@ -916,12 +917,12 @@ export function ContestCreateModal({
                   <span className="text-sm font-bold text-foreground">
                     {submissionDeadlineAt && votingClosesAt
                       ? `${Math.max(
-                          0,
-                          Math.round(
-                            (votingClosesAt.getTime() - submissionDeadlineAt.getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          )
-                        )} Days Final Review`
+                        0,
+                        Math.round(
+                          (votingClosesAt.getTime() - submissionDeadlineAt.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                        )
+                      )} Days Final Review`
                       : '—'}
                   </span>
                 </div>

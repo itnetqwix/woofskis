@@ -184,6 +184,18 @@ export function queueItemToVideo(item: {
 }
 
 /**
+ * Rating section visibility rule:
+ * Ratings are displayed ONLY when the associated contest is currently ACTIVE.
+ * For completed, judging, draft, or deleted contests, the rating section must be hidden.
+ */
+export function isRatingActiveForVideo(
+  video: { contestStatus?: string; ratingOpen?: boolean } | null | undefined
+): boolean {
+  if (!video) return false;
+  return video.contestStatus === 'ACTIVE' && video.ratingOpen !== false;
+}
+
+/**
  * Existing empty-queue showcase (M08-P04-T06).
  * This card is not a submission and must not be rated.
  */

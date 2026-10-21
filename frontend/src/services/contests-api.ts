@@ -31,6 +31,7 @@ export const API_CONTEST_STATUSES = [
   'JUDGING',
   'COMPLETED',
   'ARCHIVED',
+  'DELETED',
 ] as const;
 
 export type ApiContestStatus = (typeof API_CONTEST_STATUSES)[number];
@@ -42,6 +43,7 @@ const NEXT_STATUS: Record<ApiContestStatus, ApiContestStatus | null> = {
   JUDGING: 'COMPLETED',
   COMPLETED: 'ARCHIVED',
   ARCHIVED: null,
+  DELETED: null,
 };
 
 export function isApiContestStatus(value: string): value is ApiContestStatus {
@@ -81,6 +83,7 @@ export interface ApiContest {
   prizeSummary: string | null;
   rules: string | string[] | null;
   autoAdvanceDelayMs: number;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

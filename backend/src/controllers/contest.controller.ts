@@ -41,7 +41,7 @@ export async function toContestView(contest: ContestRecord) {
     bannerUrl,
     bannerObjectKey: contest.bannerObjectKey ?? null,
     thumbnailUrl: contest.thumbnailUrl,
-    status: contest.status,
+    status: contest.deletedAt ? ('DELETED' as any) : contest.status,
     timezone: contest.timezone || DEFAULT_CONTEST_TIMEZONE,
     startDate: iso(contest.startDate),
     endDate: iso(contest.endDate),
@@ -51,6 +51,7 @@ export async function toContestView(contest: ContestRecord) {
     prizeSummary: contest.prizeSummary,
     rules: contest.rules,
     autoAdvanceDelayMs: contest.autoAdvanceDelayMs,
+    deletedAt: contest.deletedAt ? iso(contest.deletedAt) : null,
     createdAt: iso(contest.createdAt),
     updatedAt: iso(contest.updatedAt),
   };

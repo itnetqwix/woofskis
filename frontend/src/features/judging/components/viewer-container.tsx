@@ -20,6 +20,7 @@ import { UnratedEndDialog } from '@/features/judging/components/unrated-end-dial
 import { StarCelebration } from '@/features/judging/components/star-celebration';
 import { ratingToPrefill } from '@/constants/rating-scale';
 import {
+  isRatingActiveForVideo,
   readUnratedEndHintHidden,
   writeUnratedEndHintHidden,
 } from '@/features/judging/lib/judging-flow';
@@ -88,6 +89,7 @@ export function ViewerContainer() {
     : null;
   const ratedCurrent = storedRating !== null;
   const unratedEnded = Boolean(currentId && endedVideoId === currentId && !ratedCurrent);
+  const isRatingActive = isRatingActiveForVideo(currentVideo);
   const showRating =
     !isSuspended &&
     !queueError &&
@@ -95,7 +97,8 @@ export function ViewerContainer() {
     !isCompleted &&
     Boolean(currentVideo) &&
     !isEmptyFallback &&
-    !isRevealingScore;
+    !isRevealingScore &&
+    isRatingActive;
   const showPrevious = Boolean(previousResult) && showRating && !isWideLayout;
   const showPreviousPanel = Boolean(previousResult) && !isSuspended && !queueError;
   const previousVideo = previousResult
@@ -119,10 +122,10 @@ export function ViewerContainer() {
     const rating = userRatings[currentVideo.id]?.rating ?? currentVideo.viewerRating;
     if (typeof rating === 'number') return;
     setEndedVideoId(currentVideo.id);
-    if (currentVideo.ratingOpen !== false && !readUnratedEndHintHidden()) {
+    if (isRatingActive && !readUnratedEndHintHidden()) {
       setHintOpen(true);
     }
-  }, [currentVideo, isEmptyFallback, userRatings]);
+  }, [currentVideo, isEmptyFallback, userRatings, isRatingActive]);
 
   const focusRating = useCallback(() => {
     setHintOpen(false);
@@ -186,10 +189,16 @@ export function ViewerContainer() {
                 Live Judging
               </p>
               <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground lg:text-3xl">
-                Rate <span className="text-primary">This Video</span>
+                {isRatingActive ? (
+                  <>Rate <span className="text-primary">This Video</span></>
+                ) : (
+                  <>Watch <span className="text-primary">This Video</span></>
+                )}
               </h1>
               <p className="mt-1 text-xs text-muted-foreground lg:text-sm">
-                Watch the video and give your rating. The next video will play automatically.
+                {isRatingActive
+                  ? 'Watch the video and give your rating. The next video will play automatically.'
+                  : 'Watch the video. The next video will play automatically.'}
               </p>
             </div>
             {currentVideo && !isEmptyFallback && totalVideos > 0 && (
@@ -216,8 +225,8 @@ export function ViewerContainer() {
                 ref={ratingRef}
                 className="w-full"
                 onRate={submitRating}
-                disabled={isSubmittingRating || currentVideo?.ratingOpen === false}
-                closed={currentVideo?.ratingOpen === false}
+                disabled={isSubmittingRating || !isRatingActive}
+                closed={!isRatingActive}
                 userRating={storedRating}
                 onSkip={skipVideo}
                 error={ratingError}
@@ -227,8 +236,8 @@ export function ViewerContainer() {
               />
             </div>
           )}
-          {/* Tablet/desktop: hold the rating panel's space so the player size stays fixed */}
-          {!showRating && (
+          {/* Tablet/desktop: hold the rating panel's space during score reveal or loading for active contests */}
+          {!showRating && isRatingActive && (
             <div aria-hidden="true" className="hidden md:order-last md:block md:h-[102px] md:shrink-0" />
           )}
 

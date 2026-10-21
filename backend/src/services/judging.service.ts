@@ -56,7 +56,6 @@ import {
 
 export const VOTING_CONTEST_STATUSES: ReadonlySet<ContestStatus> = new Set([
   ContestStatus.ACTIVE,
-  ContestStatus.JUDGING,
 ]);
 
 export const VIEWABLE_CONTEST_STATUSES: ReadonlySet<ContestStatus> = new Set([
@@ -64,6 +63,8 @@ export const VIEWABLE_CONTEST_STATUSES: ReadonlySet<ContestStatus> = new Set([
   ContestStatus.JUDGING,
   ContestStatus.COMPLETED,
   ContestStatus.ARCHIVED,
+  ContestStatus.DRAFT,
+  ContestStatus.SCHEDULED,
 ]);
 
 export interface JudgingVoter {
@@ -138,10 +139,11 @@ export function assertRatingValue(rating: number): void {
 export function assertVotingContest(
   status: ContestStatus,
   votingClosesAt?: Date | null,
+  contestDeletedAt?: Date | null,
 ): void {
-  if (!VOTING_CONTEST_STATUSES.has(status)) {
+  if (contestDeletedAt || !VOTING_CONTEST_STATUSES.has(status)) {
     throw new ConflictError(
-      'Votes are only accepted while a contest is ACTIVE or JUDGING',
+      'Votes are only accepted while a contest is ACTIVE',
     );
   }
   if (votingClosesAt && new Date() >= votingClosesAt) {
@@ -209,7 +211,10 @@ export class JudgingService {
     if (!contest) {
       throw new NotFoundError('Contest not found');
     }
-    assertViewableContest(contest.status);
+    const isDeleted = Boolean(contest.deletedAt);
+    if (!isDeleted) {
+      assertViewableContest(contest.status);
+    }
     const rows = await SubmissionRepository.listApprovedForContest(contestId);
     const avatarUrls = new Map<string, Promise<string | null>>();
     const avatarFor = (objectKey: string | null | undefined) => {
@@ -238,12 +243,16 @@ export class JudgingService {
     const viewerRatingBySubmission = new Map(
       viewerRatings.map((row) => [row.submissionId, row.rating]),
     );
+    const effectiveStatus = isDeleted ? ('DELETED' as ContestStatus) : contest.status;
+    const isRatingActive =
+      !isDeleted &&
+      VOTING_CONTEST_STATUSES.has(contest.status) &&
+      (!contest.votingClosesAt || new Date() < contest.votingClosesAt);
+
     return {
       contestId: contest.id,
-      status: contest.status,
-      ratingOpen:
-        VOTING_CONTEST_STATUSES.has(contest.status) &&
-        (!contest.votingClosesAt || new Date() < contest.votingClosesAt),
+      status: effectiveStatus,
+      ratingOpen: isRatingActive,
       autoAdvanceDelayMs: contest.autoAdvanceDelayMs,
       items: items.map((item) => ({
         ...item,
@@ -258,7 +267,7 @@ export class JudgingService {
    */
   static async getSharePreview(submissionId: string): Promise<SharePreview> {
     const row = await SubmissionRepository.findApprovedById(submissionId);
-    if (!row || !VIEWABLE_CONTEST_STATUSES.has(row.contest.status)) {
+    if (!row) {
       throw new NotFoundError('Submission not found');
     }
     return {
@@ -283,7 +292,11 @@ export class JudgingService {
       if (!locked) {
         throw new NotFoundError('Submission not found');
       }
-      assertVotingContest(locked.contestStatus, locked.votingClosesAt);
+      assertVotingContest(
+        locked.contestStatus,
+        locked.votingClosesAt,
+        locked.contestDeletedAt,
+      );
       if (locked.status !== SubmissionStatus.APPROVED) {
         throw new ConflictError('Only approved submissions can be rated');
       }

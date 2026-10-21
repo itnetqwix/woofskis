@@ -20,6 +20,7 @@ export interface ContestListFilters {
   status?: ContestStatus;
   statuses?: ContestStatus[];
   categorySlug?: string;
+  includeDeleted?: boolean;
 }
 
 export interface CreateContestData {
@@ -59,6 +60,7 @@ export type UpdateContestData = {
   prizeSummary?: string | null;
   rules?: Prisma.InputJsonValue | null;
   autoAdvanceDelayMs?: number;
+  deletedAt?: Date | null;
 };
 
 /**
@@ -104,6 +106,7 @@ export class ContestRepository {
       where: {
         status: filters.statuses ? { in: filters.statuses } : filters.status,
         category: filters.categorySlug ? { slug: filters.categorySlug } : undefined,
+        ...(filters.includeDeleted ? {} : { deletedAt: null }),
       },
       include: contestInclude,
       orderBy: { createdAt: 'desc' },
@@ -176,11 +179,39 @@ export class ContestRepository {
   }
 
   /**
-   * Hard-delete. Submission and Rating rows cascade from the Prisma relations.
-   * Audit logs keep the actor row and null the submission reference.
+   * Soft-delete. Marks the contest as deleted without cascade-deleting
+   * video submissions, ratings, or media records.
    */
   static async deleteById(id: string): Promise<void> {
-    await prisma.contest.delete({ where: { id } });
+    await prisma.contest.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  /**
+   * Contests viewable in the Videos section.
+   * Includes active contests as well as any contest (completed, judging, draft,
+   * archived, or deleted) that contains uploaded video submissions.
+   */
+  static async listViewable(): Promise<ContestRecord[]> {
+    return prisma.contest.findMany({
+      where: {
+        OR: [
+          { status: ContestStatus.ACTIVE, deletedAt: null },
+          {
+            submissions: {
+              some: {
+                status: SubmissionStatus.APPROVED,
+                deletedAt: null,
+              },
+            },
+          },
+        ],
+      },
+      include: contestInclude,
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   static async findTitlesByIds(ids: string[]) {

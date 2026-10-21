@@ -116,11 +116,13 @@ model Contest {
   prizeSummary       String?
   rules              Json?
   autoAdvanceDelayMs Int           @default(1800)
+  deletedAt          DateTime?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   submissions        Submission[]
 
   @@index([organizationId, status])
+  @@index([deletedAt])
   @@map("contests")
 }
 
@@ -304,7 +306,7 @@ Implemented in `schema.prisma`. Migration directory: `prisma/migrations/20260925
 
 `Rating` (`ratings`): `id`, `submissionId`, optional `userId`, optional `voterFingerprint`, `voterIpHash` (HMAC of the client IP, not the raw address), `rating` (integer; new votes 1–10, historical 1–5 rows remain), `createdAt`. Unique `(submissionId, voterIpHash)`. Indexes: `submissionId`, `(voterFingerprint, submissionId)`.
 
-`Contest` also stores optional `tagline`, `bannerUrl`, `bannerObjectKey`, `thumbnailUrl`, `timezone` (IANA, default `Asia/Kolkata`), and `votingClosesAt`. `startDate` is submission opening and `endDate` is the submission deadline. Both are absolute timestamps. `bannerObjectKey` is the stable private-bucket reference. `bannerUrl` on read is a short-lived signed GET when a key exists, otherwise the legacy URL. Prize breakdown beyond `prizeSummary` is not a column. Contest deletion is a hard delete. `Submission` and `Rating` cascade from the contest. `AuditLog.submissionId` is set null. `ACTIVE` and `JUDGING` are not deletable. Migration: `prisma/migrations/20261011120000_contest_banner_timezone_schedule`.
+`Contest` also stores optional `tagline`, `bannerUrl`, `bannerObjectKey`, `thumbnailUrl`, `timezone` (IANA, default `Asia/Kolkata`), `votingClosesAt`, and nullable `deletedAt`. `startDate` is submission opening and `endDate` is the submission deadline. Both are absolute timestamps. `bannerObjectKey` is the stable private-bucket reference. `bannerUrl` on read is a short-lived signed GET when a key exists, otherwise the legacy URL. Prize breakdown beyond `prizeSummary` is not a column. Contest deletion is a soft delete (`deletedAt` timestamp). Deleting a contest sets `deletedAt` without cascade-deleting `Submission` or `Rating` rows, preserving the contest relationship, history, and uploaded video entries in the Videos section. `ACTIVE` contests cannot be deleted. Migration: `prisma/migrations/20261021180000_contest_soft_delete`.
 
 `userId` is null for anonymous visitors. Authenticated `VIEWER` ratings store `userId`. The fingerprint algorithm, duplicate-vote window, and retry/idempotency are **NOT SPECIFIED**. No leaderboard table was added.
 

@@ -84,6 +84,7 @@ function contestRow(
     prizeSummary: null,
     rules: null,
     autoAdvanceDelayMs,
+    deletedAt: null,
     createdAt: now,
     updatedAt: now,
     category: { id: 'cat-1', name: 'Sketch', slug: 'sketch', description: null },
@@ -196,6 +197,8 @@ describe('M08 judging APIs', { concurrency: false }, () => {
         communityScore: row.communityScore,
         totalVotes: row.totalVotes,
         contestStatus: contest.status,
+        votingClosesAt: contest.votingClosesAt,
+        contestDeletedAt: contest.deletedAt,
       };
       return locked;
     }) as typeof RatingRepository.lockSubmission;
@@ -367,10 +370,12 @@ describe('M08 judging APIs', { concurrency: false }, () => {
     memory.submissions.get(VIDEO_A)!.status = SubmissionStatus.APPROVED;
   });
 
-  it('keeps completed contest videos viewable and rejects new ratings', async () => {
+  it('keeps completed, draft, and deleted contest videos viewable and rejects new ratings', async () => {
     memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.DRAFT));
     const draft = await app.inject({ method: 'GET', url: `/api/v1/contests/${CONTEST_A}/queue` });
-    assert.equal(draft.statusCode, 409);
+    assert.equal(draft.statusCode, 200);
+    assert.equal(JSON.parse(draft.payload).data.ratingOpen, false);
+    assert.equal(JSON.parse(draft.payload).data.items.some((item: { id: string }) => item.id === VIDEO_A), true);
 
     memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.COMPLETED));
     const closed = await app.inject({ method: 'GET', url: `/api/v1/contests/${CONTEST_A}/queue` });
@@ -386,12 +391,22 @@ describe('M08 judging APIs', { concurrency: false }, () => {
       payload: { rating: 2 },
     });
     assert.equal(rated.statusCode, 409);
-    assert.equal(JSON.parse(rated.payload).message, 'Votes are only accepted while a contest is ACTIVE or JUDGING');
+    assert.equal(JSON.parse(rated.payload).message, 'Votes are only accepted while a contest is ACTIVE');
 
     memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.JUDGING, 1800));
     const judging = await app.inject({ method: 'GET', url: `/api/v1/contests/${CONTEST_A}/queue` });
     assert.equal(judging.statusCode, 200);
-    assert.equal(JSON.parse(judging.payload).data.ratingOpen, true);
+    assert.equal(JSON.parse(judging.payload).data.ratingOpen, false);
+
+    const deletedContest = { ...contestRow(CONTEST_A, ContestStatus.COMPLETED), deletedAt: new Date() };
+    memory.contests.set(CONTEST_A, deletedContest);
+    const deletedQueue = await app.inject({ method: 'GET', url: `/api/v1/contests/${CONTEST_A}/queue` });
+    assert.equal(deletedQueue.statusCode, 200);
+    const deletedBody = JSON.parse(deletedQueue.payload);
+    assert.equal(deletedBody.data.status, 'DELETED');
+    assert.equal(deletedBody.data.ratingOpen, false);
+    assert.equal(deletedBody.data.items.some((item: { id: string }) => item.id === VIDEO_A), true);
+
     memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.ACTIVE, 1800));
   });
 
@@ -585,7 +600,7 @@ describe('M08 judging APIs', { concurrency: false }, () => {
     assert.equal(memory.submissions.get(VIDEO_REJECTED)!.totalVotes, 0);
   });
 
-  it('allows JUDGING and denies creator, brand admin, and super admin', async () => {
+  it('rejects ratings during JUDGING and accepts during ACTIVE while denying non-guest roles', async () => {
     memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.JUDGING));
     const judging = await app.inject({
       method: 'POST',
@@ -593,7 +608,17 @@ describe('M08 judging APIs', { concurrency: false }, () => {
       remoteAddress: '198.51.100.20',
       payload: { rating: 2 },
     });
-    assert.equal(judging.statusCode, 200);
+    assert.equal(judging.statusCode, 409);
+    assert.equal(JSON.parse(judging.payload).message, 'Votes are only accepted while a contest is ACTIVE');
+
+    memory.contests.set(CONTEST_A, contestRow(CONTEST_A, ContestStatus.ACTIVE));
+    const active = await app.inject({
+      method: 'POST',
+      url: rateUrl(),
+      remoteAddress: '198.51.100.20',
+      payload: { rating: 2 },
+    });
+    assert.equal(active.statusCode, 200);
 
     for (const role of [Role.CREATOR, Role.ADMIN]) {
       const res = await app.inject({
