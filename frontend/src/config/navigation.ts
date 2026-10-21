@@ -21,6 +21,10 @@ export const mainNavConfig: NavItem[] = [
     href: '/leaderboard',
   },
   {
+    title: 'About Woofskis',
+    href: '/about',
+  },
+  {
     title: 'Submissions',
     href: '/submissions',
   },

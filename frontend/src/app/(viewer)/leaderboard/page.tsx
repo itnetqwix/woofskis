@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { AppHeader } from '@/components/layout/app-header';
+import { AppFooter } from '@/components/layout/app-footer';
 import { TenantSwitcherHUD } from '@/components/layout/tenant-switcher-hud';
 import { LeaderboardScreen } from '@/features/leaderboard/components/leaderboard-screen';
 
@@ -13,6 +14,7 @@ export default function LeaderboardPage() {
       <main className="mx-auto w-full max-w-7xl flex-1 px-3 py-3 sm:px-6 sm:py-6 lg:px-8">
         <LeaderboardScreen />
       </main>
+      <AppFooter />
     </div>
   );
 }

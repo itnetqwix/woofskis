@@ -585,13 +585,13 @@ export function ContestsManagementTable({
                           <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                           <span>Duplicate Contest</span>
                         </DropdownMenuItem>
-                        {contest.status === 'ACTIVE' || contest.status === 'JUDGING' ? null : (
+                        {contest.status === 'DRAFT' && (
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => {
                                 const confirmed = window.confirm(
-                                  `You are about to delete this contest.\n\n${contest.title}`
+                                  `You are about to delete this draft contest.\n\n${contest.title}`
                                 );
                                 if (confirmed) onDeleteContest(contest.id);
                               }}

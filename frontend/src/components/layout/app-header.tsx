@@ -19,6 +19,7 @@ import {
   Tags,
   User,
   Users,
+  Heart,
 } from 'lucide-react';
 import { ProfileAvatar } from '@/components/common/profile-avatar';
 import { ThemeToggle } from '@/components/common/theme-toggle';
@@ -270,6 +271,13 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
         iconClassName: 'text-amber-500',
         active: pathname === '/leaderboard',
       },
+      {
+        href: '/about',
+        label: 'About Woofskis',
+        icon: Heart,
+        iconClassName: 'text-rose-500',
+        active: pathname === '/about',
+      },
     ],
   });
 
@@ -418,6 +426,19 @@ export function AppHeader({ onOpenUploadModal, extraControls, overlay = false }:
               >
                 <Trophy className="h-3.5 w-3.5 text-amber-500" />
                 <span>Leaderboard</span>
+              </Link>
+
+              <Link
+                href="/about"
+                className={cn(
+                  'flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                  pathname === '/about'
+                    ? 'shadow-xs bg-muted font-semibold text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                )}
+              >
+                <Heart className="h-3.5 w-3.5 text-rose-500" />
+                <span>About Woofskis</span>
               </Link>
             </nav>
           )}

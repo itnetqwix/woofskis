@@ -253,13 +253,17 @@ export function useContestsManagement() {
   const deleteContest = useCallback(
     async (contestId: string): Promise<ContestActionResult> => {
       const current = allContests.find((contest) => contest.id === contestId);
-      if (current?.status === 'ACTIVE' || current?.status === 'JUDGING') {
+      if (current && current.status !== 'DRAFT') {
         return {
           ok: false,
           message:
             current.status === 'ACTIVE'
               ? ACTIVE_DELETE_BLOCKED
-              : 'Contests in judging cannot be deleted while voting is open',
+              : current.status === 'JUDGING'
+                ? 'Contests in judging cannot be deleted'
+                : current.status === 'COMPLETED'
+                  ? 'Completed contests cannot be deleted'
+                  : 'Only DRAFT contests can be deleted',
         };
       }
       try {

@@ -162,4 +162,24 @@ describe('M05-P04 contests API client', () => {
       assert.equal(result.data[1].id, '22222222-2222-4222-8222-222222222222');
     }
   });
+
+  it('enforces that only DRAFT contests are deletable in admin UI and hook', async () => {
+    const { readFileSync } = await import('node:fs');
+    const tableSource = readFileSync(
+      new URL('../../src/features/admin/components/contests-management-table.tsx', import.meta.url),
+      'utf8',
+    );
+    const hookSource = readFileSync(
+      new URL('../../src/features/admin/hooks/use-contests-management.ts', import.meta.url),
+      'utf8',
+    );
+
+    // Table only renders Delete Contest when status is DRAFT
+    assert.match(tableSource, /contest\.status === 'DRAFT' &&/);
+    assert.equal(tableSource.includes("contest.status === 'ACTIVE' || contest.status === 'JUDGING' ? null :"), false);
+
+    // Hook blocks deletion for any non-DRAFT contest
+    assert.match(hookSource, /current\.status !== 'DRAFT'/);
+  });
 });
+
