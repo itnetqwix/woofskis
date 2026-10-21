@@ -91,6 +91,7 @@ export type ContestLifecycleStatus =
   | 'JUDGING'
   | 'COMPLETED'
   | 'ARCHIVED'
+  | 'DELETED'
   | 'PUBLISHED'
   | 'PAUSED'
   | 'CLOSED';

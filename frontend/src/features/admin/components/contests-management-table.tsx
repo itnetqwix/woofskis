@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { ContestConfigItem, ContestLifecycleStatus } from '@/types/tenant';
 import { ContestSortOption } from '@/features/admin/hooks/use-contests-management';
-import { nextContestStatus } from '@/services/contests-api';
+import { nextContestStatus, type ApiContestStatus } from '@/services/contests-api';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -47,6 +47,7 @@ const STATUS_STYLES: Record<string, string> = {
   SCHEDULED: 'border-blue-500/30 bg-blue-500/15 text-blue-500',
   JUDGING: 'border-primary/30 bg-primary/10 text-primary',
   COMPLETED: 'border-amber-500/30 bg-amber-500/15 text-amber-500',
+  DELETED: 'border-destructive/30 bg-destructive/15 text-destructive',
 };
 
 function ContestStatusBadge({ status }: { status: ContestLifecycleStatus }) {
@@ -73,7 +74,7 @@ const STATUS_OPTIONS: { id: string; label: string }[] = [
   { id: 'ARCHIVED', label: 'Archived' },
 ];
 
-const ADVANCE_LABELS: Partial<Record<ContestLifecycleStatus, string>> = {
+const ADVANCE_LABELS: Partial<Record<ContestLifecycleStatus | ApiContestStatus, string>> = {
   SCHEDULED: 'Schedule',
   ACTIVE: 'Activate',
   JUDGING: 'Move to Judging',
