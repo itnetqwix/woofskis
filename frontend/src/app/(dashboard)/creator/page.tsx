@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Users } from 'lucide-react';
+import { BarChart3, Clapperboard, Plus, Trophy, Users } from 'lucide-react';
 import { AppHeader } from '@/components/layout/app-header';
 import { TenantSwitcherHUD } from '@/components/layout/tenant-switcher-hud';
 import { RoleGuard } from '@/components/auth/role-guard';
@@ -21,6 +21,19 @@ import {
 } from '@/features/submissions/hooks/use-creator-submissions';
 import { CreatorSubmissionItem } from '@/types/creator';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+type CreatorStudioTab = 'metrics' | 'contests' | 'submissions';
+
+const CREATOR_TABS: {
+  id: CreatorStudioTab;
+  label: string;
+  icon: typeof BarChart3;
+}[] = [
+  { id: 'metrics', label: 'Performance Overview & Metrics', icon: BarChart3 },
+  { id: 'contests', label: 'Contests', icon: Trophy },
+  { id: 'submissions', label: 'Your Submissions', icon: Clapperboard },
+];
 
 export default function CreatorDashboardPage() {
   const {
@@ -68,15 +81,50 @@ export default function CreatorDashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<CreatorSubmissionItem | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [tab, setTab] = useState<CreatorStudioTab>('metrics');
+  const [uploadContestOverride, setUploadContestOverride] = useState<string | null>(null);
+  const tabRefs = useRef<Partial<Record<CreatorStudioTab, HTMLButtonElement | null>>>({});
+
+  const preferredContestId =
+    uploadContestOverride ?? (activeContest?.status === 'ACTIVE' ? activeContest.id : null);
 
   // Open fresh upload modal
   const handleOpenNewUpload = () => {
+    setUploadContestOverride(null);
     setUploadModalInitialData(null);
     setUploadModalOpen(true);
   };
 
+  const handleSubmitToContest = (contestId: string) => {
+    setSelectedContestId(contestId);
+    setUploadContestOverride(contestId);
+    setUploadModalInitialData(null);
+    setUploadModalOpen(true);
+  };
+
+  const selectTab = (next: CreatorStudioTab) => {
+    setTab(next);
+    tabRefs.current[next]?.focus();
+  };
+
+  const onTabKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).getAttribute('role') !== 'tab') return;
+    const index = CREATOR_TABS.findIndex((item) => item.id === tab);
+    if (index < 0) return;
+    let nextIndex = index;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % CREATOR_TABS.length;
+    else if (event.key === 'ArrowLeft') {
+      nextIndex = (index - 1 + CREATOR_TABS.length) % CREATOR_TABS.length;
+    } else if (event.key === 'Home') nextIndex = 0;
+    else if (event.key === 'End') nextIndex = CREATOR_TABS.length - 1;
+    else return;
+    event.preventDefault();
+    selectTab(CREATOR_TABS[nextIndex].id);
+  };
+
   // Open upload modal configured for resubmission
   const handleResubmit = (submission: CreatorSubmissionItem) => {
+    setUploadContestOverride(null);
     setUploadModalInitialData({
       resubmitId: submission.id,
       title: submission.title,
@@ -169,37 +217,95 @@ export default function CreatorDashboardPage() {
             </p>
           ) : null}
 
-          {/* 1. CREATOR OVERVIEW KPI METRICS */}
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Performance Overview & Metrics
-              </h2>
-            </div>
+          <div
+            role="tablist"
+            aria-label="Creator studio sections"
+            onKeyDown={onTabKeyDown}
+            className="flex gap-1 overflow-x-auto rounded-xl border border-border/80 bg-muted/50 p-1"
+          >
+            {CREATOR_TABS.map((item) => {
+              const selected = tab === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  ref={(node) => {
+                    tabRefs.current[item.id] = node;
+                  }}
+                  id={`creator-tab-${item.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls={`creator-panel-${item.id}`}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => setTab(item.id)}
+                  className={cn(
+                    'flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold transition-all duration-200 sm:text-sm',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                    selected
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-background/60 hover:text-foreground'
+                  )}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <span className="whitespace-nowrap">{item.label}</span>
+                  {item.id === 'submissions' ? (
+                    <span
+                      className={cn(
+                        'rounded-full px-1.5 py-0.5 text-[10px] font-bold',
+                        selected ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {statusCounts.ALL}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+
+          <section
+            role="tabpanel"
+            id="creator-panel-metrics"
+            aria-labelledby="creator-tab-metrics"
+            hidden={tab !== 'metrics'}
+            className={cn(tab === 'metrics' && 'duration-200 animate-in fade-in')}
+          >
             <CreatorMetricsCards
               metrics={metrics}
-              onFilterStatusSelect={(status) => setFilterStatus(status)}
+              onFilterStatusSelect={(status) => {
+                setFilterStatus(status);
+                setTab('submissions');
+              }}
             />
           </section>
 
-          <CreatorContestBoard
-            contests={contests}
-            selectedId={selectedContestId}
-            onSelect={setSelectedContestId}
-          />
+          <section
+            role="tabpanel"
+            id="creator-panel-contests"
+            aria-labelledby="creator-tab-contests"
+            hidden={tab !== 'contests'}
+            className={cn(tab === 'contests' && 'duration-200 animate-in fade-in')}
+          >
+            <CreatorContestBoard
+              contests={contests}
+              selectedId={selectedContestId}
+              onSelect={setSelectedContestId}
+              onSubmitEntry={handleSubmitToContest}
+            />
+          </section>
 
-          {/* 3. SUBMISSIONS TABLE SECTION */}
-          <section aria-label="Creator Submissions Table" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold tracking-tight text-foreground">
-                  Your Submissions ({statusCounts.ALL})
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  Track moderation review status, evaluator scores, and contest ranking.
-                </p>
-              </div>
-            </div>
+          <section
+            role="tabpanel"
+            id="creator-panel-submissions"
+            aria-labelledby="creator-tab-submissions"
+            aria-label="Creator Submissions Table"
+            hidden={tab !== 'submissions'}
+            className={cn('space-y-4', tab === 'submissions' && 'duration-200 animate-in fade-in')}
+          >
+            <p className="text-xs text-muted-foreground">
+              Track moderation review status, evaluator scores, and contest ranking.
+            </p>
 
             <SubmissionsTable
               submissions={filteredSubmissions}
@@ -230,7 +336,7 @@ export default function CreatorDashboardPage() {
           onOpenChange={setUploadModalOpen}
           initialData={uploadModalInitialData}
           contests={uploadContests}
-          preferredContestId={activeContest?.status === 'ACTIVE' ? activeContest.id : null}
+          preferredContestId={preferredContestId}
           onSubmitSuccess={handleUploadSuccess}
         />
 

@@ -2,7 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Facebook, Mail, MessageCircle, Link2 } from 'lucide-react';
+import { Check, Facebook, Mail, MessageCircle, MessageSquare, Link2 } from 'lucide-react';
+import {
+  buildSmsShareHref,
+  buildVideoShareMessage,
+  buildVideoShareText,
+  isPublicSharePageUrl,
+} from '@/features/judging/lib/share-url';
+import {
+  shareWithNativeTarget,
+  shouldUseDesktopShareFallback,
+} from '@/features/judging/lib/share-target';
 
 export interface ShareSheetProps {
   open: boolean;
@@ -38,12 +48,16 @@ async function copyText(value: string): Promise<boolean> {
 
 export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) {
   const [copied, setCopied] = useState(false);
+  const [messageCopied, setMessageCopied] = useState(false);
   const [manual, setManual] = useState(false);
+  const [manualValue, setManualValue] = useState('');
 
   useEffect(() => {
     if (!open) {
       setCopied(false);
+      setMessageCopied(false);
       setManual(false);
+      setManualValue('');
     }
   }, [open]);
 
@@ -61,9 +75,15 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
 
   if (!open || typeof document === 'undefined') return null;
 
-  const text = title ? `${title} ${url}` : url;
+  const text = buildVideoShareMessage(title, url);
+  const shareText = buildVideoShareText(title);
+  const publicPage = isPublicSharePageUrl(url);
   const openExternal = (href: string) => {
     window.open(href, '_blank', 'noopener,noreferrer');
+  };
+  const showManual = (value: string) => {
+    setManual(true);
+    setManualValue(value);
   };
 
   const actions = [
@@ -72,29 +92,75 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
       label: copied ? 'Copied' : 'Copy Link',
       icon: copied ? Check : Link2,
       onClick: async () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
         const ok = await copyText(url);
         setCopied(ok);
-        setManual(!ok);
+        setMessageCopied(false);
+        if (!ok) showManual(url);
       },
     },
     {
       id: 'whatsapp',
       label: 'WhatsApp',
       icon: MessageCircle,
-      onClick: () => openExternal(`https://wa.me/?text=${encodeURIComponent(text)}`),
+      onClick: () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        openExternal(`https://wa.me/?text=${encodeURIComponent(text)}`);
+      },
+    },
+    {
+      id: 'message',
+      label: 'Message',
+      icon: MessageSquare,
+      onClick: async () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        const result = await shareWithNativeTarget({
+          title: title.trim() || 'Woofskis video',
+          text: shareText,
+          url,
+        });
+        if (result === 'shared' || result === 'aborted') return;
+        const message = buildVideoShareMessage(title, url);
+        if (!shouldUseDesktopShareFallback()) {
+          window.location.assign(buildSmsShareHref(message));
+          return;
+        }
+        const ok = await copyText(message);
+        setCopied(false);
+        setMessageCopied(ok);
+        if (!ok) showManual(message);
+      },
     },
     {
       id: 'facebook',
       label: 'Facebook',
       icon: Facebook,
-      onClick: () =>
-        openExternal(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`),
+      onClick: () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        openExternal(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+      },
     },
     {
       id: 'email',
       label: 'Email',
       icon: Mail,
       onClick: () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
         const subject = encodeURIComponent(title ? `Woofskis: ${title}` : 'Woofskis video');
         const body = encodeURIComponent(text);
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
@@ -128,8 +194,7 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
           </button>
         </div>
 
-        {/* 1 Horizontal Row of 4 Sharing Options */}
-        <div className="grid grid-cols-4 gap-2 p-4 sm:gap-3 sm:p-5">
+        <div className="grid grid-cols-3 gap-2 p-4 sm:grid-cols-5 sm:gap-3 sm:p-5">
           {actions.map((action) => {
             const Icon = action.icon;
             const isCopyActive = action.id === 'copy' && copied;
@@ -164,13 +229,20 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
           </div>
         ) : null}
 
+        {messageCopied ? (
+          <div className="flex items-center justify-center gap-1.5 px-4 pb-4 text-center text-xs font-bold text-[#fa4616]">
+            <Check className="h-3.5 w-3.5 shrink-0" />
+            <span>Message copied. Paste it into Messages.</span>
+          </div>
+        ) : null}
+
         {manual ? (
           <div className="px-4 pb-4">
             <label className="block text-xs text-muted-foreground">
               Clipboard is unavailable. Copy this link:
               <input
                 readOnly
-                value={url}
+                value={manualValue || url}
                 onFocus={(event) => event.currentTarget.select()}
                 className="mt-1.5 w-full rounded-xl border border-border bg-card px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
