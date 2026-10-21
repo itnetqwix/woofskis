@@ -135,11 +135,17 @@ export function assertRatingValue(rating: number): void {
   }
 }
 
-export function assertVotingContest(status: ContestStatus): void {
+export function assertVotingContest(
+  status: ContestStatus,
+  votingClosesAt?: Date | null,
+): void {
   if (!VOTING_CONTEST_STATUSES.has(status)) {
     throw new ConflictError(
       'Votes are only accepted while a contest is ACTIVE or JUDGING',
     );
+  }
+  if (votingClosesAt && new Date() >= votingClosesAt) {
+    throw new ConflictError('Voting has closed for this contest');
   }
 }
 
@@ -235,7 +241,9 @@ export class JudgingService {
     return {
       contestId: contest.id,
       status: contest.status,
-      ratingOpen: VOTING_CONTEST_STATUSES.has(contest.status),
+      ratingOpen:
+        VOTING_CONTEST_STATUSES.has(contest.status) &&
+        (!contest.votingClosesAt || new Date() < contest.votingClosesAt),
       autoAdvanceDelayMs: contest.autoAdvanceDelayMs,
       items: items.map((item) => ({
         ...item,
@@ -275,7 +283,7 @@ export class JudgingService {
       if (!locked) {
         throw new NotFoundError('Submission not found');
       }
-      assertVotingContest(locked.contestStatus);
+      assertVotingContest(locked.contestStatus, locked.votingClosesAt);
       if (locked.status !== SubmissionStatus.APPROVED) {
         throw new ConflictError('Only approved submissions can be rated');
       }

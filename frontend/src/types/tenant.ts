@@ -142,6 +142,8 @@ export interface ContestConfigItem {
     distribution: PrizeDistributionItem[];
   };
   status: ContestLifecycleStatus;
+  scheduledJudgingAt?: string | null;
+  originalTagline?: string | null;
   entriesCount: number;
   votesCount: number;
   featured?: boolean;

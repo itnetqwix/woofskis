@@ -18,6 +18,7 @@ export interface LockedSubmissionScore {
   communityScore: number;
   totalVotes: number;
   contestStatus: ContestStatus;
+  votingClosesAt: Date | null;
 }
 
 export interface InsertRatingData {
@@ -35,6 +36,7 @@ interface LockedRow {
   communityScore: number;
   totalVotes: number;
   contestStatus: ContestStatus;
+  votingClosesAt: Date | string | null;
 }
 
 export class RatingRepository {
@@ -50,7 +52,8 @@ export class RatingRepository {
         s.status,
         s."communityScore",
         s."totalVotes",
-        c.status AS "contestStatus"
+        c.status AS "contestStatus",
+        c."votingClosesAt" AS "votingClosesAt"
       FROM "submissions" s
       INNER JOIN "contests" c ON c.id = s."contestId"
       WHERE s.id = ${submissionId}
@@ -67,6 +70,7 @@ export class RatingRepository {
       communityScore: Number(row.communityScore),
       totalVotes: Number(row.totalVotes),
       contestStatus: row.contestStatus,
+      votingClosesAt: row.votingClosesAt ? new Date(row.votingClosesAt) : null,
     };
   }
 

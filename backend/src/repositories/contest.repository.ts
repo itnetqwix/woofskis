@@ -34,6 +34,8 @@ export interface CreateContestData {
   startDate: Date;
   endDate: Date;
   votingClosesAt: Date | null;
+  scheduledJudgingAt?: Date | null;
+  originalTagline?: string | null;
   prizeSummary: string | null;
   rules: Prisma.InputJsonValue | null;
   autoAdvanceDelayMs: number;
@@ -52,6 +54,8 @@ export type UpdateContestData = {
   startDate?: Date;
   endDate?: Date;
   votingClosesAt?: Date | null;
+  scheduledJudgingAt?: Date | null;
+  originalTagline?: string | null;
   prizeSummary?: string | null;
   rules?: Prisma.InputJsonValue | null;
   autoAdvanceDelayMs?: number;
@@ -77,6 +81,8 @@ export class ContestRepository {
         startDate: data.startDate,
         endDate: data.endDate,
         votingClosesAt: data.votingClosesAt,
+        scheduledJudgingAt: data.scheduledJudgingAt ?? null,
+        originalTagline: data.originalTagline ?? null,
         prizeSummary: data.prizeSummary,
         rules: data.rules === null ? Prisma.JsonNull : data.rules,
         autoAdvanceDelayMs: data.autoAdvanceDelayMs,
@@ -120,6 +126,8 @@ export class ContestRepository {
         startDate: data.startDate,
         endDate: data.endDate,
         votingClosesAt: data.votingClosesAt,
+        scheduledJudgingAt: data.scheduledJudgingAt,
+        originalTagline: data.originalTagline,
         prizeSummary: data.prizeSummary,
         rules:
           data.rules === undefined
@@ -128,6 +136,40 @@ export class ContestRepository {
               ? Prisma.JsonNull
               : data.rules,
         autoAdvanceDelayMs: data.autoAdvanceDelayMs,
+      },
+      include: contestInclude,
+    });
+  }
+
+  /**
+   * Atomically transitions an ACTIVE contest to JUDGING if its scheduledJudgingAt is due.
+   * Ensures exactly-once transition across workers/retries.
+   */
+  static async transitionDueToJudging(id: string, now: Date): Promise<boolean> {
+    const result = await prisma.contest.updateMany({
+      where: {
+        id,
+        status: ContestStatus.ACTIVE,
+        scheduledJudgingAt: { lte: now },
+      },
+      data: {
+        status: ContestStatus.JUDGING,
+        scheduledJudgingAt: null,
+        votingClosesAt: now,
+        endDate: now,
+      },
+    });
+    return result.count > 0;
+  }
+
+  /**
+   * Finds all ACTIVE contests that have a scheduledJudgingAt instant in the past or present.
+   */
+  static async findDueScheduledTransitions(now: Date): Promise<ContestRecord[]> {
+    return prisma.contest.findMany({
+      where: {
+        status: ContestStatus.ACTIVE,
+        scheduledJudgingAt: { lte: now },
       },
       include: contestInclude,
     });

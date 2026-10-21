@@ -7,6 +7,7 @@ import {
   createContestSchema,
   listContestsQuerySchema,
   presignContestBannerSchema,
+  scheduleJudgingBodySchema,
   updateContestSchema,
 } from '../schemas/contest.schema.js';
 import { sendSuccess } from '../utils/response.js';
@@ -45,6 +46,8 @@ export async function toContestView(contest: ContestRecord) {
     startDate: iso(contest.startDate),
     endDate: iso(contest.endDate),
     votingClosesAt: contest.votingClosesAt ? iso(contest.votingClosesAt) : null,
+    scheduledJudgingAt: contest.scheduledJudgingAt ? iso(contest.scheduledJudgingAt) : null,
+    originalTagline: contest.originalTagline ?? null,
     prizeSummary: contest.prizeSummary,
     rules: contest.rules,
     autoAdvanceDelayMs: contest.autoAdvanceDelayMs,
@@ -124,6 +127,25 @@ export class ContestController {
       reply,
       await toContestView(contest),
       'Contest updated successfully',
+      HTTP_STATUS.OK,
+    );
+  }
+
+  /**
+   * POST /api/v1/contests/:id/schedule-judging
+   */
+  static async scheduleJudging(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = contestIdParamSchema.parse(request.params);
+    const body = scheduleJudgingBodySchema.parse(request.body);
+    const contest = await ContestService.scheduleJudging(
+      actorFromRequest(request),
+      id,
+      body.taglineConfirmation,
+    );
+    return sendSuccess(
+      reply,
+      await toContestView(contest),
+      'Judging transition scheduled successfully',
       HTTP_STATUS.OK,
     );
   }

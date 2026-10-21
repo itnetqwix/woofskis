@@ -21,6 +21,7 @@ export const CONTEST_API_PATHS = {
   creatorCollection: '/creator/contests',
   creatorById: (id: string) => `/creator/contests/${encodeURIComponent(id)}`,
   byId: (id: string) => `/contests/${encodeURIComponent(id)}`,
+  scheduleJudging: (id: string) => `/contests/${encodeURIComponent(id)}/schedule-judging`,
 } as const;
 
 export const API_CONTEST_STATUSES = [
@@ -35,7 +36,7 @@ export const API_CONTEST_STATUSES = [
 export type ApiContestStatus = (typeof API_CONTEST_STATUSES)[number];
 
 const NEXT_STATUS: Record<ApiContestStatus, ApiContestStatus | null> = {
-  DRAFT: 'SCHEDULED',
+  DRAFT: 'ACTIVE',
   SCHEDULED: 'ACTIVE',
   ACTIVE: 'JUDGING',
   JUDGING: 'COMPLETED',
@@ -75,6 +76,8 @@ export interface ApiContest {
   startDate: string;
   endDate: string;
   votingClosesAt?: string | null;
+  scheduledJudgingAt?: string | null;
+  originalTagline?: string | null;
   prizeSummary: string | null;
   rules: string | string[] | null;
   autoAdvanceDelayMs: number;
@@ -178,4 +181,13 @@ export function updateContest(
   body: UpdateContestRequest
 ): Promise<ApiResponse<ApiContest>> {
   return http.patch<ApiContest>(CONTEST_API_PATHS.byId(id), body);
+}
+
+export function scheduleContestJudging(
+  id: string,
+  taglineConfirmation: string
+): Promise<ApiResponse<ApiContest>> {
+  return http.post<ApiContest>(CONTEST_API_PATHS.scheduleJudging(id), {
+    taglineConfirmation,
+  });
 }

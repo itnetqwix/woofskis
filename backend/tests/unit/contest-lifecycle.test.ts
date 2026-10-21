@@ -56,7 +56,7 @@ describe('M05-P01 contest schema', () => {
 
 describe('M05-P02 contest lifecycle', () => {
   it('allows only the documented forward step', () => {
-    assert.equal(nextContestStatus(ContestStatus.DRAFT), ContestStatus.SCHEDULED);
+    assert.equal(nextContestStatus(ContestStatus.DRAFT), ContestStatus.ACTIVE);
     assert.equal(nextContestStatus(ContestStatus.SCHEDULED), ContestStatus.ACTIVE);
     assert.equal(nextContestStatus(ContestStatus.ACTIVE), ContestStatus.JUDGING);
     assert.equal(nextContestStatus(ContestStatus.JUDGING), ContestStatus.COMPLETED);
@@ -64,13 +64,10 @@ describe('M05-P02 contest lifecycle', () => {
     assert.equal(nextContestStatus(ContestStatus.ARCHIVED), null);
 
     assert.doesNotThrow(() =>
-      assertContestTransition(ContestStatus.DRAFT, ContestStatus.SCHEDULED),
+      assertContestTransition(ContestStatus.DRAFT, ContestStatus.ACTIVE),
     );
-    assert.throws(
-      () => assertContestTransition(ContestStatus.DRAFT, ContestStatus.ACTIVE),
-      (error: unknown) =>
-        error instanceof ConflictError &&
-        /Invalid contest status transition from DRAFT to ACTIVE/.test(error.message),
+    assert.doesNotThrow(() =>
+      assertContestTransition(ContestStatus.DRAFT, ContestStatus.SCHEDULED),
     );
     assert.throws(
       () => assertContestTransition(ContestStatus.ACTIVE, ContestStatus.SCHEDULED),
@@ -111,6 +108,7 @@ describe('M05-P03 contest zod schemas', () => {
   const validCreate = {
     title: 'Summer Comedy Slam',
     description: 'Short comedy entries.',
+    bannerObjectKey: 'banners/admin-1/test-banner.jpg',
     startDate: '2026-10-01T00:00:00.000Z',
     endDate: '2026-10-31T00:00:00.000Z',
     category: { name: 'Comedy Skits' },
@@ -120,6 +118,10 @@ describe('M05-P03 contest zod schemas', () => {
   it('accepts a documented create payload and rejects skips, inverted dates, and unknown keys', () => {
     assert.equal(createContestSchema.parse(validCreate).title, 'Summer Comedy Slam');
     assert.equal(createContestSchema.safeParse({ ...validCreate, status: 'ACTIVE' }).success, false);
+    assert.equal(
+      createContestSchema.safeParse({ ...validCreate, bannerObjectKey: undefined, bannerUrl: undefined }).success,
+      false,
+    );
     assert.equal(
       createContestSchema.safeParse({ ...validCreate, criteria: ['humor'] }).success,
       false,

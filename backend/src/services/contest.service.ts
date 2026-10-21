@@ -24,6 +24,7 @@ import {
 import {
   DEFAULT_CONTEST_TIMEZONE,
   assertChronologicalSchedule,
+  assertSubmissionOpenSchedule,
   isValidIanaTimeZone,
 } from './contest-schedule.js';
 import {
@@ -194,18 +195,26 @@ export class ContestService {
       votingClosesAt,
     });
 
+    const timezone = resolveTimezone(input.timezone);
+    assertSubmissionOpenSchedule(startDate, timezone);
+
     const categoryId = await resolveCategoryId(input.categoryId, input.category);
     const bannerObjectKey = resolveBannerObjectKey(input.bannerObjectKey) ?? null;
+    const bannerUrl = bannerObjectKey ? null : blankToNull(input.bannerUrl);
+
+    if (!bannerObjectKey && !bannerUrl) {
+      throw new ValidationError('A custom banner upload is mandatory');
+    }
 
     return ContestRepository.create({
       categoryId: categoryId ?? null,
       title: input.title,
       description: input.description,
       tagline: blankToNull(input.tagline),
-      bannerUrl: bannerObjectKey ? null : blankToNull(input.bannerUrl),
+      bannerUrl,
       bannerObjectKey,
       thumbnailUrl: blankToNull(input.thumbnailUrl),
-      timezone: resolveTimezone(input.timezone),
+      timezone,
       startDate,
       endDate,
       votingClosesAt,
@@ -298,10 +307,66 @@ export class ContestService {
 
     if (input.status !== undefined) {
       assertContestTransition(existing.status, input.status);
+
+      if (input.status === ContestStatus.ACTIVE) {
+        if (existing.status !== ContestStatus.DRAFT && existing.status !== ContestStatus.SCHEDULED) {
+          throw new ConflictError('Only contests in DRAFT can be activated');
+        }
+        if (existing.endDate.getTime() <= Date.now()) {
+          throw new ValidationError('Cannot activate a contest whose submission deadline has already passed');
+        }
+      }
+
+      if (existing.status === ContestStatus.ACTIVE && input.status === ContestStatus.JUDGING) {
+        throw new ConflictError(
+          'Active contests cannot be moved to JUDGING immediately. Schedule the 3-day judging transition.',
+        );
+      }
+
       data.status = input.status;
     }
 
     return ContestRepository.update(id, data);
+  }
+
+  /**
+   * Schedule the 3-day transition of an ACTIVE contest to JUDGING.
+   * Requires exact confirmation of the contest tagline.
+   * Updates the tagline to announce closure in 3 days and preserves the original.
+   */
+  static async scheduleJudging(
+    actor: ContestActor,
+    id: string,
+    taglineConfirmation: string,
+  ) {
+    assertContestManager(actor);
+    const existing = await ContestService.getById(actor, id);
+
+    if (existing.status !== ContestStatus.ACTIVE) {
+      throw new ConflictError('Only ACTIVE contests can be scheduled for judging');
+    }
+
+    if (existing.scheduledJudgingAt) {
+      throw new ConflictError('Contest is already scheduled for judging transition');
+    }
+
+    const expected = (existing.tagline ?? '').trim();
+    if (taglineConfirmation.trim() !== expected) {
+      throw new ValidationError('Tagline confirmation does not match the contest tagline');
+    }
+
+    const now = new Date();
+    const scheduledJudgingAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const originalTagline = existing.tagline;
+    const newTagline = 'Submissions and voting close in 3 days';
+
+    return ContestRepository.update(id, {
+      tagline: newTagline,
+      originalTagline,
+      scheduledJudgingAt,
+      votingClosesAt: scheduledJudgingAt,
+      endDate: scheduledJudgingAt,
+    });
   }
 
   /** Public read of every ACTIVE contest. No client tenant parameter. */

@@ -177,12 +177,50 @@ export interface ContestScheduleFieldErrors {
   votingClosure?: string;
 }
 
-export function validateContestWallSchedule(input: {
-  timeZone: string;
-  submissionOpen: string;
-  submissionDeadline: string;
-  votingClosure: string;
-}): ContestScheduleFieldErrors {
+export const SUBMISSION_OPEN_BEFORE_TODAY =
+  'Submission opening date cannot be before today in the contest timezone.';
+
+export const SUBMISSION_OPEN_BEFORE_NOW =
+  'Submission opening time cannot be earlier than the current time.';
+
+export function validateSubmissionOpenAgainstNow(
+  wallOpen: string,
+  timeZone: string,
+  now = new Date()
+): string | null {
+  if (!isValidIanaTimeZone(timeZone)) return 'Choose a valid timezone.';
+  const openDate = zonedWallTimeToUtc(wallOpen, timeZone);
+  if (!wallOpen || !openDate) {
+    return 'Enter a valid submission opening in the contest timezone.';
+  }
+  const nowParts = readZonedParts(now, timeZone);
+  const openParts = readZonedParts(openDate, timeZone);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const todayStr = `${nowParts.year}-${pad(nowParts.month)}-${pad(nowParts.day)}`;
+  const openStr = `${openParts.year}-${pad(openParts.month)}-${pad(openParts.day)}`;
+
+  if (openStr < todayStr) {
+    return SUBMISSION_OPEN_BEFORE_TODAY;
+  }
+  if (openStr === todayStr) {
+    const nowMin = nowParts.hour * 60 + nowParts.minute;
+    const openMin = openParts.hour * 60 + openParts.minute;
+    if (openMin < nowMin) {
+      return SUBMISSION_OPEN_BEFORE_NOW;
+    }
+  }
+  return null;
+}
+
+export function validateContestWallSchedule(
+  input: {
+    timeZone: string;
+    submissionOpen: string;
+    submissionDeadline: string;
+    votingClosure: string;
+  },
+  options?: { checkSubmissionOpenAgainstNow?: boolean; now?: Date }
+): ContestScheduleFieldErrors {
   const errors: ContestScheduleFieldErrors = {};
   if (!isValidIanaTimeZone(input.timeZone)) {
     errors.timeZone = 'Choose a valid timezone.';
@@ -195,7 +233,17 @@ export function validateContestWallSchedule(input: {
 
   if (!input.submissionOpen || !open) {
     errors.submissionOpen = 'Enter a valid submission opening in the contest timezone.';
+  } else if (options?.checkSubmissionOpenAgainstNow) {
+    const openErr = validateSubmissionOpenAgainstNow(
+      input.submissionOpen,
+      input.timeZone,
+      options.now ?? new Date()
+    );
+    if (openErr) {
+      errors.submissionOpen = openErr;
+    }
   }
+
   if (!input.submissionDeadline || !deadline) {
     errors.submissionDeadline = 'Enter a valid submission deadline in the contest timezone.';
   }

@@ -48,6 +48,7 @@ import {
   listCreatorContestsSwaggerSchema,
   listDeploymentActiveContestsSwaggerSchema,
   listViewableContestsSwaggerSchema,
+  scheduleJudgingSwaggerSchema,
   updateContestSwaggerSchema,
 } from '../schemas/contest.schema.js';
 import {
@@ -408,6 +409,15 @@ export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       onRequest: contestGuards,
     },
     ContestController.update,
+  );
+
+  fastify.post(
+    '/contests/:id/schedule-judging',
+    {
+      schema: scheduleJudgingSwaggerSchema,
+      onRequest: contestGuards,
+    },
+    ContestController.scheduleJudging,
   );
 
   fastify.delete(

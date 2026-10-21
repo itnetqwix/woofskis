@@ -3,10 +3,13 @@ import assert from 'node:assert/strict';
 import {
   SUBMISSION_DEADLINE_AFTER_OPENING,
   VOTING_CLOSURE_AFTER_DEADLINE,
+  SUBMISSION_OPEN_BEFORE_TODAY,
+  SUBMISSION_OPEN_BEFORE_NOW,
   defaultContestSchedule,
   todayDateTimeLocal,
   utcToZonedWallTime,
   validateContestWallSchedule,
+  validateSubmissionOpenAgainstNow,
   zonedWallTimeToUtc,
 } from '../../src/features/contests/lib/contest-schedule';
 import {
@@ -73,6 +76,54 @@ describe('contest schedule defaults and ordering', () => {
       votingClosure: '2026-10-13T00:00',
     });
     assert.deepEqual(valid, {});
+  });
+
+  it('validates submission open against the current time in the selected timezone', () => {
+    // Current time: 2026-10-21 14:30 EDT (18:30 UTC) in America/New_York
+    const now = new Date('2026-10-21T18:30:00.000Z');
+    const timeZone = 'America/New_York';
+
+    // A date before today (2026-10-20): reject with clear alert
+    assert.equal(
+      validateSubmissionOpenAgainstNow('2026-10-20T14:30', timeZone, now),
+      SUBMISSION_OPEN_BEFORE_TODAY
+    );
+
+    // Today earlier than current time (14:00 < 14:30): reject
+    assert.equal(
+      validateSubmissionOpenAgainstNow('2026-10-21T14:00', timeZone, now),
+      SUBMISSION_OPEN_BEFORE_NOW
+    );
+
+    // Today at current time (14:30): allow
+    assert.equal(
+      validateSubmissionOpenAgainstNow('2026-10-21T14:30', timeZone, now),
+      null
+    );
+
+    // Today after current time (15:00): allow
+    assert.equal(
+      validateSubmissionOpenAgainstNow('2026-10-21T15:00', timeZone, now),
+      null
+    );
+
+    // Future date: allow
+    assert.equal(
+      validateSubmissionOpenAgainstNow('2026-10-25T10:00', timeZone, now),
+      null
+    );
+
+    // Integrated into validateContestWallSchedule when option enabled
+    const beforeTodaySchedule = validateContestWallSchedule(
+      {
+        timeZone,
+        submissionOpen: '2026-10-20T14:30',
+        submissionDeadline: '2026-10-22T14:30',
+        votingClosure: '2026-10-23T14:30',
+      },
+      { checkSubmissionOpenAgainstNow: true, now }
+    );
+    assert.equal(beforeTodaySchedule.submissionOpen, SUBMISSION_OPEN_BEFORE_TODAY);
   });
 });
 

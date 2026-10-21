@@ -24,12 +24,21 @@ import { ConflictError } from '../utils/response.js';
  */
 
 const NEXT_STATUS: Record<ContestStatus, ContestStatus | null> = {
-  DRAFT: ContestStatus.SCHEDULED,
+  DRAFT: ContestStatus.ACTIVE,
   SCHEDULED: ContestStatus.ACTIVE,
   ACTIVE: ContestStatus.JUDGING,
   JUDGING: ContestStatus.COMPLETED,
   COMPLETED: ContestStatus.ARCHIVED,
   ARCHIVED: null,
+};
+
+const ALLOWED_TRANSITIONS: Record<ContestStatus, ReadonlySet<ContestStatus>> = {
+  DRAFT: new Set([ContestStatus.ACTIVE, ContestStatus.SCHEDULED]),
+  SCHEDULED: new Set([ContestStatus.ACTIVE]),
+  ACTIVE: new Set([ContestStatus.JUDGING]),
+  JUDGING: new Set([ContestStatus.COMPLETED]),
+  COMPLETED: new Set([ContestStatus.ARCHIVED]),
+  ARCHIVED: new Set(),
 };
 
 export const CONFIGURATION_MUTABLE_STATUSES: ReadonlySet<ContestStatus> = new Set([
@@ -42,8 +51,8 @@ export function nextContestStatus(status: ContestStatus): ContestStatus | null {
 }
 
 export function assertContestTransition(from: ContestStatus, to: ContestStatus): void {
-  const allowed = NEXT_STATUS[from];
-  if (to !== allowed) {
+  const allowed = ALLOWED_TRANSITIONS[from];
+  if (!allowed || !allowed.has(to)) {
     throw new ConflictError(`Invalid contest status transition from ${from} to ${to}`);
   }
 }

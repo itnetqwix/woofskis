@@ -104,7 +104,7 @@ describe('M05-P04 contests API client', () => {
     assert.equal(captured.method, 'patch');
     assert.equal(captured.url, CONTEST_API_PATHS.byId('contest-1'));
     assert.deepEqual(JSON.parse(captured.data ?? '{}'), { status: 'SCHEDULED' });
-    assert.equal(nextContestStatus('DRAFT'), 'SCHEDULED');
+    assert.equal(nextContestStatus('DRAFT'), 'ACTIVE');
     assert.equal(nextContestStatus('ACTIVE'), 'JUDGING');
     assert.equal(nextContestStatus('ARCHIVED'), null);
     assert.equal(nextContestStatus('PAUSED'), null);

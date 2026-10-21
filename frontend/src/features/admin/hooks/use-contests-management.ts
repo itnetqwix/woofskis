@@ -7,6 +7,7 @@ import {
   createContest as createContestRequest,
   deleteContest as deleteContestRequest,
   listContests,
+  scheduleContestJudging,
   updateContest as updateContestRequest,
   type ApiContest,
   type ApiContestStatus,
@@ -230,6 +231,21 @@ export function useContestsManagement() {
     [remember]
   );
 
+  const scheduleJudging = useCallback(
+    async (contestId: string, taglineConfirmation: string): Promise<ContestActionResult> => {
+      try {
+        const envelope = await scheduleContestJudging(contestId, taglineConfirmation);
+        if (!envelope.success || !envelope.data) {
+          return { ok: false, message: envelope.message || 'Could not schedule judging transition' };
+        }
+        return { ok: true, contest: remember(envelope.data) };
+      } catch (error) {
+        return { ok: false, message: failureMessage(error) };
+      }
+    },
+    [remember]
+  );
+
   const duplicateContest = useCallback(async (_contestId: string): Promise<ContestActionResult> => {
     return { ok: false, message: UNSUPPORTED_DUPLICATE };
   }, []);
@@ -307,6 +323,7 @@ export function useContestsManagement() {
     createContest,
     updateContest,
     transitionStatus,
+    scheduleJudging,
     duplicateContest,
     deleteContest,
     reloadContests,

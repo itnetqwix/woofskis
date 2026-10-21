@@ -39,6 +39,7 @@ export default function AdminContestsPage() {
     createContest,
     updateContest,
     transitionStatus,
+    scheduleJudging,
     duplicateContest,
     deleteContest,
     reloadContests,
@@ -87,6 +88,13 @@ export default function AdminContestsPage() {
   const handleTransitionStatus = async (contestId: string, newStatus: any) => {
     const updated = await transitionStatus(contestId, newStatus);
     showToast(updated.ok ? `Contest status updated to ${newStatus}.` : updated.message);
+    return updated;
+  };
+
+  const handleScheduleJudging = async (contestId: string, taglineConfirmation: string) => {
+    const result = await scheduleJudging(contestId, taglineConfirmation);
+    showToast(result.ok ? 'Judging transition scheduled for 3 days from now.' : result.message);
+    return result;
   };
 
   const handleDuplicate = async (contestId: string) => {
@@ -156,6 +164,7 @@ export default function AdminContestsPage() {
             onSortByChange={setSortBy}
             onEditContest={handleEditContest}
             onTransitionStatus={handleTransitionStatus}
+            onScheduleJudging={handleScheduleJudging}
             onDuplicateContest={handleDuplicate}
             onDeleteContest={handleDelete}
             onResetDefaults={() => {

@@ -89,6 +89,8 @@ export function apiContestToConfigItem(contest: ApiContest): ContestConfigItem {
       distribution: [],
     },
     status: contest.status,
+    scheduledJudgingAt: contest.scheduledJudgingAt ?? null,
+    originalTagline: contest.originalTagline ?? null,
     entriesCount: 0,
     votesCount: 0,
     createdAt: contest.createdAt,

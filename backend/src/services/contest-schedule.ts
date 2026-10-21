@@ -139,6 +139,39 @@ export function todayDateTimeLocal(timeZone: string, now = new Date()): string {
   return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T00:00`;
 }
 
+export const SUBMISSION_OPEN_BEFORE_TODAY =
+  'Submission opening date cannot be before today in the contest timezone.';
+
+export const SUBMISSION_OPEN_BEFORE_NOW =
+  'Submission opening time cannot be earlier than the current time.';
+
+export function assertSubmissionOpenSchedule(
+  startDate: Date,
+  timeZone: string,
+  now = new Date(),
+): void {
+  if (Number.isNaN(startDate.getTime())) {
+    throw new ValidationError('Contest schedule must use valid date-times');
+  }
+  const zone = isValidIanaTimeZone(timeZone) ? timeZone : DEFAULT_CONTEST_TIMEZONE;
+  const nowParts = readZonedParts(now, zone);
+  const openParts = readZonedParts(startDate, zone);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  const todayStr = `${nowParts.year}-${pad(nowParts.month)}-${pad(nowParts.day)}`;
+  const openStr = `${openParts.year}-${pad(openParts.month)}-${pad(openParts.day)}`;
+
+  if (openStr < todayStr) {
+    throw new ValidationError(SUBMISSION_OPEN_BEFORE_TODAY);
+  }
+  if (openStr === todayStr) {
+    const nowMin = nowParts.hour * 60 + nowParts.minute;
+    const openMin = openParts.hour * 60 + openParts.minute;
+    if (openMin < nowMin) {
+      throw new ValidationError(SUBMISSION_OPEN_BEFORE_NOW);
+    }
+  }
+}
+
 export function assertChronologicalSchedule(input: {
   submissionOpenAt: Date;
   submissionDeadlineAt: Date;

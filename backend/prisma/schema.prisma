@@ -132,6 +132,10 @@ model Contest {
   endDate            DateTime
   // Null on contests created before voting closure was stored separately.
   votingClosesAt     DateTime?
+  // Scheduled transition to JUDGING. Null when not scheduled or after transition has completed.
+  scheduledJudgingAt DateTime?
+  // Preserves original tagline before 3-day closing copy was set.
+  originalTagline    String?
   prizeSummary       String?
   rules              Json?
   autoAdvanceDelayMs Int           @default(1800)

@@ -195,8 +195,9 @@ describe('M05 contest APIs', { concurrency: false }, () => {
   const createBody = {
     title: 'Summer Comedy Slam',
     description: 'Short comedy entries.',
-    startDate: '2026-10-01T00:00:00.000Z',
-    endDate: '2026-10-31T00:00:00.000Z',
+    bannerObjectKey: 'contest-banners/00000000-0000-4000-8000-000000000001/11111111-1111-4111-8111-111111111111.png',
+    startDate: '2026-11-01T00:00:00.000Z',
+    endDate: '2026-11-30T00:00:00.000Z',
     prizeSummary: '25000 USD',
     rules: ['Be original'],
     category: { name: 'Comedy Skits' },
@@ -358,14 +359,15 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       headers: { authorization: `Bearer ${token(Role.ADMIN)}` },
       payload: { status: 'JUDGING' },
     });
-    assert.equal(judging.statusCode, 200);
-    assert.equal(JSON.parse(judging.payload).data.status, 'JUDGING');
+    assert.equal(judging.statusCode, 409);
+    assert.match(JSON.parse(judging.payload).message, /Active contests cannot be moved to JUDGING immediately/);
+    memory.contests.get(created.id)!.status = ContestStatus.JUDGING;
   });
 
   it('M05-P05-T03 COMPLETED and ARCHIVED are read-only except COMPLETED → ARCHIVED', async () => {
     memory = createMemory();
     const created = await createDraft();
-    for (const status of ['SCHEDULED', 'ACTIVE', 'JUDGING', 'COMPLETED']) {
+    for (const status of ['SCHEDULED', 'ACTIVE']) {
       const step = await app.inject({
         method: 'PATCH',
         url: `/api/v1/contests/${created.id}`,
@@ -374,6 +376,15 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       });
       assert.equal(step.statusCode, 200, status);
     }
+    // Active cannot jump immediately to JUDGING; transition happens via scheduler
+    memory.contests.get(created.id)!.status = ContestStatus.JUDGING;
+    const completedStep = await app.inject({
+      method: 'PATCH',
+      url: `/api/v1/contests/${created.id}`,
+      headers: { authorization: `Bearer ${token(Role.ADMIN)}` },
+      payload: { status: 'COMPLETED' },
+    });
+    assert.equal(completedStep.statusCode, 200, 'COMPLETED');
 
     const editCompleted = await app.inject({
       method: 'PATCH',
@@ -438,6 +449,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       payload: {
         ...createBody,
         tagline: 'Funniest minute',
+        bannerObjectKey: null,
         bannerUrl: 'https://images.example.com/banner.jpg',
         thumbnailUrl: 'https://images.example.com/thumb.jpg',
       },
@@ -511,8 +523,8 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       headers,
       payload: {
         ...createBody,
-        startDate: '2026-10-11T18:30:00.000Z',
-        endDate: '2026-10-11T18:30:00.000Z',
+        startDate: '2026-11-10T18:30:00.000Z',
+        endDate: '2026-11-10T18:30:00.000Z',
       },
     });
     assert.equal(equal.statusCode, 400);
@@ -526,7 +538,8 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       headers,
       payload: {
         ...createBody,
-        endDate: '2026-09-01T00:00:00.000Z',
+        startDate: '2026-11-10T18:30:00.000Z',
+        endDate: '2026-11-05T00:00:00.000Z',
       },
     });
     assert.equal(reversed.statusCode, 400);
@@ -537,7 +550,7 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       headers,
       payload: {
         ...createBody,
-        votingClosesAt: '2026-10-31T00:00:00.000Z',
+        votingClosesAt: '2026-11-20T00:00:00.000Z',
       },
     });
     assert.equal(voting.statusCode, 400);
@@ -552,20 +565,20 @@ describe('M05 contest APIs', { concurrency: false }, () => {
       payload: {
         ...createBody,
         timezone: 'America/New_York',
-        votingClosesAt: '2026-11-02T00:00:00.000Z',
+        votingClosesAt: '2026-12-05T00:00:00.000Z',
       },
     });
     assert.equal(created.statusCode, 201);
     const body = JSON.parse(created.payload).data;
     assert.equal(body.timezone, 'America/New_York');
-    assert.equal(body.votingClosesAt, '2026-11-02T00:00:00.000Z');
-    assert.equal(body.bannerObjectKey, null);
+    assert.equal(body.votingClosesAt, '2026-12-05T00:00:00.000Z');
+    assert.equal(body.bannerObjectKey, 'contest-banners/00000000-0000-4000-8000-000000000001/11111111-1111-4111-8111-111111111111.png');
 
     const edited = await app.inject({
       method: 'PATCH',
       url: `/api/v1/contests/${body.id}`,
       headers,
-      payload: { endDate: '2026-11-02T00:00:00.000Z' },
+      payload: { endDate: '2026-12-06T00:00:00.000Z' },
     });
     assert.equal(edited.statusCode, 400);
     assert.match(JSON.parse(edited.payload).message, new RegExp(VOTING_CLOSURE_AFTER_DEADLINE));

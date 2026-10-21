@@ -79,63 +79,6 @@ interface ContestCreateModalProps {
   ) => void | Promise<{ ok: boolean; message?: string } | void>;
 }
 
-const CATEGORY_PRESETS: Record<string, string[]> = {
-  woofskis: [
-    'Dog Agility',
-    'Cat Bloopers',
-    'Tricks & Training',
-    'Exotic Pets',
-    'Puppy Moments',
-    'Rescue Stories',
-  ],
-  talentskis: [
-    'CGI / 3D VFX',
-    'Sci-Fi Action',
-    'Motion Design',
-    'Vocal Feats',
-    'Dance Choreography',
-    'Unreal Engine',
-  ],
-  gameskis: [
-    'Tactical FPS',
-    'Battle Royale',
-    'Fighting Games',
-    'Speedruns',
-    'Gamer Rage / Comedy',
-    'Clutch Moments',
-  ],
-  default: [
-    'Short Comedy',
-    'VFX & Animation',
-    'Music & Vocals',
-    'Action & Stunts',
-    'Creative Reel',
-    'Gaming',
-  ],
-};
-
-const RULE_TEMPLATES = {
-  standard: `### Official Contest Rules & Submission Criteria
-
-1. **Format Requirements:** All video entries must be rendered in 9:16 vertical aspect ratio (minimum 1080x1920).
-2. **Duration Limit:** Exactly between 5 and 60 seconds runtime.
-3. **Audio Rights:** Must use licensed stems or cleared royalty-free audio tracks.
-4. **Originality:** Must be 100% original work owned by the submitting creator.
-5. **Community Standards:** Zero tolerance for hate speech, dangerous physical stunts, or harassment.
-6. **Judging Consensus:** Final rank calculated by real-time Elo rating combined with verified reviewer score average.`,
-  pet: `### Animal Welfare & Pet Contest Guidelines
-
-1. **Pet Safety First:** Zero force or uncomfortable situations. All tricks must use positive reinforcement.
-2. **Format:** 9:16 vertical video under 60 seconds.
-3. **Clear Lighting:** Well-lit pet action without motion blur.
-4. **Audio:** Original pet sounds and creator commentary welcomed.`,
-  vfx: `### Cinematic VFX Standards & Constraints
-
-1. Submissions must include VFX breakdown clip in credits or description.
-2. 4K vertical rendering encouraged (1080x1920 minimum).
-3. Max runtime: 90 seconds.`,
-};
-
 export function ContestCreateModal({
   open,
   onOpenChange,
@@ -173,9 +116,8 @@ export function ContestCreateModal({
   const [votingCloseDate, setVotingCloseDate] = useState<string>('');
 
   // Categories & Constraints
-  const [categories, setCategories] = useState<string[]>(['Comedy Skits', 'VFX Shorts', 'Parody']);
-  const [customCategoryInput, setCustomCategoryInput] = useState<string>('');
-  const [rules, setRules] = useState<string>(RULE_TEMPLATES.standard);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [rules, setRules] = useState<string>('');
   const [maxDurationSeconds, setMaxDurationSeconds] = useState<number>(60);
   const [minDurationSeconds, setMinDurationSeconds] = useState<number>(5);
   const [aspectRatio, setAspectRatio] = useState<'9:16' | '16:9' | '1:1' | 'all'>('9:16');
@@ -235,8 +177,8 @@ export function ContestCreateModal({
       setStartDate(wall(editContest.startDate));
       setDeadlineDate(wall(editContest.deadlineDate));
       setVotingCloseDate(wall(editContest.votingCloseDate));
-      setCategories(editContest.categories);
-      setRules(editContest.rules);
+      setCategories(editContest.categories || []);
+      setRules(editContest.rules || '');
       setMaxDurationSeconds(editContest.mediaConstraints?.maxDurationSeconds || 60);
       setMinDurationSeconds(editContest.mediaConstraints?.minDurationSeconds || 5);
       setAspectRatio(editContest.mediaConstraints?.aspectRatio || '9:16');
@@ -268,8 +210,8 @@ export function ContestCreateModal({
       setStartDate(schedule.startDate);
       setDeadlineDate(schedule.deadlineDate);
       setVotingCloseDate(schedule.votingCloseDate);
-      setCategories(CATEGORY_PRESETS[defaultTenant] || CATEGORY_PRESETS.default);
-      setRules(RULE_TEMPLATES.standard);
+      setCategories([]);
+      setRules('');
       setMaxDurationSeconds(60);
       setMinDurationSeconds(5);
       setAspectRatio('9:16');
@@ -288,26 +230,6 @@ export function ContestCreateModal({
   // Selected brand object
   const selectedBrand = brands.find((b) => b.id === tenantId) || brands[0];
 
-  // Category chip management
-  const handleToggleCategory = (cat: string) => {
-    if (categories.includes(cat)) {
-      if (categories.length > 1) {
-        setCategories(categories.filter((c) => c !== cat));
-      }
-    } else {
-      setCategories([...categories, cat]);
-    }
-  };
-
-  const handleAddCustomCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customCategoryInput.trim()) return;
-    const clean = customCategoryInput.trim();
-    if (!categories.includes(clean)) {
-      setCategories([...categories, clean]);
-    }
-    setCustomCategoryInput('');
-  };
 
   // Calculated prize values
   const p1Amount = Math.round((totalPrizePool * p1Percentage) / 100);
@@ -316,12 +238,15 @@ export function ContestCreateModal({
   const pCommunityAmount = Math.round((totalPrizePool * pCommunityPercentage) / 100);
   const totalPercentage = p1Percentage + p2Percentage + p3Percentage + pCommunityPercentage;
 
-  const scheduleErrors = validateContestWallSchedule({
-    timeZone,
-    submissionOpen: startDate,
-    submissionDeadline: deadlineDate,
-    votingClosure: votingCloseDate,
-  });
+  const scheduleErrors = validateContestWallSchedule(
+    {
+      timeZone,
+      submissionOpen: startDate,
+      submissionDeadline: deadlineDate,
+      votingClosure: votingCloseDate,
+    },
+    { checkSubmissionOpenAgainstNow: true }
+  );
   const scheduleInvalid = Object.values(scheduleErrors).some(Boolean);
 
   const uploadBanner = async (file: File) => {
@@ -403,19 +328,33 @@ export function ContestCreateModal({
   };
 
   // Final submit
+  const hasValidBanner = Boolean(bannerObjectKey || legacyBannerUrl);
+
+  // Final submit
   const handleSubmit = async () => {
     if (!title.trim()) {
       alert('Please enter a contest title.');
       setCurrentStep(1);
       return;
     }
-    if (scheduleInvalid) {
-      setCurrentStep(2);
+    if (!hasValidBanner) {
+      setBannerUploadError('A custom banner upload is mandatory before publishing.');
+      alert('A custom banner upload is mandatory before publishing.');
+      setCurrentStep(1);
       return;
     }
     if (bannerUploading) {
       setBannerUploadError('Wait for the banner upload to finish.');
       setCurrentStep(1);
+      return;
+    }
+    if (scheduleErrors.submissionOpen) {
+      alert(scheduleErrors.submissionOpen);
+      setCurrentStep(2);
+      return;
+    }
+    if (scheduleInvalid) {
+      setCurrentStep(2);
       return;
     }
 
@@ -510,7 +449,7 @@ export function ContestCreateModal({
       thumbnailUrl,
       timezone: timeZone,
       categories,
-      rules,
+      rules: rules.trim(),
       startDate: submissionOpenAt.toISOString(),
       deadlineDate: submissionDeadlineAt.toISOString(),
       votingCloseDate: votingClosesAt.toISOString(),
@@ -541,8 +480,8 @@ export function ContestCreateModal({
   const displayedBanner =
     bannerPreviewUrl ||
     (bannerObjectKey ? editContest?.bannerUrl : legacyBannerUrl) ||
-    DEFAULT_CONTEST_BANNER_URL;
-  const usingCustomBanner = Boolean(bannerPreviewUrl || bannerObjectKey || legacyBannerUrl);
+    null;
+  const usingCustomBanner = Boolean(displayedBanner);
   const submissionOpenAt = zonedWallTimeToUtc(startDate, timeZone);
   const submissionDeadlineAt = zonedWallTimeToUtc(deadlineDate, timeZone);
   const votingClosesAt = zonedWallTimeToUtc(votingCloseDate, timeZone);
@@ -553,7 +492,7 @@ export function ContestCreateModal({
       `Official ${title || 'contest'} challenge on ${selectedBrand?.name || 'Woofskis'}.`,
     tagline,
     status: status || 'DRAFT',
-    bannerUrl: usingCustomBanner ? displayedBanner : null,
+    bannerUrl: displayedBanner,
     submissionOpenAt: submissionOpenAt?.toISOString() ?? null,
     submissionDeadlineAt: submissionDeadlineAt?.toISOString() ?? null,
     votingClosesAt: votingClosesAt?.toISOString() ?? null,
@@ -563,7 +502,31 @@ export function ContestCreateModal({
   };
 
   const goToStep = (next: number) => {
-    if (currentStep === 2 && next > currentStep && scheduleInvalid) return;
+    if (next > 1 && !hasValidBanner) {
+      setBannerUploadError('A custom banner upload is mandatory before proceeding.');
+      alert('A custom banner upload is mandatory before proceeding.');
+      setCurrentStep(1);
+      return;
+    }
+    if (next > 1 && bannerUploading) {
+      setBannerUploadError('Wait for the banner upload to finish.');
+      setCurrentStep(1);
+      return;
+    }
+    if (currentStep === 2 && next > currentStep) {
+      if (scheduleErrors.submissionOpen) {
+        alert(scheduleErrors.submissionOpen);
+        return;
+      }
+      if (scheduleInvalid) return;
+    }
+    if (next > 2 && scheduleInvalid) {
+      if (scheduleErrors.submissionOpen) {
+        alert(scheduleErrors.submissionOpen);
+      }
+      setCurrentStep(2);
+      return;
+    }
     setCurrentStep(next);
   };
 
@@ -724,19 +687,38 @@ export function ContestCreateModal({
               </div>
 
               <div className="space-y-2 pt-1">
-                <label className="block font-bold text-foreground">Contest Banner</label>
-                <div className="overflow-hidden rounded-xl border border-border bg-muted/30">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={displayedBanner}
-                    alt="Contest banner preview"
-                    className="h-36 w-full object-cover sm:h-44"
-                    onError={(event) => {
-                      if (event.currentTarget.src !== DEFAULT_CONTEST_BANNER_URL) {
-                        event.currentTarget.src = DEFAULT_CONTEST_BANNER_URL;
-                      }
-                    }}
-                  />
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-foreground">Contest Banner *</label>
+                  <span className="text-[11px] font-semibold text-amber-500">Custom Upload Required</span>
+                </div>
+                <div
+                  className={cn(
+                    'relative flex h-36 w-full flex-col items-center justify-center overflow-hidden rounded-xl border sm:h-44',
+                    displayedBanner
+                      ? 'border-border bg-muted/30'
+                      : 'border-dashed border-amber-500/50 bg-amber-500/5 p-4 text-center'
+                  )}
+                >
+                  {displayedBanner ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={displayedBanner}
+                      alt="Contest banner preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+                        <Upload className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-foreground">Custom Banner Required</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          Upload a custom banner image. Progression and publishing are blocked until uploaded.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <input
                   ref={bannerInputRef}
@@ -755,30 +737,30 @@ export function ContestCreateModal({
                     size="sm"
                     disabled={bannerUploading}
                     onClick={() => bannerInputRef.current?.click()}
-                    className="gap-1.5 text-xs"
+                    className="gap-1.5 text-xs font-bold"
                   >
                     {bannerUploading ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
                       <Upload className="h-3.5 w-3.5" />
                     )}
-                    <span>{usingCustomBanner ? 'Replace banner' : 'Upload banner'}</span>
+                    <span>{displayedBanner ? 'Replace banner' : 'Upload banner (Mandatory)'}</span>
                   </Button>
-                  {usingCustomBanner ? (
+                  {displayedBanner ? (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       disabled={bannerUploading}
                       onClick={removeBanner}
-                      className="gap-1.5 text-xs text-muted-foreground"
+                      className="gap-1.5 text-xs text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       <span>Remove</span>
                     </Button>
                   ) : (
-                    <span className="text-[11px] text-muted-foreground">
-                      No custom banner. The default contest banner will be used.
+                    <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                      A custom banner upload is mandatory before proceeding.
                     </span>
                   )}
                 </div>
@@ -791,7 +773,7 @@ export function ContestCreateModal({
                   <p className="text-xs font-semibold text-destructive">{bannerUploadError}</p>
                 ) : (
                   <p className="text-[11px] text-muted-foreground">
-                    JPEG, PNG, WebP, or GIF. Maximum size 100MB.
+                    JPEG, PNG, WebP, or GIF. Maximum size 100MB. Progression is blocked until a valid banner is uploaded.
                   </p>
                 )}
               </div>
@@ -947,71 +929,9 @@ export function ContestCreateModal({
             </div>
           )}
 
-          {/* STEP 3: RULES, CATEGORIES & MEDIA CONSTRAINTS */}
+          {/* STEP 3: RULES & MEDIA CONSTRAINTS */}
           {currentStep === 3 && (
             <div className="space-y-5 duration-200 animate-in fade-in">
-              {/* Category Chips Selection */}
-              <div className="space-y-2">
-                <label className="flex items-center justify-between font-bold text-foreground">
-                  <span>Allowed Competition Categories (Chips)</span>
-                  <span className="font-normal text-muted-foreground">
-                    {categories.length} selected
-                  </span>
-                </label>
-
-                <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-background/80 p-3">
-                  {categories.map((cat) => (
-                    <span
-                      key={cat}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary"
-                    >
-                      <span>{cat}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleCategory(cat)}
-                        className="transition-colors hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-
-                {/* Preset Chips + Custom Tag Input */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="shrink-0 text-[10px] text-muted-foreground">Quick Add:</span>
-                  {(CATEGORY_PRESETS[tenantId] || CATEGORY_PRESETS.default).map((cat) => {
-                    const isPicked = categories.includes(cat);
-                    if (isPicked) return null;
-                    return (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => handleToggleCategory(cat)}
-                        className="rounded-full border border-border/80 bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-                      >
-                        + {cat}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Custom Category Input Form */}
-                <form onSubmit={handleAddCustomCategory} className="flex items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    value={customCategoryInput}
-                    onChange={(e) => setCustomCategoryInput(e.target.value)}
-                    placeholder="Type custom category name..."
-                    className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
-                  />
-                  <Button type="submit" size="sm" variant="outline" className="h-8 gap-1 font-bold">
-                    <Plus className="h-3.5 w-3.5" />
-                    <span>Add Tag</span>
-                  </Button>
-                </form>
-              </div>
-
               {/* Video Constraints */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="space-y-1.5 rounded-xl border border-border bg-background/80 p-3">
@@ -1060,40 +980,14 @@ export function ContestCreateModal({
 
               {/* Rules Markdown Editor */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="font-bold text-foreground">
-                    Contest Rules & Submission Guidelines
-                  </label>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-muted-foreground">Template:</span>
-                    <button
-                      type="button"
-                      onClick={() => setRules(RULE_TEMPLATES.standard)}
-                      className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground hover:bg-muted/80"
-                    >
-                      Short Skit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRules(RULE_TEMPLATES.pet)}
-                      className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground hover:bg-muted/80"
-                    >
-                      Pet Bloopers
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRules(RULE_TEMPLATES.vfx)}
-                      className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground hover:bg-muted/80"
-                    >
-                      VFX Film
-                    </button>
-                  </div>
-                </div>
-
+                <label className="font-bold text-foreground">
+                  Contest Rules & Submission Guidelines
+                </label>
                 <textarea
                   rows={6}
                   value={rules}
                   onChange={(e) => setRules(e.target.value)}
+                  placeholder="Enter official contest rules, guidelines, and evaluation criteria for creators..."
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -1309,8 +1203,9 @@ export function ContestCreateModal({
               <Button
                 type="button"
                 size="sm"
+                disabled={currentStep === 1 && (!hasValidBanner || bannerUploading)}
                 onClick={() => goToStep(currentStep + 1)}
-                className="gap-1 bg-primary text-xs font-bold text-primary-foreground shadow-md shadow-primary/25"
+                className="gap-1 bg-primary text-xs font-bold text-primary-foreground shadow-md shadow-primary/25 disabled:opacity-50"
               >
                 <span>Continue</span>
                 <ChevronRight className="h-3.5 w-3.5" />

@@ -128,9 +128,21 @@ export const createContestSchema = z
   .refine((value) => !(value.categoryId && value.category), {
     message: 'Provide either categoryId or category, not both',
     path: ['category'],
+  })
+  .refine((value) => Boolean(value.bannerObjectKey || value.bannerUrl), {
+    message: 'A custom banner upload is mandatory',
+    path: ['bannerObjectKey'],
   });
 
 export type CreateContestInput = z.infer<typeof createContestSchema>;
+
+export const scheduleJudgingBodySchema = z
+  .object({
+    taglineConfirmation: z.string().trim().min(1, 'Tagline confirmation is required'),
+  })
+  .strict();
+
+export type ScheduleJudgingBodyInput = z.infer<typeof scheduleJudgingBodySchema>;
 
 export const updateContestSchema = z
   .object({
@@ -226,6 +238,8 @@ const contestViewSchema = {
     endDate: { type: 'string', format: 'date-time' },
     votingClosesAt: { type: 'string', format: 'date-time', nullable: true },
     prizeSummary: { type: 'string', nullable: true },
+    scheduledJudgingAt: { type: 'string', format: 'date-time', nullable: true },
+    originalTagline: { type: 'string', nullable: true },
     rules: {
       anyOf: [
         { type: 'string' },
@@ -619,6 +633,54 @@ export const listViewableContestsSwaggerSchema: FastifySchema = {
         { type: 'array', items: contestViewSchema },
         'Viewable contests retrieved successfully',
       ),
+    },
+  },
+};
+
+export const scheduleJudgingSwaggerSchema: FastifySchema = {
+  tags: ['Contests'],
+  summary: 'Schedule delayed transition of ACTIVE contest to JUDGING in 3 days',
+  description:
+    'ADMIN only. Schedules the transition from ACTIVE to JUDGING for exactly 3 days from now. Requires typing the contest exact tagline to confirm. Updates tagline to announce closing in 3 days and preserves original tagline.',
+  security: [{ bearerAuth: [] }],
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+    },
+  },
+  body: {
+    type: 'object',
+    required: ['taglineConfirmation'],
+    properties: {
+      taglineConfirmation: { type: 'string' },
+    },
+  },
+  response: {
+    200: {
+      description: 'Judging transition scheduled',
+      ...swaggerSuccessEnvelope(contestViewSchema, 'Judging transition scheduled successfully'),
+    },
+    400: {
+      description: 'Validation error',
+      ...swaggerErrorEnvelope('Tagline confirmation does not match'),
+    },
+    401: {
+      description: 'Missing or invalid token',
+      ...swaggerErrorEnvelope('Unauthorized'),
+    },
+    403: {
+      description: 'Wrong role',
+      ...swaggerErrorEnvelope('Forbidden'),
+    },
+    404: {
+      description: 'Contest not found',
+      ...swaggerErrorEnvelope('Contest not found'),
+    },
+    409: {
+      description: 'Contest is not ACTIVE or already scheduled',
+      ...swaggerErrorEnvelope('Only ACTIVE contests can be scheduled for judging'),
     },
   },
 };
