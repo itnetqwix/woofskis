@@ -3,7 +3,7 @@
 > **Canonical Path**: `/docs/knowledge/frontend-map.md`  
 > **Repository**: [frontend](file:///D:/woofskis/frontend/)  
 > **Framework**: Next.js 14.2 (App Router) + React 18 + TypeScript 5.6 + TailwindCSS 3.4 + Redux Toolkit 2.2 + TanStack Query 5.59  
-> **Last Updated**: 2026-09-22
+> **Last Updated**: 2026-10-21
 
 ---
 
@@ -11,10 +11,11 @@
 
 | Route Path | File Location | Purpose & Persona | Implementation Status |
 |---|---|---|---|
-| `/` | `src/app/page.tsx` | Continuous single-video judging queue (`<ViewerContainer />`). Main community voting landing page. | `IMPLEMENTED` |
+| `/` | `src/app/page.tsx` | Continuous single-video judging queue (`<ViewerContainer />`). `/?v=<submissionId>` is the public share URL and renders Open Graph and Twitter tags from the share preview. | `IMPLEMENTED` |
+| `/media/submissions/[id]/thumbnail` | `src/app/media/submissions/[id]/thumbnail/route.ts` | Stable public thumbnail for link previews. Redirects to a public image, proxies an expiring download, or falls back to the site logo. Private video objects are not served. | `IMPLEMENTED` |
 | `/login` | `src/app/(auth)/login/page.tsx` | Unified login page for Creators, Brand Admins, and Super Admins. | `IMPLEMENTED` |
 | `/register` | `src/app/(auth)/register/page.tsx` | Dynamic registration page supporting both Creator and Brand sign-up tabs. | `IMPLEMENTED` |
-| `/creator` | `src/app/(dashboard)/creator/page.tsx` | Content Creator dashboard showing submission metrics cards, submission table, and upload trigger. | `IMPLEMENTED` |
+| `/creator` | `src/app/(dashboard)/creator/page.tsx` | Creator Studio. Tabs show Performance Overview & Metrics, Contests, or Your Submissions. The metrics tab is the default. | `IMPLEMENTED` |
 | `/creator/friends` | `src/app/(dashboard)/creator/friends/page.tsx` | Creator friends list, name search, request actions, and the chat inbox. CREATOR only. | `IMPLEMENTED` |
 | `/creator/friends/[friendshipId]` | `src/app/(dashboard)/creator/friends/[friendshipId]/page.tsx` | One accepted-friend conversation. Same CREATOR RoleGuard as `/creator/friends`. | `IMPLEMENTED` |
 | `/admin/moderation` | `src/app/(dashboard)/admin/moderation/page.tsx` | Split-screen video moderation review queue and decision workflows. | `IMPLEMENTED` |
@@ -35,18 +36,21 @@
 - **`components/rating-modal.tsx`**: Unused by the live judging path. The rate API still accepts 1–10.
 - **`components/star-rating.tsx`**: Shared star control. The judging bar uses 5 stars. Filled stars use `#8BC144`.
 - **`components/star-celebration.tsx`**: Pointer-events-none stars that rise after a successful rating. Reduced motion fades them.
-- **`components/previous-rated-card.tsx`**: Last rated video thumbnail, title, the viewer's stars, and the community score. Tap returns to that video.
+- **`components/previous-rated-card.tsx`**: Last rated video thumbnail, title, the viewer's stars, and the community score. Tap returns to that video. `variant="panel"` is the persistent left-column card on tablet/desktop (≥768px), where the judging page uses a two-column layout (last rated ~31%, player + rating panel ~67%). Phones keep the auto-hiding overlay.
 - **`components/rating-bar.tsx`**: Full-width glass bar under the header. Five stars submit 1–5 through the existing rate API. Skip appears when an unrated video ends.
 - **`components/unrated-end-dialog.tsx`**: First unrated ending on a device. "Don't show this again" is stored in `localStorage` (`cos_unrated_end_hint_hidden`).
 - **`components/score-reveal-overlay.tsx`**: Consensus overlay component. A successful rating advances immediately; the live path does not wait on this overlay.
 - **`components/queue-completed.tsx`**: End-of-queue view shown when all active contest videos have been rated.
 - **`components/keyboard-shortcuts-modal.tsx`**: Help modal detailing keyboard shortcuts (`1-5` rate, `Space`, `M`, `N`, `P`, `R`).
 - **`hooks/use-contest-queue.ts`**: Queue state. A successful rating calls the rate API and advances. An unrated video stays when playback ends. Keys `1-5` submit that score.
+- **`components/share-sheet.tsx`**: Copy Link, WhatsApp, Message, Facebook, and Email. Message uses the Web Share API when available and copies the public page message on desktop otherwise. Shared URLs are `/?v=<submissionId>`.
+- **`lib/share-metadata.ts`**: Builds Open Graph and Twitter tags. `og:image` is the stable `/media/submissions/[id]/thumbnail` URL, not a presigned download or object key.
 
 ### 2.2 `features/submissions` (Creator Hub)
 - **`components/upload-modal.tsx`**: Video upload dialog. Client validates MP4/WebM/MOV, ≤100MB, ≤60s, then **presign → PUT S3 → complete**. Video bytes do not go through Fastify.
 - **`components/submissions-table.tsx`**: Data table listing creator's uploaded videos, status badges (`APPROVED`, `PENDING_REVIEW`, `REJECTED`), community score, vote counts, and preview triggers.
-- **`components/creator-metrics-cards.tsx`**: Summary cards derived from `GET /submissions/me` (M06-P04-T07).
+- **`components/creator-metrics-cards.tsx`**: Summary cards derived from `GET /submissions/me` (M06-P04-T07). Choosing a card filters submissions and shows the Your Submissions tab.
+- **`components/creator-contest-board.tsx`**: Compact contest grid. A card opens a dialog with `ContestPresentation`, requirements, and Submit entry while the contest is `ACTIVE`.
 - **`components/video-preview-modal.tsx`**: Modal for inspecting video playback and metadata.
 - **`components/delete-submission-dialog.tsx`**: Confirms creator delete with the video title. The list updates only after `DELETE /submissions/:id` succeeds.
 - **`hooks/use-creator-submissions.ts`**: Loads `GET /submissions/me`. `cos_creator_submissions_v1` is not the primary source. Delete calls `DELETE /submissions/:id` and removes the row only after success.
