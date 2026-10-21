@@ -1,4 +1,4 @@
-import { ContestStatus, Prisma } from '@prisma/client';
+import { ContestStatus, Prisma, SubmissionStatus } from '@prisma/client';
 import { prisma } from '../config/database.js';
 
 const contestInclude = {
