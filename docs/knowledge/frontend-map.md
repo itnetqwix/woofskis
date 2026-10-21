@@ -26,6 +26,7 @@
 | `/super-admin` | `src/app/(dashboard)/super-admin/page.tsx` | Multi-tenant overview. Tenant fleet and status from `GET /super-admin/organizations` (`useSuperAdminOrganizations`); Suspend opens `SuspendOrganizationDialog` (required reason); Reactivate calls reinstate. Compliance notices are still a local prototype. | `IMPLEMENTED` |
 | `/leaderboard` | `src/app/(viewer)/leaderboard/page.tsx` | Public scoreboard for ACTIVE contests only. Ranks come from the leaderboard API. Search does not re-rank. | `IMPLEMENTED` |
 | `/about` | `src/app/about/page.tsx` | Public "What is Woofskis?" information page explaining the platform, 1–10 rating system, community consensus, creator submission, and mission. | `IMPLEMENTED` |
+| 404 (Unmatched URLs) | `src/app/not-found.tsx` | Playful dog-themed 404 page featuring puppy illustration vignette, "Oops! This Pup Took a Wrong Turn!", Back to Home (`/`), Explore Videos (`/`), safe back action, and trailhead navigation. | `IMPLEMENTED` |
 
 ---
 
@@ -85,7 +86,10 @@
 - **`components/about-page-view.tsx`**: Public 7-section informational overview of Woofskis covering Hero, Platform Overview (Viewer and Creator personas), How It Works (1–10 rating scale and hotkeys), Why Your Rating Matters (running average consensus math & HMAC anti-fraud protection), Creator Opportunities (Creator Studio, submission metrics, and friend connections), Mission for Dog Lovers, and final CTAs.
 - **`src/components/layout/app-footer.tsx`**: Public responsive footer featuring Woofskis branding, Explore links, Creator tools, and Fair Play integrity points.
 
-### 2.7 Route guards (`components/auth`) — frozen M03-P02
+### 2.7 `features/not-found` (Dog-Themed 404 Recovery)
+- **`components/not-found-view.tsx`**: Playful 404 presentation view featuring the investigative puppy illustration (`/images/woofskis_404_pup.jpg`), ambient brand glow, prominent Back to Home CTA (`/`), Explore Videos CTA (`/`), history-safe Go Back action, and quick trailhead navigation links (`/leaderboard`, `/about`, `/creator`).
+
+### 2.8 Route guards (`components/auth`) — frozen M03-P02
 
 There is **no** dashboard `layout.tsx` RoleGuard. Each protected page wraps itself:
 
