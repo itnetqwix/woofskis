@@ -3,7 +3,7 @@
 > **Canonical Path**: `/docs/knowledge/frontend-map.md`  
 > **Repository**: [frontend](file:///D:/woofskis/frontend/)  
 > **Framework**: Next.js 14.2 (App Router) + React 18 + TypeScript 5.6 + TailwindCSS 3.4 + Redux Toolkit 2.2 + TanStack Query 5.59  
-> **Last Updated**: 2026-10-21
+> **Last Updated**: 2026-10-22
 
 ---
 
@@ -11,8 +11,9 @@
 
 | Route Path | File Location | Purpose & Persona | Implementation Status |
 |---|---|---|---|
-| `/` | `src/app/page.tsx` | Continuous single-video judging queue (`<ViewerContainer />`). `/?v=<submissionId>` is the public share URL and renders Open Graph and Twitter tags from the share preview. | `IMPLEMENTED` |
-| `/media/submissions/[id]/thumbnail` | `src/app/media/submissions/[id]/thumbnail/route.ts` | Stable public thumbnail for link previews. Redirects to a public image, proxies an expiring download, or falls back to the site logo. Private video objects are not served. | `IMPLEMENTED` |
+| `/` | `src/app/page.tsx` | Continuous single-video judging queue (`<ViewerContainer />`). `/?v=<submissionId>` is the public share URL and renders Open Graph and Twitter tags from the share preview. WhatsApp keeps this page. Other link-preview crawlers are rewritten to the preview document. | `IMPLEMENTED` |
+| `/media/submissions/[id]/thumbnail` | `src/app/media/submissions/[id]/thumbnail/route.ts` | Stable public thumbnail for link previews. Returns image bytes (public CDN or an expiring download fetched server-side). A public image is redirected only if that fetch fails. No usable thumbnail returns the Woofskis logo file. Private video objects and presigned URLs are not published. | `IMPLEMENTED` |
+| `/media/submissions/[id]/preview` | `src/app/media/submissions/[id]/preview/route.ts` | Initial HTML for link-preview crawlers on `/?v=<id>`. Head contains that video's Open Graph and Twitter tags. Other callers are redirected to the canonical video URL. | `IMPLEMENTED` |
 | `/login` | `src/app/(auth)/login/page.tsx` | Unified login page for Creators, Brand Admins, and Super Admins. | `IMPLEMENTED` |
 | `/register` | `src/app/(auth)/register/page.tsx` | Dynamic registration page supporting both Creator and Brand sign-up tabs. | `IMPLEMENTED` |
 | `/creator` | `src/app/(dashboard)/creator/page.tsx` | Creator Studio. Tabs show Performance Overview & Metrics, Contests, or Your Submissions. The metrics tab is the default. | `IMPLEMENTED` |
@@ -45,8 +46,8 @@
 - **`components/queue-completed.tsx`**: End-of-queue view shown when all active contest videos have been rated.
 - **`components/keyboard-shortcuts-modal.tsx`**: Help modal detailing keyboard shortcuts (`1-5` rate, `Space`, `M`, `N`, `P`, `R`).
 - **`hooks/use-contest-queue.ts`**: Queue state. A successful rating calls the rate API and advances. An unrated video stays when playback ends. Keys `1-5` submit that score.
-- **`components/share-sheet.tsx`**: Copy Link, WhatsApp, Message, Facebook, and Email. Message uses the Web Share API when available and copies the public page message on desktop otherwise. Shared URLs are `/?v=<submissionId>`.
-- **`lib/share-metadata.ts`**: Builds Open Graph and Twitter tags. `og:image` is the stable `/media/submissions/[id]/thumbnail` URL, not a presigned download or object key.
+- **`components/share-sheet.tsx`**: Copy Link, WhatsApp, Message, Facebook, and Email. Copy Link copies the canonical `/?v=<submissionId>` URL. WhatsApp, Message, and Email include the title, creator, a short description, and that URL. Message uses the Web Share API when available and copies the same message on desktop otherwise. The shared origin is `NEXT_PUBLIC_APP_URL` when that host is public.
+- **`lib/share-metadata.ts`**: Builds Open Graph and Twitter tags and the crawler HTML document. `og:image` is the stable `/media/submissions/[id]/thumbnail` URL, not a presigned download or object key.
 
 ### 2.2 `features/submissions` (Creator Hub)
 - **`components/upload-modal.tsx`**: Video upload dialog. Client validates MP4/WebM/MOV, ≤100MB, ≤60s, then **presign → PUT S3 → complete**. Video bytes do not go through Fastify.

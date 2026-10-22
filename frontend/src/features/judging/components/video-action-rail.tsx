@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { Volume2, VolumeX, Keyboard, MessageCircle, Send, Trophy } from 'lucide-react';
 import { ContestVideoItem } from '@/types/contest';
 import { ShareSheet } from '@/features/judging/components/share-sheet';
-import { buildScoreboardPath, buildVideoShareUrl } from '@/features/judging/lib/share-url';
+import {
+  buildScoreboardPath,
+  buildVideoShareUrl,
+  canonicalShareOrigin,
+} from '@/features/judging/lib/share-url';
 import { cn } from '@/lib/utils';
 
 // Temporarily hidden. Set to true to restore the community score & vote count card.
@@ -38,10 +42,12 @@ export function VideoActionRail({
 }: VideoActionRailProps) {
   const [shareOpen, setShareOpen] = useState(false);
   const shareable = !video.id.startsWith('empty-');
-  const shareUrl =
-    shareable && typeof window !== 'undefined'
-      ? buildVideoShareUrl(window.location.origin, video.id)
-      : '';
+  const shareUrl = shareable
+    ? buildVideoShareUrl(
+        canonicalShareOrigin(typeof window === 'undefined' ? null : window.location.origin),
+        video.id,
+      )
+    : '';
   const scoreDisplay = video.communityScore > 0 ? video.communityScore.toFixed(1) : '—';
   const votesDisplay =
     video.totalVotes > 0
@@ -167,7 +173,14 @@ export function VideoActionRail({
       </button>
 
       {/* 5. Desktop Keyboard Shortcuts Trigger (Hidden on Mobile) */}
-      <ShareSheet open={shareOpen} url={shareUrl} title={video.title} onOpenChange={setShareOpen} />
+      <ShareSheet
+        open={shareOpen}
+        url={shareUrl}
+        title={video.title}
+        creatorName={video.creatorName}
+        description={video.description}
+        onOpenChange={setShareOpen}
+      />
 
       {onOpenShortcuts && (
         <button

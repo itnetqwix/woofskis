@@ -18,6 +18,8 @@ export interface ShareSheetProps {
   open: boolean;
   url: string;
   title: string;
+  creatorName?: string | null;
+  description?: string | null;
   onOpenChange: (open: boolean) => void;
 }
 
@@ -46,7 +48,14 @@ async function copyText(value: string): Promise<boolean> {
   }
 }
 
-export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) {
+export function ShareSheet({
+  open,
+  url,
+  title,
+  creatorName,
+  description,
+  onOpenChange,
+}: ShareSheetProps) {
   const [copied, setCopied] = useState(false);
   const [messageCopied, setMessageCopied] = useState(false);
   const [manual, setManual] = useState(false);
@@ -75,8 +84,9 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
 
   if (!open || typeof document === 'undefined') return null;
 
-  const text = buildVideoShareMessage(title, url);
-  const shareText = buildVideoShareText(title);
+  const copy = { creatorName, description };
+  const text = buildVideoShareMessage(title, url, copy);
+  const shareText = buildVideoShareText(title, copy);
   const publicPage = isPublicSharePageUrl(url);
   const openExternal = (href: string) => {
     window.open(href, '_blank', 'noopener,noreferrer');
@@ -129,7 +139,7 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
           url,
         });
         if (result === 'shared' || result === 'aborted') return;
-        const message = buildVideoShareMessage(title, url);
+        const message = buildVideoShareMessage(title, url, copy);
         if (!shouldUseDesktopShareFallback()) {
           window.location.assign(buildSmsShareHref(message));
           return;
@@ -239,7 +249,7 @@ export function ShareSheet({ open, url, title, onOpenChange }: ShareSheetProps) 
         {manual ? (
           <div className="px-4 pb-4">
             <label className="block text-xs text-muted-foreground">
-              Clipboard is unavailable. Copy this link:
+              Clipboard is unavailable. Copy this:
               <input
                 readOnly
                 value={manualValue || url}

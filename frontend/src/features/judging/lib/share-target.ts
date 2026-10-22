@@ -25,6 +25,20 @@ function canShareData(data: ShareData): boolean {
 }
 
 /**
+ * Share payloads that keep the written message. The URL is attached for apps
+ * that unfurl a separate url field, then repeated in the text when that shape
+ * is rejected. A bare URL is not offered.
+ */
+export function nativeShareCandidates(data: NativeSharePayload): ShareData[] {
+  const message = data.text.includes(data.url) ? data.text : `${data.text}\n${data.url}`;
+  return [
+    { title: data.title, text: data.text, url: data.url },
+    { title: data.title, text: message },
+    { text: message },
+  ];
+}
+
+/**
  * Web Share API when the browser supports it (Messages and other native targets).
  * A cancelled sheet is `aborted`. Callers use SMS or a copied message otherwise.
  */
@@ -32,7 +46,7 @@ export async function shareWithNativeTarget(data: NativeSharePayload): Promise<N
   if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
     return 'unavailable';
   }
-  const candidates: ShareData[] = [data, { title: data.title, url: data.url }, { url: data.url }];
+  const candidates = nativeShareCandidates(data);
   for (const candidate of candidates) {
     if (!canShareData(candidate)) continue;
     try {

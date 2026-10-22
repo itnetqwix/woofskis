@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "projectName": "Woofskis",
-  "lastUpdated": "2026-10-21",
+  "lastUpdated": "2026-10-22",
   "nodes": [
     {
       "id": "domain:auth",
@@ -433,7 +433,7 @@
       "type": "FrontendComponent",
       "label": "Video share thumbnail route",
       "domain": "Judging",
-      "description": "Stable public thumbnail for shared video Open Graph tags. Does not publish private video objects or presigned URLs.",
+      "description": "Stable public thumbnail for shared video Open Graph tags. Returns image bytes, or the Woofskis logo when the video has no usable thumbnail. Does not publish private video objects or presigned URLs.",
       "status": "IMPLEMENTED",
       "sourceReference": {
         "chapter": "Chapter 6",
@@ -443,6 +443,24 @@
       "codeReference": {
         "repository": "frontend",
         "filePath": "src/app/media/submissions/[id]/thumbnail/route.ts",
+        "symbol": "GET"
+      }
+    },
+    {
+      "id": "fe:VideoSharePreview",
+      "type": "FrontendComponent",
+      "label": "Video share preview document",
+      "domain": "Judging",
+      "description": "Initial HTML for link-preview crawlers on /?v=<id>. Contains that video's Open Graph and Twitter tags. Other callers redirect to the canonical video URL.",
+      "status": "IMPLEMENTED",
+      "sourceReference": {
+        "chapter": "Chapter 6",
+        "section": "6.2",
+        "docPath": "/docs/source/6 Product Vision 390ca8c5bdf780e9810ac7d28a2ae7fd.md"
+      },
+      "codeReference": {
+        "repository": "frontend",
+        "filePath": "src/app/media/submissions/[id]/preview/route.ts",
         "symbol": "GET"
       }
     },
@@ -1711,7 +1729,7 @@
       "type": "APIEndpoint",
       "label": "GET /api/v1/submissions/:id/share-preview",
       "domain": "Judging",
-      "description": "Public link preview metadata (title, description, thumbnailUrl, creatorName) for an APPROVED, non-deleted submission in a viewable contest. Feeds Open Graph tags on /?v=<id>. The page image is the stable /media/submissions/:id/thumbnail route.",
+      "description": "Public link preview metadata (title, description, thumbnailUrl, creatorName) for an APPROVED, non-deleted submission in a viewable contest. Feeds Open Graph tags on /?v=<id> and the crawler preview document. The page image is the stable /media/submissions/:id/thumbnail route.",
       "status": "IMPLEMENTED",
       "sourceReference": {
         "chapter": "Chapter 10",
@@ -3627,6 +3645,13 @@
       "target": "api:GET /submissions/:id/share-preview",
       "relationshipType": "CALLS_API",
       "description": "The stable thumbnail route loads public share-preview metadata and never returns a private video."
+    },
+    {
+      "id": "e158",
+      "source": "fe:VideoSharePreview",
+      "target": "api:GET /submissions/:id/share-preview",
+      "relationshipType": "CALLS_API",
+      "description": "The crawler preview document loads the same public share-preview metadata as the judging page."
     }
   ]
 }

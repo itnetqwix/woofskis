@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
-import { buildVideoShareUrl, isShareSubmissionId } from './share-url';
+import { buildVideoShareUrl, canonicalShareOrigin, isShareSubmissionId } from './share-url';
 
 export interface SharePreview {
   id: string;
@@ -13,7 +13,7 @@ export interface SharePreview {
 export type ThumbnailTarget =
   { kind: 'redirect'; url: string } | { kind: 'proxy'; url: string } | { kind: 'fallback' };
 
-const FALLBACK_IMAGE_PATH = '/logo/woofskis_logo_with_dog.png';
+export const BRAND_FALLBACK_IMAGE_PATH = '/logo/woofskis_logo_with_dog.png';
 const DESCRIPTION_MAX = 200;
 const VIDEO_PATH = /\.(mp4|webm|mov|m4v)(?:$|\?)/i;
 
@@ -31,7 +31,22 @@ export function shareThumbnailPageUrl(origin: string, submissionId: string): str
 }
 
 export function publicLogoUrl(origin: string): string {
-  return new URL(FALLBACK_IMAGE_PATH, origin).toString();
+  return new URL(BRAND_FALLBACK_IMAGE_PATH, origin).toString();
+}
+
+/**
+ * Image response for a classified thumbnail.
+ * Public and expiring images are proxied so crawlers receive bytes.
+ * A stable public image may still be redirected to if the proxy fails.
+ * Signed URLs are never redirected. Anything else is the branded logo.
+ */
+export function thumbnailDelivery(
+  target: ThumbnailTarget,
+  proxySucceeded: boolean,
+): 'proxy' | 'redirect' | 'logo' {
+  if ((target.kind === 'proxy' || target.kind === 'redirect') && proxySucceeded) return 'proxy';
+  if (target.kind === 'redirect') return 'redirect';
+  return 'logo';
 }
 
 function isBlockedThumbnailHost(hostname: string): boolean {
@@ -112,6 +127,87 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
+export interface VideoShareTags {
+  title: string;
+  description: string;
+  pageUrl: string;
+  imageUrl: string;
+  imageAlt: string;
+  siteName: string;
+}
+
+/** Tags for one shared video. The image is the stable public thumbnail route. */
+export function videoShareTags(
+  origin: string,
+  siteName: string,
+  preview: SharePreview,
+): VideoShareTags {
+  const title = preview.creatorName?.trim()
+    ? `${preview.title} by ${preview.creatorName.trim()}`
+    : preview.title;
+  return {
+    title,
+    description: truncate(
+      preview.description?.trim() || `Watch and rate this video on ${siteName}.`,
+      DESCRIPTION_MAX,
+    ),
+    pageUrl: buildVideoShareUrl(origin, preview.id),
+    imageUrl: shareThumbnailPageUrl(origin, preview.id),
+    imageAlt: preview.title,
+    siteName,
+  };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Complete HTML document whose head already contains the video tags.
+ * Link-preview crawlers read this response and do not run JavaScript.
+ */
+export function renderSharePreviewDocument(
+  origin: string,
+  siteName: string,
+  preview: SharePreview,
+): string {
+  const tags = videoShareTags(origin, siteName, preview);
+  const secure = tags.imageUrl.startsWith('https:')
+    ? `<meta property="og:image:secure_url" content="${escapeHtml(tags.imageUrl)}">`
+    : '';
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(tags.title)}</title>
+<link rel="canonical" href="${escapeHtml(tags.pageUrl)}">
+<meta name="description" content="${escapeHtml(tags.description)}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${escapeHtml(tags.siteName)}">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="${escapeHtml(tags.pageUrl)}">
+<meta property="og:title" content="${escapeHtml(tags.title)}">
+<meta property="og:description" content="${escapeHtml(tags.description)}">
+<meta property="og:image" content="${escapeHtml(tags.imageUrl)}">
+${secure}
+<meta property="og:image:alt" content="${escapeHtml(tags.imageAlt)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(tags.title)}">
+<meta name="twitter:description" content="${escapeHtml(tags.description)}">
+<meta name="twitter:image" content="${escapeHtml(tags.imageUrl)}">
+<meta name="twitter:image:alt" content="${escapeHtml(tags.imageAlt)}">
+</head>
+<body>
+<p>${escapeHtml(tags.title)}</p>
+<p>${escapeHtml(tags.description)}</p>
+</body>
+</html>`;
+}
+
 /**
  * Open Graph and Twitter tags for a shared `/?v=<submissionId>` link.
  * Returns null when the id is not a public approved video, so the page
@@ -122,37 +218,32 @@ export function videoShareMetadataFromPreview(
   siteName: string,
   preview: SharePreview
 ): Metadata {
-  const pageUrl = buildVideoShareUrl(origin, preview.id);
-  const image = shareThumbnailPageUrl(origin, preview.id);
-  const title = preview.creatorName ? `${preview.title} by ${preview.creatorName}` : preview.title;
-  const description = truncate(
-    preview.description?.trim() || `Watch and rate this video on ${siteName}.`,
-    DESCRIPTION_MAX
-  );
-
+  const tags = videoShareTags(origin, siteName, preview);
   return {
-    title,
-    description,
-    alternates: { canonical: pageUrl },
+    metadataBase: new URL(origin),
+    title: tags.title,
+    description: tags.description,
+    alternates: { canonical: tags.pageUrl },
     openGraph: {
       type: 'website',
-      siteName,
-      url: pageUrl,
-      title,
-      description,
+      locale: 'en_US',
+      siteName: tags.siteName,
+      url: tags.pageUrl,
+      title: tags.title,
+      description: tags.description,
       images: [
         {
-          url: image,
-          ...(image.startsWith('https:') ? { secureUrl: image } : {}),
-          alt: preview.title,
+          url: tags.imageUrl,
+          ...(tags.imageUrl.startsWith('https:') ? { secureUrl: tags.imageUrl } : {}),
+          alt: tags.imageAlt,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
-      images: [image],
+      title: tags.title,
+      description: tags.description,
+      images: [tags.imageUrl],
     },
   };
 }
@@ -163,5 +254,5 @@ export async function buildVideoShareMetadata(
   if (!submissionId || !isShareSubmissionId(submissionId)) return null;
   const preview = await fetchSharePreview(submissionId);
   if (!preview) return null;
-  return videoShareMetadataFromPreview(siteConfig.url, siteConfig.name, preview);
+  return videoShareMetadataFromPreview(canonicalShareOrigin(), siteConfig.name, preview);
 }

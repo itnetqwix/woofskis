@@ -1,15 +1,24 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { siteConfig } from '@/config/site';
 import {
+  BRAND_FALLBACK_IMAGE_PATH,
   classifyThumbnailTarget,
   fetchSharePreview,
   publicLogoUrl,
+  thumbnailDelivery,
 } from '@/features/judging/lib/share-metadata';
 import { isShareSubmissionId } from '@/features/judging/lib/share-url';
 
 export const revalidate = 300;
 
 const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
+
+const IMAGE_HEADERS = {
+  'Cache-Control': 'public, max-age=300',
+  'X-Content-Type-Options': 'nosniff',
+} as const;
 
 function imageContentType(header: string | null, url: string): string | null {
   const type = header?.split(';')[0]?.trim().toLowerCase() ?? '';
@@ -47,8 +56,7 @@ async function proxyThumbnail(url: string): Promise<NextResponse | null> {
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=300',
-        'X-Content-Type-Options': 'nosniff',
+        ...IMAGE_HEADERS,
       },
     });
   } catch {
@@ -56,8 +64,21 @@ async function proxyThumbnail(url: string): Promise<NextResponse | null> {
   }
 }
 
-function logoRedirect(): NextResponse {
-  return NextResponse.redirect(publicLogoUrl(siteConfig.url), 302);
+/** Branded logo bytes. A redirect is only used when the file cannot be read. */
+async function logoResponse(): Promise<NextResponse> {
+  try {
+    const relative = BRAND_FALLBACK_IMAGE_PATH.replace(/^\/+/, '');
+    const bytes = await readFile(path.join(process.cwd(), 'public', relative));
+    return new NextResponse(new Uint8Array(bytes), {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        ...IMAGE_HEADERS,
+      },
+    });
+  } catch {
+    return NextResponse.redirect(publicLogoUrl(siteConfig.url), 302);
+  }
 }
 
 /**
@@ -75,12 +96,14 @@ export async function GET(
   if (!preview) return new NextResponse(null, { status: 404 });
 
   const target = classifyThumbnailTarget(preview.thumbnailUrl);
-  if (target.kind === 'redirect') {
+  const proxied =
+    target.kind === 'redirect' || target.kind === 'proxy'
+      ? await proxyThumbnail(target.url)
+      : null;
+  const delivery = thumbnailDelivery(target, Boolean(proxied));
+  if (delivery === 'proxy' && proxied) return proxied;
+  if (delivery === 'redirect' && target.kind === 'redirect') {
     return NextResponse.redirect(target.url, 302);
   }
-  if (target.kind === 'proxy') {
-    const proxied = await proxyThumbnail(target.url);
-    if (proxied) return proxied;
-  }
-  return logoRedirect();
+  return logoResponse();
 }
