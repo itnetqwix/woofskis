@@ -25,6 +25,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTenantTheme } from '@/features/admin/hooks/use-tenant-theme';
+import { AboutDoodleWallpaper } from './about-doodle-wallpaper';
 
 export function AboutPageView() {
   const { activeBrand } = useTenantTheme();
@@ -32,6 +33,9 @@ export function AboutPageView() {
 
   return (
     <div className="relative w-full overflow-hidden text-foreground antialiased selection:bg-primary/20">
+      {/* WhatsApp-inspired subtle repeating doodle wallpaper */}
+      <AboutDoodleWallpaper />
+
       {/* Background ambient light effects */}
       <div
         className="pointer-events-none absolute -top-48 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full opacity-15 blur-[120px] transition-all duration-700"
