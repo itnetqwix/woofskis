@@ -3,6 +3,8 @@
 import { forwardRef } from 'react';
 import { StarRating } from '@/features/judging/components/star-rating';
 import { RATING_MAX } from '@/constants/rating-scale';
+import { useTenantTheme } from '@/features/admin/hooks/use-tenant-theme';
+import { isRipskisBrand } from '@/features/judging/components/brand-rating-icons';
 import { cn } from '@/lib/utils';
 
 export interface RatingBarProps {
@@ -34,6 +36,8 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
   },
   ref
 ) {
+  const { activeBrand } = useTenantTheme();
+  const isRipskis = isRipskisBrand(activeBrand);
   const width = `${Math.min(100, Math.max(0, progress * 100))}%`;
 
   return (
@@ -44,13 +48,18 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
       aria-label="Rate this video"
       className={cn(
         'pointer-events-none w-full min-w-0 max-w-full overflow-hidden outline-none',
-        'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#fa4616]',
-        attention && 'ring-2 ring-inset ring-[#fa4616]',
+        isRipskis
+          ? 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#8BC144]'
+          : 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#fa4616]',
+        attention && (isRipskis ? 'ring-2 ring-inset ring-[#8BC144]' : 'ring-2 ring-inset ring-[#fa4616]'),
         className
       )}
     >
       <div
-        className="pointer-events-auto mx-2 rounded-2xl border-2 border-[#fa4616]/80 bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(250,70,22,0.25)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border md:border-border md:bg-card md:px-4 md:pb-2.5 md:pt-3 md:shadow-sm md:backdrop-blur-none"
+        className={cn(
+          'pointer-events-auto mx-2 rounded-2xl border border-white/15 ring-1 ring-inset ring-white/5 bg-black/40 px-2 pb-1.5 pt-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.35)] backdrop-blur-md sm:mx-2.5 md:mx-0 md:border md:border-border md:bg-card md:px-4 md:pb-2.5 md:pt-3 md:shadow-sm md:backdrop-blur-none',
+          isRipskis ? 'border-[#8BC144]/60' : 'border-[#fa4616]/70'
+        )}
         data-interactive="true"
       >
         <div
@@ -58,7 +67,10 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           aria-hidden="true"
         >
           <div
-            className="h-full rounded-full bg-[#fa4616] transition-[width] duration-75"
+            className={cn(
+              'h-full rounded-full transition-[width] duration-75',
+              isRipskis ? 'bg-[#8BC144]' : 'bg-[#fa4616]'
+            )}
             style={{ width }}
           />
         </div>
@@ -66,7 +78,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
         <p className="mt-1 text-center text-[11px] font-medium leading-none tracking-wide text-white/70 sm:text-xs md:mt-0 md:text-base md:font-bold md:text-foreground">
           Select a rating to see the next video
         </p>
-        {/* {onSkip && (
+        {onSkip && (
           <button
             type="button"
             onClick={onSkip}
@@ -74,7 +86,7 @@ export const RatingBar = forwardRef<HTMLElement, RatingBarProps>(function Rating
           >
             or skip to the next video
           </button>
-        )} */}
+        )}
         {error && (
           <p className="mt-1 text-center text-[11px] font-semibold text-rose-300 md:text-destructive">
             {error}

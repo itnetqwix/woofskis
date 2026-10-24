@@ -37,10 +37,11 @@
 - **`components/viewer-container.tsx`**: High-level wrapper coordinating video playback, the glass rating bar, the unrated-end hint, and mute state.
 - **`components/video-player.tsx`**: Custom video player component with play/pause, volume controls, buffering indicator, and full-screen support.
 - **`components/rating-modal.tsx`**: Unused by the live judging path. The rate API still accepts 1–10.
-- **`components/star-rating.tsx`**: Shared star control. The judging bar uses 5 stars. Filled stars use `#8BC144`.
-- **`components/star-celebration.tsx`**: Pointer-events-none stars that rise after a successful rating. Reduced motion fades them.
-- **`components/previous-rated-card.tsx`**: Last rated video thumbnail, title, the viewer's stars, and the community score. Tap returns to that video. `variant="panel"` is the persistent left-column card on tablet/desktop (≥768px), where the judging page uses a two-column layout (last rated ~31%, player + rating panel ~67%). Phones keep the auto-hiding overlay.
-- **`components/rating-bar.tsx`**: Full-width glass bar under the header. Five stars submit 1–5 through the existing rate API. Skip appears when an unrated video ends.
+- **`components/brand-rating-icons.tsx`**: Brand-specific rating icons module providing `PawRatingIcon` (Woofskis cute paw prints in `#fa4616`) and `JointRatingIcon` (Ripskis hand-rolled cannabis joint with rolling paper, filter seam, and twisted tip in `#8BC144`).
+- **`components/star-rating.tsx`**: Shared rating control on a 1–10 scale. Dynamically selects paw-print icons for Woofskis and rolled joint icons for Ripskis based on active tenant theme.
+- **`components/star-celebration.tsx`**: Post-rating floating celebration displaying approximately 3–5 staggered rising icons (floating paw prints for Woofskis, floating rolled joints for Ripskis). Respects `prefers-reduced-motion`.
+- **`components/previous-rated-card.tsx`**: Last rated video thumbnail, title, viewer's rating with brand glyph, and community score. Tap returns to that video. `variant="panel"` is the persistent left-column card on tablet/desktop (≥768px).
+- **`components/rating-bar.tsx`**: Full-width glass bar under the header with 10 rating inputs using brand-specific icons and brand-aware focus/progress accents. Skip appears when an unrated video ends.
 - **`components/unrated-end-dialog.tsx`**: First unrated ending on a device. "Don't show this again" is stored in `localStorage` (`cos_unrated_end_hint_hidden`).
 - **`components/score-reveal-overlay.tsx`**: Consensus overlay component. A successful rating advances immediately; the live path does not wait on this overlay.
 - **`components/queue-completed.tsx`**: End-of-queue view shown when all active contest videos have been rated.

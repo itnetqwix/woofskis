@@ -1,15 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
+import { useTenantTheme } from '@/features/admin/hooks/use-tenant-theme';
+import {
+  isRipskisBrand,
+  PawRatingIcon,
+  JointRatingIcon,
+} from '@/features/judging/components/brand-rating-icons';
 
-/** Burst from the rating zone. Sizes: 24–28, 30–34, 36–40, and two hero stars. */
+/**
+ * Particle definitions for floating celebration animations.
+ * Tuned with staggered delays, lateral drift, and gentle spin.
+ */
 const PARTICLES = [
   {
     left: '48%',
     bottom: '22%',
     delay: '0ms',
-    drift: '-4px',
+    drift: '-8px',
     spin: '-8deg',
     size: 46,
     duration: '1080ms',
@@ -18,7 +26,7 @@ const PARTICLES = [
   {
     left: '60%',
     bottom: '20%',
-    delay: '50ms',
+    delay: '60ms',
     drift: '16px',
     spin: '14deg',
     size: 42,
@@ -26,20 +34,20 @@ const PARTICLES = [
     rise: '-28vh',
   },
   {
-    left: '36%',
+    left: '38%',
     bottom: '24%',
-    delay: '20ms',
+    delay: '120ms',
     drift: '-20px',
     spin: '-18deg',
-    size: 40,
+    size: 34,
     duration: '1120ms',
-    rise: '-36vh',
+    rise: '-34vh',
   },
   {
     left: '54%',
     bottom: '18%',
-    delay: '90ms',
-    drift: '8px',
+    delay: '180ms',
+    drift: '10px',
     spin: '10deg',
     size: 38,
     duration: '900ms',
@@ -169,9 +177,10 @@ const PARTICLES = [
 
 const CSS = `
 @keyframes cos-star-rise {
-  0% { transform: translate3d(0, 8px, 0) rotate(0deg) scale(0.55); opacity: 0; }
+  0% { transform: translate3d(0, 8px, 0) rotate(0deg) scale(0.6); opacity: 0; }
   18% { opacity: 1; }
-  100% { transform: translate3d(var(--drift), var(--rise), 0) rotate(var(--spin)) scale(1); opacity: 0; }
+  85% { opacity: 0.9; }
+  100% { transform: translate3d(var(--drift), var(--rise), 0) rotate(var(--spin)) scale(1.05); opacity: 0; }
 }
 @keyframes cos-star-fade {
   0% { opacity: 0; }
@@ -190,18 +199,40 @@ const CSS = `
 }
 `;
 
-export function StarCelebration({ burstId }: { burstId: number }) {
+/**
+ * Post-Rating Floating Celebration
+ *
+ * Staggered lightweight animation appearing when a user submits a rating.
+ * Displays floating Paw Prints for Woofskis (#fa4616) and floating Rolled Joints
+ * for Ripskis (#8BC144). Uses approximately 4 floating icons for smooth, non-intrusive feedback.
+ */
+export function StarCelebration({
+  burstId,
+  brand,
+}: {
+  burstId: number;
+  brand?: string;
+}) {
+  const { activeBrand } = useTenantTheme();
+  const effectiveBrand = brand || activeBrand?.slug || activeBrand?.id || 'woofskis';
+  const isRipskis = isRipskisBrand(effectiveBrand);
+
   const [visible, setVisible] = useState(0);
 
   useEffect(() => {
     if (burstId === 0) return;
     setVisible(burstId);
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const timer = window.setTimeout(() => setVisible(0), reduced ? 360 : 1450);
     return () => window.clearTimeout(timer);
   }, [burstId]);
 
   if (visible === 0) return null;
+
+  // Staggered lightweight subset: exactly 4 icons (within 3-5 requirement)
+  const activeParticles = PARTICLES.slice(0, 4);
 
   return (
     <div
@@ -209,10 +240,13 @@ export function StarCelebration({ burstId }: { burstId: number }) {
       className="pointer-events-none fixed inset-0 z-[80] overflow-hidden"
       aria-hidden="true"
       data-star-celebration=""
+      data-rating-celebration=""
       data-star-count={PARTICLES.length}
+      data-active-particles={activeParticles.length}
+      data-brand={isRipskis ? 'ripskis' : 'woofskis'}
     >
       <style>{CSS}</style>
-      {PARTICLES.map((particle, index) => (
+      {activeParticles.map((particle, index) => (
         <span
           key={`${visible}-${index}`}
           className="cos-star-particle"
@@ -226,13 +260,23 @@ export function StarCelebration({ burstId }: { burstId: number }) {
             ['--rise' as string]: particle.rise,
           }}
         >
-          <Star
-            strokeWidth={2}
-            className="fill-[#fa4616] text-[#fa4616]"
-            style={{ width: particle.size, height: particle.size }}
-          />
+          {isRipskis ? (
+            <JointRatingIcon
+              filled
+              className="fill-[#8BC144] text-[#8BC144] drop-shadow-[0_0_12px_rgba(139,193,68,0.6)]"
+              style={{ width: particle.size, height: particle.size }}
+            />
+          ) : (
+            <PawRatingIcon
+              filled
+              className="fill-[#fa4616] text-[#fa4616] drop-shadow-[0_0_12px_rgba(250,70,22,0.5)]"
+              style={{ width: particle.size, height: particle.size }}
+            />
+          )}
         </span>
       ))}
     </div>
   );
 }
+
+export { StarCelebration as RatingCelebration };

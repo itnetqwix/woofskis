@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Film, Play, Star, Users, RotateCcw } from 'lucide-react';
+import { X, Film, Play, Users, RotateCcw } from 'lucide-react';
 import { ProfileAvatar } from '@/components/common/profile-avatar';
+import { BrandRatingGlyph } from '@/features/judging/components/brand-rating-icons';
 import {
   LastRatedVideo,
   formatAverageScore,
@@ -239,7 +240,7 @@ export function PreviousRatedCard({
             </div>
           )}
           <span className="pointer-events-none absolute right-2 top-2 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/65 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
-            <Star className="h-3.5 w-3.5 fill-primary text-primary" aria-hidden="true" />
+            <BrandRatingGlyph filled className="h-3.5 w-3.5 fill-primary text-primary" aria-hidden="true" />
             {overallScoreValue}/10
           </span>
           {!replayPlaying && (

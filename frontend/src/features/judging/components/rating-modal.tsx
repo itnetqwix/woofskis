@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { RATING_MAX, RATING_MIN } from '@/constants/rating-scale';
 import { formatAverageScore, formatVoteCount } from '@/features/judging/lib/feed-state';
 import { StarRating } from '@/features/judging/components/star-rating';
+import { useTenantTheme } from '@/features/admin/hooks/use-tenant-theme';
+import { isRipskisBrand } from '@/features/judging/components/brand-rating-icons';
 
 export interface RatingModalProps {
   open: boolean;
@@ -28,6 +30,8 @@ export function RatingModal({
   onOpenChange,
   onSubmit,
 }: RatingModalProps) {
+  const { activeBrand } = useTenantTheme();
+  const isRipskis = isRipskisBrand(activeBrand);
   const panelRef = useRef<HTMLDivElement>(null);
   const initialRef = useRef(initialRating);
   initialRef.current = initialRating;
@@ -111,7 +115,11 @@ export function RatingModal({
           onClick={() => {
             if (selected !== null) onSubmit(selected);
           }}
-          className="mt-4 h-12 w-full rounded-xl bg-[#fa4616] text-sm font-bold text-white transition-colors hover:bg-[#fa4616]/90 disabled:opacity-50"
+          className={
+            isRipskis
+              ? 'mt-4 h-12 w-full rounded-xl bg-[#8BC144] text-sm font-bold text-white transition-colors hover:bg-[#8BC144]/90 disabled:opacity-50'
+              : 'mt-4 h-12 w-full rounded-xl bg-[#fa4616] text-sm font-bold text-white transition-colors hover:bg-[#fa4616]/90 disabled:opacity-50'
+          }
         >
           {existingRating !== null ? 'Update rating' : 'Submit rating'}
         </button>
@@ -119,3 +127,4 @@ export function RatingModal({
     </div>
   );
 }
+

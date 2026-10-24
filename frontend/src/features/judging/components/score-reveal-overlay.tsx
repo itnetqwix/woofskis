@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Award, Star, ArrowRight, TrendingUp, CheckCircle2, Users } from 'lucide-react';
+import { Award, ArrowRight, TrendingUp, CheckCircle2, Users } from 'lucide-react';
 import { AggregatedScoreResult } from '@/types/contest';
 import { Button } from '@/components/ui/button';
+import { useTenantTheme } from '@/features/admin/hooks/use-tenant-theme';
+import { BrandRatingGlyph, isRipskisBrand } from '@/features/judging/components/brand-rating-icons';
 
 interface ScoreRevealOverlayProps {
   result: AggregatedScoreResult | null;
@@ -16,6 +18,8 @@ export function ScoreRevealOverlay({
   countdownProgress,
   onNextNow,
 }: ScoreRevealOverlayProps) {
+  const { activeBrand } = useTenantTheme();
+  const isRipskis = isRipskisBrand(activeBrand);
   if (!result) return null;
 
   return (
@@ -40,8 +44,18 @@ export function ScoreRevealOverlay({
             <span className="text-[10px] font-medium uppercase tracking-wider text-white/70">
               Your Rating
             </span>
-            <div className="mt-0.5 flex items-center gap-1 text-lg font-black text-[#fa4616]">
-              <Star className="h-4 w-4 fill-[#fa4616]" />
+            <div
+              className={
+                isRipskis
+                  ? 'mt-0.5 flex items-center gap-1 text-lg font-black text-[#8BC144]'
+                  : 'mt-0.5 flex items-center gap-1 text-lg font-black text-[#fa4616]'
+              }
+            >
+              <BrandRatingGlyph
+                brand={activeBrand?.id}
+                filled
+                className={isRipskis ? 'h-4 w-4 fill-[#8BC144] text-[#8BC144]' : 'h-4 w-4 fill-[#fa4616] text-[#fa4616]'}
+              />
               <span>{result.userRating}.0</span>
             </div>
           </div>

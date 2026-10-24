@@ -252,16 +252,17 @@ export function deploymentOrganizationSlug(): string {
 
 /** Paint placeholder until GET /organizations/:slug/branding returns. */
 export function deploymentBrandPlaceholder(slug = deploymentOrganizationSlug()): TenantBrandConfig {
-  const primary = '#fa4616';
-  const accent = '#3e2717';
+  const isRipskis = slug.toLowerCase() === 'ripskis';
+  const primary = isRipskis ? '#8bc144' : '#fa4616';
+  const accent = isRipskis ? '#13491e' : '#3e2717';
   return {
     id: slug,
-    name: slug === 'woofskis' ? 'Woofskis' : slug,
+    name: isRipskis ? 'Ripskis' : slug === 'woofskis' ? 'Woofskis' : slug,
     slug,
     subdomain: '',
-    customDomain: '',
-    logoUrl: '/logo/woofskis_logo_with_dog_transparent.png',
-    tagline: '',
+    customDomain: isRipskis ? 'ripskis.com' : 'woofskis.com',
+    logoUrl: isRipskis ? '/logo/ripskis_logo.png' : '/logo/woofskis_logo_with_dog_transparent.png',
+    tagline: isRipskis ? 'High-Octane Entertainment Showdowns' : '',
     description: '',
     colors: {
       primary,
@@ -269,7 +270,7 @@ export function deploymentBrandPlaceholder(slug = deploymentOrganizationSlug()):
       primaryForeground: '0 0% 100%',
       accent,
       accentHsl: hexToHslTriplet(accent),
-      accentForeground: '0 0% 100%',
+      accentForeground: isRipskis ? '132.2 58.7% 12%' : '0 0% 100%',
       backgroundStyle: 'clean-light',
     },
     isDefault: true,
@@ -307,6 +308,18 @@ export function saveStoredBrands(brands: TenantBrandConfig[]): void {
 }
 
 export function getStoredActiveTenant(): TenantBrandConfig {
+  if (typeof window !== 'undefined') {
+    try {
+      const activeId = localStorage.getItem(STORAGE_KEYS.ACTIVE_TENANT_ID);
+      if (activeId) {
+        const brands = getStoredBrands();
+        const match = brands.find((brand) => brand.slug === activeId || brand.id === activeId);
+        return match ?? deploymentBrandPlaceholder(activeId);
+      }
+    } catch {
+      // ignore unreadable storage
+    }
+  }
   const slug = deploymentOrganizationSlug();
   const brands = getStoredBrands();
   const match = brands.find((brand) => brand.slug === slug || brand.id === slug);
