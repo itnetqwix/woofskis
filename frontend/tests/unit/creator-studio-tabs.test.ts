@@ -50,5 +50,18 @@ describe('video message share', () => {
     assert.match(shareSheet, /label: 'WhatsApp'/);
     assert.match(shareSheet, /label: 'Email'/);
     assert.match(shareSheet, /label: 'Facebook'/);
+    assert.match(shareSheet, /label: 'Instagram'/);
+  });
+
+  it('orders share actions as Message, Email, Copy Link, Facebook, WhatsApp, Instagram', () => {
+    const actionIds = [...shareSheet.matchAll(/id:\s*'([a-z]+)'/g)].map((m) => m[1]);
+    assert.deepEqual(actionIds, [
+      'message',
+      'email',
+      'copy',
+      'facebook',
+      'whatsapp',
+      'instagram',
+    ]);
   });
 });

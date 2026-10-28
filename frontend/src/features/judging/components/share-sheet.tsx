@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Facebook, Mail, MessageCircle, MessageSquare, Link2 } from 'lucide-react';
+import { Check, Facebook, Instagram, Mail, MessageCircle, MessageSquare, Link2 } from 'lucide-react';
 import {
   buildSmsShareHref,
   buildVideoShareMessage,
@@ -58,6 +58,7 @@ export function ShareSheet({
 }: ShareSheetProps) {
   const [copied, setCopied] = useState(false);
   const [messageCopied, setMessageCopied] = useState(false);
+  const [instagramCopied, setInstagramCopied] = useState(false);
   const [manual, setManual] = useState(false);
   const [manualValue, setManualValue] = useState('');
 
@@ -65,6 +66,7 @@ export function ShareSheet({
     if (!open) {
       setCopied(false);
       setMessageCopied(false);
+      setInstagramCopied(false);
       setManual(false);
       setManualValue('');
     }
@@ -98,33 +100,6 @@ export function ShareSheet({
 
   const actions = [
     {
-      id: 'copy',
-      label: copied ? 'Copied' : 'Copy Link',
-      icon: copied ? Check : Link2,
-      onClick: async () => {
-        if (!publicPage) {
-          showManual(url);
-          return;
-        }
-        const ok = await copyText(url);
-        setCopied(ok);
-        setMessageCopied(false);
-        if (!ok) showManual(url);
-      },
-    },
-    {
-      id: 'whatsapp',
-      label: 'WhatsApp',
-      icon: MessageCircle,
-      onClick: () => {
-        if (!publicPage) {
-          showManual(url);
-          return;
-        }
-        openExternal(`https://wa.me/?text=${encodeURIComponent(text)}`);
-      },
-    },
-    {
       id: 'message',
       label: 'Message',
       icon: MessageSquare,
@@ -147,19 +122,8 @@ export function ShareSheet({
         const ok = await copyText(message);
         setCopied(false);
         setMessageCopied(ok);
+        setInstagramCopied(false);
         if (!ok) showManual(message);
-      },
-    },
-    {
-      id: 'facebook',
-      label: 'Facebook',
-      icon: Facebook,
-      onClick: () => {
-        if (!publicPage) {
-          showManual(url);
-          return;
-        }
-        openExternal(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
       },
     },
     {
@@ -176,6 +140,66 @@ export function ShareSheet({
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
       },
     },
+    {
+      id: 'copy',
+      label: copied ? 'Copied' : 'Copy Link',
+      icon: copied ? Check : Link2,
+      onClick: async () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        const ok = await copyText(url);
+        setCopied(ok);
+        setMessageCopied(false);
+        setInstagramCopied(false);
+        if (!ok) showManual(url);
+      },
+    },
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      icon: Facebook,
+      onClick: () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        openExternal(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+      },
+    },
+    {
+      id: 'whatsapp',
+      label: 'WhatsApp',
+      icon: MessageCircle,
+      onClick: () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        openExternal(`https://wa.me/?text=${encodeURIComponent(text)}`);
+      },
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      icon: Instagram,
+      onClick: async () => {
+        if (!publicPage) {
+          showManual(url);
+          return;
+        }
+        const ok = await copyText(url);
+        setCopied(false);
+        setMessageCopied(false);
+        setInstagramCopied(ok);
+        if (!ok) {
+          showManual(url);
+        } else {
+          openExternal('https://www.instagram.com');
+        }
+      },
+    },
   ];
 
   return createPortal(
@@ -190,7 +214,7 @@ export function ShareSheet({
         role="dialog"
         aria-modal="true"
         aria-label="Share video"
-        className="pointer-events-auto relative z-10 w-full max-w-md rounded-t-2xl border border-border bg-background shadow-2xl sm:rounded-2xl"
+        className="pointer-events-auto relative z-10 w-full max-w-md rounded-t-2xl border border-border bg-background shadow-2xl sm:max-w-lg sm:rounded-2xl"
       >
         {/* Header bar matching Comment drawer */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -204,7 +228,7 @@ export function ShareSheet({
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 p-4 sm:grid-cols-5 sm:gap-3 sm:p-5">
+        <div className="grid grid-cols-3 gap-2 p-4 sm:grid-cols-6 sm:gap-3 sm:p-5">
           {actions.map((action) => {
             const Icon = action.icon;
             const isCopyActive = action.id === 'copy' && copied;
@@ -243,6 +267,13 @@ export function ShareSheet({
           <div className="flex items-center justify-center gap-1.5 px-4 pb-4 text-center text-xs font-bold text-[#fa4616]">
             <Check className="h-3.5 w-3.5 shrink-0" />
             <span>Message copied. Paste it into Messages.</span>
+          </div>
+        ) : null}
+
+        {instagramCopied ? (
+          <div className="flex items-center justify-center gap-1.5 px-4 pb-4 text-center text-xs font-bold text-[#fa4616]">
+            <Check className="h-3.5 w-3.5 shrink-0" />
+            <span>Link copied. Paste it into Instagram.</span>
           </div>
         ) : null}
 
