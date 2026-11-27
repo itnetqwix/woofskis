@@ -7,6 +7,7 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/deploy-backend.yml"
+      - ".github/workflows/deploy-backend-remote.sh"
 
   workflow_dispatch:
 
@@ -22,7 +23,7 @@ jobs:
   deploy:
     name: Build and Deploy API
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -71,39 +72,33 @@ jobs:
         run: aws sts get-caller-identity
 
       - name: Deploy through SSM
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
         run: |
           set -eu
 
+          printf '%s' "$DEPLOY_SHA" | grep -Eq '^[0-9a-f]{40}$'
           INSTANCE_ID="i-022a5944c5fd2092e"
+
+          # Fresh clone of this commit. Do not use /tmp/woofskis-repo (.git there is not a repository).
+          SCRIPT=$(sed "s/__SHA__/${DEPLOY_SHA}/" .github/workflows/deploy-backend-remote.sh)
+          if printf '%s' "$SCRIPT" | grep -q '__SHA__'; then
+            echo "Deploy script still contains the SHA placeholder"
+            exit 1
+          fi
 
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "$INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
-            --comment "Deploy Woofskis backend from GitHub Actions" \
-            --parameters 'commands=[
-              "set -eu",
-              "export HOME=/root",
-              "git config --global --add safe.directory /tmp/woofskis-repo",
-              "cd /tmp/woofskis-repo",
-              "git pull --ff-only origin main",
-              "sudo cp -a backend/. /var/www/woofskis/app/",
-              "sudo chown -R ubuntu:ubuntu /var/www/woofskis/app",
-              "cd /var/www/woofskis/app",
-              "npm ci",
-              "npm run build",
-              "sudo -u ubuntu -H pm2 restart woofskis-api",
-              "sudo -u ubuntu -H pm2 save",
-              "for i in $(seq 1 12); do if curl --fail --silent http://127.0.0.1:5000/api/v1/health; then echo HEALTH_CHECK_PASSED; exit 0; fi; sleep 5; done",
-              "echo HEALTH_CHECK_FAILED",
-              "pm2 logs woofskis-api --lines 50 --nostream",
-              "exit 1"
-            ]' \
+            --timeout-seconds 900 \
+            --comment "Deploy Woofskis backend $DEPLOY_SHA" \
+            --parameters "$(jq -n --arg script "$SCRIPT" '{commands: [$script]}')" \
             --query 'Command.CommandId' \
             --output text)
 
           echo "SSM Command ID: $COMMAND_ID"
 
-          for i in $(seq 1 40); do
+          for i in $(seq 1 60); do
             STATUS=$(aws ssm get-command-invocation \
               --command-id "$COMMAND_ID" \
               --instance-id "$INSTANCE_ID" \
@@ -131,7 +126,7 @@ jobs:
                 ;;
             esac
 
-            sleep 5
+            sleep 15
           done
 
           echo "ERROR: Timed out waiting for SSM deployment"
