@@ -38,8 +38,9 @@ export class ContestTransitionService {
   /**
    * Starts a background polling scheduler that checks for due contest transitions.
    * Runs immediately on startup, then every `intervalMs` milliseconds.
+   * Default is 10 minutes so Neon can scale the compute to zero between checks.
    */
-  static startScheduler(intervalMs = 30000): () => void {
+  static startScheduler(intervalMs = 10 * 60 * 1000): () => void {
     void ContestTransitionService.processDueTransitions().catch((err) => {
       console.error('[ContestTransitionService] Startup check failed:', err);
     });
